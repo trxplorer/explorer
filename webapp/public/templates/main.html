@@ -1,0 +1,151 @@
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />	 	 
+<meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+<title>{% block title %}{% endblock %} - trxplorer.io</title>
+<meta name="description" content="{%block description%}trxplorer: Tron blockchain explorer and TRX coin tracker.{%endblock%}" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
+<link rel="stylesheet" href="/css/main.css" />
+<link rel="stylesheet" href="/css/site.css" />
+{%block canonical%}<link rel="canonical" href="{{baseUrl}}{{path}}">{%endblock%}
+{% block header %} 
+
+{% endblock %}
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-1016076-27"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-1016076-27');
+</script>
+</head>
+<body class="Site">
+
+	<div class="Site-header">
+	{%block menu%}
+		{%if path!='/'%}
+			{%include 'partials/topmenu'%}
+		{%endif%}
+	{%endblock%}
+	</div>
+	<div class="Site-content {%if path!='/'%}ui container{%endif%}">
+	
+	{%if path!='/'%}
+		{{breadcrumbs|raw}}
+		{{breadcrumbs_ld|raw}}
+	{%endif%}
+	
+	{%block content%}
+	{%endblock%}
+	</div>
+	
+	<div class="Site-footer">
+	{%block bottommenu%}
+		<div class="ui inverted vertical footer segment" style="margin-top: 50px;">	
+			<div class="ui container" >
+				<div class="row">
+					
+					<div class="eight wide column">
+						<a href="/status">Status</a>
+					</div>
+					
+			</div>
+				<div ><small>Copyright 2018 - trxplorer.io</small></div>
+		</div>
+			
+		</div>	
+	{%endblock%}
+	</div>
+
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		{%if seconfig.enabled==true%}	
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.7/components/transition.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.7/components/dropdown.min.js" integrity="sha256-bYQL+Q8ZK2VsybgEno6xX4YbLfg847r7OJzqHY0AQbo=" crossorigin="anonymous"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/components/search.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/components/api.min.js"></script>
+			<script async="async" type="text/javascript">
+				function getUrl(typeId,text,id){
+					if (typeId==='1'){
+						return '/address/'+text;
+					}else if (typeId==='2'){
+						return '/search/witness?id='+id;
+					}else if (typeId==='3'){
+						return '/tx/'+text;
+					}else if (typeId==='4'){
+						return '/block/'+text;
+					}else if (typeId==='5'){
+						return '/search/token?id='+id;
+					}
+				}
+				function getType(typeId){
+					
+					if (typeId==='1'){
+						return 'Account';
+					}else if (typeId==='2'){
+						return 'Rep.';
+					}else if (typeId==='3'){
+						return 'Transaction';
+					}else if (typeId==='4'){
+						return 'Block';
+					}else if (typeId==='5'){
+						return 'Token';
+					}else{
+						return 'Unknown';
+					}	
+					
+				}
+				
+				$('.ui.search')
+				  .search({
+					type:'category',
+					minCharacters : 3,
+				    apiSettings: {
+				      url: '{{seconfig.endpoint}}?q={query}',				      
+			          onResponse: function(seresponse) {
+
+			            var response = {
+			                results : {}
+			              }
+			            ;
+
+			            $.each(seresponse, function(index, item) {
+
+			            	  var category = getType(item.properties[1].type);
+			            	  var text = item.properties[0].text;
+			            	  var url = getUrl(item.properties[1].type,text,item.id);
+			            	  
+			            	  if(response.results[category] === undefined) {
+			                      response.results[category] = {
+			                        name    : category,
+			                        results : []
+			                      };
+			                    }			            	
+			            	
+			            	  response.results[category].results.push({
+			                      title       : text,
+			                      description : text,
+			                      url         : url
+			                    });
+			            	  
+			      				
+			            });
+			            return response;
+			          }
+				      
+			 		 }
+				  });
+				      
+				      
+			
+			</script>	
+		{%endif%}
+
+	{% block footerscripts %} 
+	
+
+	{% endblock %}
+</body>
+</html>

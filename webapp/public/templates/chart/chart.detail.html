@@ -1,0 +1,75 @@
+{% extends "main" %} 
+
+{% block title %}Search Tron blockchain{% endblock %}
+
+{%block header%}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.13.0/metricsgraphics.min.css" />
+{%endblock%}
+
+{% block content %}
+<h1 class="ui dividing header">{{chart.title}} chart</h1>
+<div class="ui massive  message">
+  <p>{{chart.description}}</p>
+</div>
+<div class="ui fluid grid">
+
+	<div class="row">
+	
+		<div class="sixteen wide column">
+			<div id="chart" style="min-height:500px;"></div>		
+
+		
+		</div>
+
+	</div>
+
+</div>
+
+<h2 class="ui dividing header"><small>Other charts</small></h2>
+<div class="ui cards">
+{%for chart in charts%}
+  <div class="card">
+    <div class="content">
+      <div class="header"><a href="/chart/{{chart.type.slug}}">{{chart.title}}</a></div>
+      <div class="description">
+        {{chart.description}}
+      </div>
+    </div>
+  </div>
+{%endfor%}
+</div>
+
+
+{%endblock%}
+
+
+{%block footerscripts%}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.13.0/metricsgraphics.min.js"></script>
+<script type="text/javascript" >
+
+$(function(){
+	
+
+	d3.json('/chart/api/{{chart.type.slug}}/all', function(data) {
+	    data = MG.convert.date(data, 'date');
+
+	    MG.data_graphic({
+	        title: "{{chart.title}}",
+	        data: data,
+	        full_width:true,
+	        full_height:true,
+	        target: '#chart',
+	        x_accessor: 'date',
+	        y_accessor: 'data'
+	    })
+	})
+	
+
+	
+	
+});
+
+
+</script>
+{%endblock%}

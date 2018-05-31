@@ -1,0 +1,14 @@
+node_modules
+trxwallet/proto
+*.code-workspace
+jsapp
+app/target
+target/
+.settings
+.classpath
+.project
+.log
+log/
+search-engine/data
+hs_err_*.log
+logs/

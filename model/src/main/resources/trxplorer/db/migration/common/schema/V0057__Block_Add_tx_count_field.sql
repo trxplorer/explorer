@@ -1,0 +1,2 @@
+ALTER TABLE `block` 
+ADD COLUMN `tx_count` INT UNSIGNED NOT NULL AFTER `txTrieRoot`;

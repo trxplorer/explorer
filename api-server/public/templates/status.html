@@ -1,0 +1,36 @@
+{% extends "main" %} 
+
+{% block title %}Status{% endblock %}
+
+{% block content %}
+
+<h1 class="ui dividing header"><small><i class="icon circle info"></i>Status</small></h1>
+	
+
+<table class="ui definition table">
+	<tbody>
+		<tr>
+			<td>Status</td>
+			<td><span class="ui {%if status.status=='OK'%}green{%elseif status.status=='KO'%}red{%else%}orange{%endif%} label">{{status.status}}</span></td>
+		</tr>
+		<tr>
+			<td>Total blocks missing</td>
+			<td>{{status.totalBlocksMissing}}</td>
+		</tr>
+		<tr>
+			<td>Trxplorer.io last block</td>
+			<td>{{status.trxplorerLastBlock}}</td>
+		</tr>
+		<tr>
+			<td>Tron last block</td>
+			<td>{{status.tronLastBlock}}</td>
+		</tr>
+		<tr>
+			<td>Block sync rate <small>(avg. on last 24h)</small></td>
+			<td>{{status.trxplorerBlockRate}} blocks / hour</td>
+		</tr>
+	</tbody>
+</table>
+
+
+{%endblock%}

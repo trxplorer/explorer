@@ -1,0 +1,25 @@
+{% extends "main" %} 
+
+{%block title%}ERROR{%endblock%}
+
+
+
+{% block content %}
+<div>
+
+{%if err.status==404 %}
+	<h1 class="ui dividing header"><small>Page not found ...</small></h1>
+	<p class="ui message">The page your are looking for could not be found ... </p>
+	
+
+{%else%}
+	<h1 class="ui dividing header">Oops ...</h1>
+	<p class="ui message">An error just occurred ... The admin has just been notified of this issue ! </p>
+
+{%endif%}
+
+
+    
+
+</div>
+{% endblock %}

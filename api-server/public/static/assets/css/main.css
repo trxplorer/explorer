@@ -1,0 +1,181 @@
+body {
+line-height: 1.4;
+height: 100%;
+
+
+background: #FFFFFF;
+}
+
+h1{
+color:#ED2939;
+font-size: 30px;
+}
+
+h2{
+color:#676767;
+font-size: 30px;
+}
+
+.home{
+background:#eee;
+}
+/*
+.ui.borderless.main.menu{
+margin-top:0;
+background:#FAE042; 
+margin-bottom: 0px;
+}
+.eyecatcher {
+background-color: #494848;
+height: 4px;
+width: 100%;
+}
+
+.eyecatcherbottom{
+background-color: #F2CC36;
+height: 4px;
+width: 100%;
+
+}
+
+*/
+.ui.stackable.borderless.main.menu{
+margin-top: 0px;
+}
+
+.eyecatcher {
+background-color: #c53027;
+height: 4px;
+width: 100%;
+}
+
+
+a{
+color: #16806e;
+}
+
+a:hover{
+color: #cc1104;	
+}
+
+.ui.borderless.main.menu a.item{
+color:#524A4A;
+font-weight:bold;
+}
+
+
+.navbar-toggle{
+border-color: #A1580B;
+}
+.navbar-toggle .icon-bar{
+background-color: #A1580B;
+}
+
+
+/**
+ * FOOTER
+ */
+
+.bottom-menu{
+ height: 30px;
+}
+
+.bottom-menu .socialite{
+width:50px;
+float:left;
+margin-left:10px;
+margin-top:3px;
+}
+
+p{
+font-size: 16px;
+}
+
+.background {
+padding: 19px 29px 29px;
+background-color: #fff;
+border: 1px solid #e5e5e5;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+-moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+box-shadow: 0 1px 2px rgba(0,0,0,.05);
+min-height: 10em;
+}
+
+
+.masthead{
+text-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+background: url(../images/fond_2048.jpg) no-repeat center -125px;
+-webkit-background-size: cover;
+-moz-background-size: cover;
+-o-background-size: cover;
+background-size: cover;
+
+
+min-height: 380px;
+
+/*-webkit-filter: blur(2px); filter: blur(2px);*/
+}
+
+
+.parsley-error{
+color: #B94A48;
+background-color: #F2DEDE;
+border: 1px solid #EED3D7;
+}
+
+.parsley-success{
+color: #468847;
+background-color: #DFF0D8;
+border: 1px solid #D6E9C6;
+}
+
+.parsley-required{
+color:red;
+}
+
+.homesearch{
+margin-top:150px;
+}
+
+
+.slider-separator{
+height:5px;
+background-color:#3C3C3C;
+position: relative;
+}
+/**slider arrow**/
+.slider-separator:after {
+	top: 100%;
+	left: 50%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+	border-color: rgba(70, 203, 213, 0);
+	border-top-color: #3C3C3C;
+	border-width: 20px;
+	margin-left: -20px;
+}
+
+footer p {
+
+font-size:12px;
+}
+
+footer {
+padding: 40px 0;
+color: #999;
+background-color: #262626;
+border-top: 1px solid #e5e5e5;
+font-size: 0.8em;
+}
+
+footer a, footer a:hover {
+color:#fff;
+
+}

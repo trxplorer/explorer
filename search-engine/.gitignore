@@ -1,0 +1,11 @@
+node_modules
+app/target
+target/
+.settings
+.classpath
+.project
+.log
+log/
+search-engine/data
+hs_err_*.log
+logs/

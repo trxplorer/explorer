@@ -1,0 +1,58 @@
+{% extends "main" %} 
+
+{% block title %}Search Tron blockchain{% endblock %}
+
+{% block content %}
+<h1 class="ui dividing header">Search</h1>
+<div class="ui message">
+  <div class="header">
+    Search Tron Blockchain
+  </div>
+  <ul class="list">
+    <li>Please specify the type of data you are looking for (Transaction , Address, Token ...)</li>
+    <li>This search will only return the exact match of you query if it exists</li>
+    {%if seconfig.enabled==true %}<li>For partial match, you can use the search bar (in the menu, on top) that will autocomplete you request if we found the information you are looking for</li>{%endif%}
+  </ul>
+</div>
+<form class="ui segment form">
+  <div class="inline field">
+    <label>Search</label>
+		<div class="ui right labeled input">
+		
+			<div class="ui action input">
+			  <input type="text" value="{{q}}" name="q" placeholder="Search...">
+			  <select name="type" class="ui selection dropdown">
+			    <option value="0">--Search type--</option>
+			    <option selected="" value="tx">Transaction</option>
+			    <option value="token">Token</option>
+			    <option value="address">Address</option>
+			    <option value="rep">Representative</option>
+			    <option value="block">Block</option>
+			  </select>
+			  <button type="submit" class="ui green button">Search</button>
+			</div>
+
+		</div>
+  </div>
+</form>
+
+{%if result!=null and result.url!=null %}
+<div class="ui success massive message">
+
+  <div class="header">
+    {{result.searchType}} found !
+  </div>
+  <p>A {{result.searchType.toLowerCase()}} was found for your query: <a href="{{result.url}}">{{result.url}}</a></p>
+</div>
+{%elseif result!=null and result.url==null%}
+<div class="ui negative massive message">
+
+  <div class="header">
+    Sorry, not {{result.searchType}} found !
+  </div>
+  <p>Not {{result.searchType.toLowerCase()}} was found for your query: {{result.query}}</p>
+<p>Maybe you wasn't searching for a {{result.searchType.toLowerCase()}} ? Please select your query type accordingly</p>
+</div>
+{%endif%}
+
+{%endblock%}

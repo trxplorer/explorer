@@ -1,0 +1,47 @@
+{% extends "main" %}
+{% block title %}Tron transactions list{% endblock %}
+{%block description%}See all transactions on Tron blockchain{%endblock%}
+
+{% block header %} 
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jspanel3/3.10.0/jquery.jspanel.min.css"/> -->
+
+{% endblock %}
+
+{% block content %}
+
+	
+<h1 class="ui dividing header"><small>Transactions</small></h1>
+	
+
+<table class="ui striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">Hash</th>
+			<th class="center aligned">Block</th>
+			<th class="center aligned">Timestamp</th>
+			<th class="center aligned">From</th>
+			<th class="center aligned">To</th>
+			<th class="center aligned">Amount</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for tx in list.items%}
+		<tr class="center aligned">
+			<td><a href="/tx/{{tx.hash}}">{{tx.shortHash}}</a></td>
+			<td><a href="/block/{{tx.blockNum}}">{{tx.blockNum}}</a></td>
+			<td>{{tx.timestamp}}</td>
+			<td><a href="/address/{{tx.from}}">{{tx.from}}</a></td>
+			<td><a href="/address/{{tx.to}}">{{tx.to}}</a></td>
+			<td>{{tx.amount}} {{tx.token}}</td>
+		</tr>
+		{%endfor%}
+	</tbody>
+ <tfoot>
+    <tr><th colspan="6">
+		{% include 'partials/pagination' %}
+  </tr></tfoot>
+</table>
+
+
+
+{%endblock%}

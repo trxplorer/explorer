@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>io.trxplorer</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>webapp</artifactId>
+
+
+	<name>Webapp</name>
+	<description>Tron blockchain explorer web app</description>
+
+
+
+
+
+	<properties>
+		<jooby.version>1.3.0</jooby.version>
+		<jooq.version>3.9.2</jooq.version>
+		<!-- Startup class -->
+		<application.class>io.trxplorer.webapp.WebApp</application.class>
+		<application.debug>8004</application.debug>
+		<application.fork>true</application.fork>
+	</properties>
+
+	<dependencies>
+		
+		
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>tron-cli</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+
+		<!-- NETTY -->
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-common</artifactId>
+			<version>4.1.17.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-buffer</artifactId>
+			<version>4.1.17.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-codec</artifactId>
+			<version>4.1.17.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-handler</artifactId>
+			<version>4.1.17.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-transport</artifactId>
+			<version>4.1.17.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-resolver</artifactId>
+			<version>4.1.17.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-transport-native-epoll</artifactId>
+			<version>4.1.17.Final</version>
+		</dependency>
+		<!-- END NETTY -->
+
+
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
+			<version>${jooq.version}</version>
+		</dependency>
+		<!-- jooby -->
+		<dependency>
+			<groupId>org.jooby</groupId>
+			<artifactId>jooby-flyway</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jooby</groupId>
+			<artifactId>jooby</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jooby</groupId>
+			<artifactId>jooby-commons-email</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jooby</groupId>
+			<artifactId>jooby-pebble</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.jooby</groupId>
+			<artifactId>jooby-pac4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.pac4j</groupId>
+			<artifactId>pac4j-oauth</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-databind</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jooby</groupId>
+			<artifactId>jooby-jooq</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jooq</groupId>
+					<artifactId>jooq</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.jooby</groupId>
+			<artifactId>jooby-jackson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jooby</groupId>
+			<artifactId>jooby-whoops</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jooby</groupId>
+			<artifactId>jooby-netty</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-common</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.jooby</groupId>
+			<artifactId>jooby-quartz</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jooby</groupId>
+			<artifactId>jooby-commons-email</artifactId>
+		</dependency>
+
+		<!-- UniRest -->
+		<dependency>
+			<groupId>com.mashape.unirest</groupId>
+			<artifactId>unirest-java</artifactId>
+			<version>1.4.9</version>
+		</dependency>
+		<!-- End uniRest -->
+
+		<!-- logging -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+
+		<!-- Tests -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.kenglxn.qrgen</groupId>
+			<artifactId>javase</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.3.2</version>
+		</dependency>
+
+
+	</dependencies>
+
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>21.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+
+
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+
+</project>

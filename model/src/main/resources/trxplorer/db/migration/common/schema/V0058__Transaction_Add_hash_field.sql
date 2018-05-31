@@ -1,0 +1,2 @@
+ALTER TABLE `transaction` 
+ADD COLUMN `hash` VARCHAR(64) NOT NULL AFTER `id`;

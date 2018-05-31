@@ -1,0 +1,2 @@
+ALTER TABLE `block` 
+ADD COLUMN `size` BIGINT(20) UNSIGNED NOT NULL AFTER `timestamp`;

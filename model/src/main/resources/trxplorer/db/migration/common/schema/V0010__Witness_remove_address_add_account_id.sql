@@ -1,0 +1,3 @@
+ALTER TABLE `witness` 
+DROP COLUMN `address`,
+ADD COLUMN `account_id` BIGINT UNSIGNED NOT NULL AFTER `isJobs`;

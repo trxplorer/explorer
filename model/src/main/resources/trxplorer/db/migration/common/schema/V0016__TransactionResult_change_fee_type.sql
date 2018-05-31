@@ -1,0 +1,2 @@
+ALTER TABLE `transaction_result` 
+CHANGE COLUMN `fee` `fee` BIGINT UNSIGNED NOT NULL DEFAULT 0 ;

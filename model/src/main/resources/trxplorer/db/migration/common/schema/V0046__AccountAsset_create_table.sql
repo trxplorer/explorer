@@ -1,0 +1,6 @@
+CREATE TABLE `account_asset` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `asset_name` VARCHAR(45) NOT NULL,
+  `balance` BIGINT UNSIGNED NOT NULL,
+  `account_id` BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`));

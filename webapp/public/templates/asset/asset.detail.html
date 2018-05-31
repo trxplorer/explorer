@@ -1,0 +1,126 @@
+{% extends "main" %} {% block title %}Tron address {{tx.hash}}informations{% endblock %} 
+
+{%block description%}Get all informations about address #{{tx.hash}} on Tron blockchain{%endblock%}
+
+ 
+{% block content %}
+
+<h1 class="ui dividing header">
+	<small>Token: <small>{{asset.name}}</small></small>
+</h1>
+
+<div class="ui grid">
+	<div class="row">
+		<div class="ten wide column">
+			<table class="ui very basic table ">
+				<tbody>
+					<tr>
+						<td>Issuer</td>
+						<td><a href="/address/{{asset.issuer}}">{{asset.issuer}}</a></td>
+					</tr>
+					<tr>
+						<td>Participation period</td>
+						<td>Start: <small>{{asset.startTime}}</small>  &nbsp;&nbsp;&nbsp; End: <small>{{asset.endTime}}</small></td>
+					</tr>
+					<tr>
+						<td>URL</td>
+						<td><a href="{{asset.url}}" target="blank">{{asset.url}}</a></td>
+					</tr>
+					<tr>
+						<td>Total supply</td>
+						<td>{{asset.totalSupply}}</td>
+					</tr>
+					<tr>
+						<td>Exchange rate</td>
+						<td>{{asset.num}} {{asset.name}} = {{asset.trxNum}} TRX</td>
+					</tr>
+					<tr>
+						<td>Description</td>
+						<td>{{asset.description}}</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+
+
+	</div>
+</div>
+
+<div class="ui top attached tabular menu">
+  <a href="/token/{{asset.id}}" class="{%if asset.criteria.tab=='tx'%}active{%endif%} item">Transfers</a>
+  <a href="/token/{{asset.id}}?t=tp" class="{%if asset.criteria.tab=='tp'%}active{%endif%} item">Participants</a>
+</div>
+
+
+<!-- TRANSACTIONS -->
+{%if asset.criteria.tab=='tx'%}
+<table class="ui striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">Hash</th>
+			<th class="center aligned">Block</th>
+			<th class="center aligned">Timestamp</th>
+			<th class="center aligned">From</th>
+			<th class="center aligned">To</th>
+			<th class="center aligned">Amount</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for tx in asset.transactions%}
+		<tr class="center aligned">
+			<td><a href="/tx/{{tx.hash}}"></a></td>
+			<td><a href="/block/{{tx.blockNum}}">{{tx.blockNum}}</a></td>
+			<td>{{tx.timestamp}}</td>
+			<td>{% if tx.from!=account.address%}<a href="/address/{{tx.from}}">{{tx.from}}</a>{%else%} {{tx.from}}{%endif%}</td>
+			<td>{% if tx.to!=account.address%}<a href="/address/{{tx.to}}">{{tx.to}}</a>{%else%}{{tx.to}}{%endif%}</td>
+			<td>{{tx.amount}} {{tx.token}}</td>
+		</tr>
+		{%endfor%}
+	</tbody>
+ <tfoot>
+    <tr><th colspan="6">
+		{% include 'partials/pagination' %}
+  </tr></tfoot>
+</table>
+{%endif%}
+
+{%if asset.criteria.tab=='tp'%}
+<!-- ASSET PARTICIPATION -->
+<table class="ui striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">Token</th>
+			<th class="center aligned">From</th>
+			<th class="center aligned">To</th>
+			<th class="center aligned">Amount</th>
+			<th class="center aligned">Timestamp</th>
+
+
+		</tr>
+	</thead>
+	<tbody>
+		{%for tp in asset.participations%}
+		<tr class="center aligned">
+			<td>{{tp.assetName}}</td>
+			<td>{% if tp.from!=account.address%}<a href="/address/{{tp.from}}">{{tp.from}}</a>{%else%} {{tp.from}}{%endif%}</td>
+			<td>{% if tp.to!=account.address%}<a href="/address/{{tp.to}}">{{tp.to}}</a>{%else%}{{tp.to}}{%endif%}</td>
+			<td>{{tp.amount}}</td>
+			<td>{{tp.timestamp}}</td>
+		</tr>
+		{%endfor%}
+	</tbody>
+ <tfoot>
+    <tr><th colspan="5">
+		{% include 'partials/pagination' %}
+  </tr></tfoot>
+</table>
+{%endif%}
+
+
+
+<h2 class="ui dividing header">
+	<small><i class="icon comments outline"></i>Comments</small>
+</h2>
+
+{%endblock%}

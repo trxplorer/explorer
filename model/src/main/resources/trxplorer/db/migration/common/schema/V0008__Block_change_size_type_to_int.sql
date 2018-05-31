@@ -1,0 +1,2 @@
+ALTER TABLE `block` 
+CHANGE COLUMN `size` `size` INT UNSIGNED NOT NULL ;

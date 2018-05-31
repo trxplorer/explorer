@@ -1,0 +1,46 @@
+{% extends "main" %}
+{% block title %}Tron block #{{block.num}} informations{% endblock %}
+{%block description%}Get all informations about block #{{block.num}} on Tron blockchain{%endblock%}
+
+
+
+{% block content %}
+
+	
+<h1 class="ui dividing header"><small>Candidates</small></h1>
+	
+<div class="ui mini icon info message">
+  <i class="circle info icon"></i>
+  <div class="content">
+    <p>These accounts represents candidates to become super representatives. Some of them might already have been elected as a super representative. Current elected super representatives are not part of this list.</p>
+  </div>
+</div>
+
+<table class="ui striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">URL</th>
+			<th class="center aligned">Blocks produced</th>
+			<th class="center aligned">Blocks missed</th>
+			<th class="center aligned">Votes</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for witness in list.items%}
+		<tr class="center aligned">
+			<td><a href="/address/{{witness.address}}">{{witness.shortUrl}}</a></td>
+			<td>{%if witness.totalProduced > 0 %}<a href="/blocks?producedBy={{witness.address}}">{{witness.totalProduced}}</a>{%else%}{{witness.totalProduced}}{%endif%}</td>
+			<td>{{witness.totalMissed}} </a></td>
+			<td>{%if witness.voteCount > 0 %}<a href="/address/{{witness.address}}?t=votes">{{witness.getVoteCountStr()}}</a>{%else%}{{witness.getVoteCountStr()}}{%endif%}</td>
+		</tr>
+		{%endfor%}
+	</tbody>
+ <tfoot>
+    <tr><th colspan="5">
+		{% include 'partials/pagination' %}
+  </tr></tfoot>
+</table>
+
+
+
+{%endblock%}

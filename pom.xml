@@ -1,0 +1,739 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>io.trxplorer</groupId>
+	<artifactId>parent</artifactId>
+	<version>1.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>Parent</name>
+	<description>Sample Parent</description>
+
+	<properties>
+		 <java-tron.version>02e92915bf1c66afe9343339eb8a0a1931149031</java-tron.version>
+		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jooq.version>3.9.2</jooq.version>
+		<mysql.connector.version>5.1.38</mysql.connector.version>
+		<flyway.version>4.2.0</flyway.version>
+		<junit.version>4.12</junit.version>
+	</properties>
+
+
+	<scm>
+		<connection>scm:git:ssh://git@bitbucket.org/nfleury/trxplorer.io.git</connection>
+		<developerConnection>scm:git:ssh://git@bitbucket.org/nfleury/trxplorer.io.git</developerConnection>
+		<url>https://bitbucket.org/nfleury/trxplorer.io</url>
+	  <tag>HEAD</tag>
+  </scm>
+
+	<modules>
+		<module>tron-cli</module>
+		<module>model</module>
+		<module>sync-node</module>
+		<module>search-engine</module>
+		<module>api-server</module>
+		<module>webapp</module>
+	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+			  <groupId>org.assertj</groupId>
+			  <artifactId>assertj-core</artifactId>
+			  <version>3.8.0</version>
+			  <scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.4</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.5</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<build>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+			</plugin>
+		</plugins>
+	  <pluginManagement>
+	    <plugins>
+	      <plugin>
+	        <artifactId>maven-archetype-plugin</artifactId>
+	        <version>3.0.0</version>
+	      </plugin>
+	    </plugins>
+	  </pluginManagement>
+	</build>
+
+
+	<profiles>
+
+		<!-- Disable doclint for java 8+ -->
+
+		 <profile>
+		    <id>doclint-java8-disable</id>
+		    <activation>
+		      <jdk>[1.8,)</jdk>
+		    </activation>
+
+		    <build>
+		      <plugins>
+		        <plugin>
+		          <groupId>org.apache.maven.plugins</groupId>
+		          <artifactId>maven-javadoc-plugin</artifactId>
+		          <configuration>
+		            <additionalparam>-Xdoclint:none</additionalparam>
+		          </configuration>
+		        </plugin>
+		      </plugins>
+		    </build>
+		  </profile>
+
+		<!-- JOOBY PROFILE -->
+		<profile>
+
+			<id>jooby</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+				<file>
+					<exists>${basedir}/.jooby.profile</exists>
+				</file>
+			</activation>
+
+			<properties>
+				<jooby.version>1.1.1</jooby.version>
+				<pac4j.version>1.9.5</pac4j.version>
+				<mysql-connector-java.version>5.1.38</mysql-connector-java.version>
+				<logback-classic.version>1.1.7</logback-classic.version>
+				<rest-assured.version>3.0.1</rest-assured.version>
+				<http-client.version>4.5.2</http-client.version>
+			</properties>
+			<dependencyManagement>
+				<dependencies>
+					<!-- JOOBY -->
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby</artifactId>
+						<scope>test</scope>
+						<version>${jooby.version}</version>
+						<classifier>tests</classifier>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-hbm4</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-hbv</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-jdbc</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-executor</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-jdbi</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-jooq</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-hbs</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-jackson</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-undertow</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-jetty</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-netty</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-servlet</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-quartz</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-guava-cache</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-ftl</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-pebble</artifactId>
+						<version>${jooby.version}</version>
+						<exclusions>
+							<exclusion>
+								<groupId>com.google.guava</groupId>
+								<artifactId>guava</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-camel</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-jedis</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-mongodb</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-mongodb-rx</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-morphia</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-run</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-elasticsearch</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-ehcache</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-pac4j</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-swagger</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-raml</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-spymemcached</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-aws</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-commons-email</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-jongo</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-flyway</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-hazelcast</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-ebean</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-akka</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-clean-css</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-closure-compiler</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-csslint</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-j2v8</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-nodejs</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-jscs</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-jshint</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-less</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-less4j</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-ng-annotate</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-requirejs</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-sass</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-uglify</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-yui-compressor</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-babel</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-rollup</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-svg-sprites</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-svg-symbol</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-assets-autprefixer</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-metrics</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-querydsl</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-sitemap</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-rxjava</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-banner</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-rxjava-jdbc</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-reactor</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-whoops</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-gradle-plugin</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-couchbase</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-cassandra</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-hbm</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-scanner</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-csl</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-unbescape</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-crash</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-thymeleaf</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-filewatcher</artifactId>
+						<version>${jooby.version}</version>
+					</dependency>
+
+					<!-- HTTP-COMPONENTS -->
+					<dependency>
+						<groupId>org.apache.httpcomponents</groupId>
+						<artifactId>httpclient</artifactId>
+						<version>${http-client.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.httpcomponents</groupId>
+						<artifactId>httpmime</artifactId>
+						<version>${http-client.version}</version>
+					</dependency>
+
+					<!-- PAC4J -->
+					<dependency>
+						<groupId>org.pac4j</groupId>
+						<artifactId>pac4j-oauth</artifactId>
+						<version>${pac4j.version}</version>
+					</dependency>
+
+					<!-- MYSQL CONNECTOR -->
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<version>${mysql-connector-java.version}</version>
+					</dependency>
+
+					<!-- logging -->
+					<dependency>
+						<groupId>ch.qos.logback</groupId>
+						<artifactId>logback-classic</artifactId>
+						<version>${logback-classic.version}</version>
+					</dependency>
+
+					<!-- Tests -->
+					<dependency>
+						<groupId>junit</groupId>
+						<artifactId>junit</artifactId>
+						<scope>test</scope>
+						<version>${junit.version}</version>
+					</dependency>
+
+					<dependency>
+						<groupId>io.rest-assured</groupId>
+						<artifactId>rest-assured</artifactId>
+						<scope>test</scope>
+						<version>${rest-assured.version}</version>
+					</dependency>
+
+				</dependencies>
+
+			</dependencyManagement>
+
+
+			<build>
+
+				<resources>
+					<resource>
+						<directory>public</directory>
+					</resource>
+					<resource>
+						<directory>src/main/resources</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+					</resource>
+				</resources>
+
+
+				<plugins>
+
+
+					<!-- Build fat jar -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-shade-plugin</artifactId>
+						<configuration>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+										<exclude>LICENSE</exclude>
+										<exclude>LICENSE.txt</exclude>
+										<exclude>NOTICE</exclude>
+										<exclude>about.html</exclude>
+										<exclude>jetty-dir.css</exclude>
+									</excludes>
+								</filter>
+								<filter>
+									<artifact>org.jooby:jooby</artifact>
+									<excludes>
+										<exclude>*.sh</exclude>
+									</excludes>
+								</filter>
+							</filters>
+						</configuration>
+						<executions>
+							<execution>
+								<id>fat-jar</id>
+								<phase>package</phase>
+								<goals>
+									<goal>shade</goal>
+								</goals>
+								<configuration>
+									<transformers>
+										<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+										<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+											<mainClass>${application.class}</mainClass>
+										</transformer>
+									</transformers>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+
+					<plugin>
+						<groupId>org.jooby</groupId>
+						<artifactId>jooby-maven-plugin</artifactId>
+						<version>${jooby.version}</version>
+						<configuration>
+							<mainClass>${application.class}</mainClass>
+							<debug>${application.debug}</debug>
+							<includes>
+								<include>**/*.class</include>
+								<include>**/*.conf</include>
+								<include>**/*.properties</include>
+								<include>**/*.sql</include>
+							</includes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- END JOOBY PROFILE -->
+
+
+
+
+	</profiles>
+
+
+</project>

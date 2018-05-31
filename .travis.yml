@@ -1,0 +1,10 @@
+language: java
+jdk: oraclejdk8
+sudo: required
+services:
+  - docker
+env:
+  global:
+    secure: EMZSw0mbPqhcV+AcD6Y27SCJkIlF+7RKdUUqWVQIH9wxXKScmHcl2jDNAjFkShW0OZxw07XaKMHwSWLiHundnwDL7X2MMPioJozx3Z7L9lHWOjFVv82JCW9uDxr3YQmc0iDCPGeTPFr0acgEP7V/5/7oFcxU7badE+z0ibdwp2xWAmqC6BvahXOJAQEjhJLFH0wXkYJ+8T8Rc45DZvm96Q2gW7B5wdnht0wxOvp5XAIf2LRPaIM/0iJMrsKNXhjOi171dOZooggUE1ILQhBKl0G5wvf7wEcFHa30fIVmfii8SW3OBBq27NOGI9AicTnigZ83Q3m89B2jJv+3BXFdKA5+iFN18zuhmLgCkrNYwrDTY4m2UyPPZWmgi8flhPEgSR0VKpxvIJPSY/ppx5/KpsByQMqbeaq7OqJyp8jEpxv9Dec2OKjmimhekfuVG3dp+OA7prR7UPG8EKlzAXAgVethJIM3lzK0IdmY176sXqbRVK76nsoCEj/Iexn3OzzkI7Y/J1zaKusuZfEJba9M429kKSxm+6V59DPLwZD9+YCXbz3tzBI7f8aIWVFhq6nUqNE+UjKD/EMmH3CfQnfW5nGlf+FP9F6huXXzj8AXq+B3C9DTxWW2LNxMk/TJu0p5NEQ1/MLl6EG2YPbdiY1i7MZBWBgtf38y0WuQkrsWfBk=
+after_success:
+  - ./.travis/create_branch.sh

@@ -1,0 +1,6 @@
+CREATE TABLE `transaction_result` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fee` DOUBLE UNSIGNED NULL,
+  `code` TINYINT(1) UNSIGNED NOT NULL,
+  `transaction_id` BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`));

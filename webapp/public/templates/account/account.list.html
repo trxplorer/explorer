@@ -1,0 +1,46 @@
+{% extends "main" %}
+{% block title %}Tron block #{{block.num}} informations{% endblock %}
+{%block description%}Get all informations about block #{{block.num}} on Tron blockchain{%endblock%}
+
+
+
+{% block content %}
+
+	
+<h1 class="ui dividing header"><small><i class="icon user"></i>Accounts</small></h1>
+	
+
+<table class="ui striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">Rank</th>
+			<th class="center aligned">Address</th>
+			<th class="center aligned">Balance</th>
+			<th class="center aligned">Percentage</th>
+			<th class="center aligned">Vote spent</th>
+			<th class="center aligned">Vote received</th>
+			<th class="center aligned">Assets</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for account in list.items%}
+		<tr class="center aligned">
+			<td>{{account.rank}}</td>
+			<td><a href="/address/{{account.address}}">{{account.address}}</a><br/><small>{{accoun.name}}</small></td>
+			<td>{{account.getBalanceStr()}}</td>
+			<td>{{account.percentage}}</a></td>
+			<td>{{account.voteSpent}}</a></td>
+			<td>{{account.voteReceived}}</a></td>
+			<td>{{account.assetCount}}</a></td>
+		</tr>
+		{%endfor%}
+	</tbody>
+ <tfoot>
+    <tr><th colspan="7">
+		{% include 'partials/pagination' %}
+  </tr></tfoot>
+</table>
+
+
+
+{%endblock%}

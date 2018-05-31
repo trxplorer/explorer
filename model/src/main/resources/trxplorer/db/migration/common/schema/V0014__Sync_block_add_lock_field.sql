@@ -1,0 +1,2 @@
+ALTER TABLE `sync_block` 
+ADD COLUMN `locked` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `date_end`;

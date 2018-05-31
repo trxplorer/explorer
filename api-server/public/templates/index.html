@@ -1,0 +1,74 @@
+{% extends "main" %} 
+
+{% block title %}TRON blockchain explorer{% endblock %}
+{%block description%}Trxplorer.io is a blockchain explorer for the Tron protocol. You can track every blocks, transactions, address, and coins/tokens and other assets on the blockchain.{%endblock%}
+
+{% block content %}
+
+<div class="eyecatcher"></div>
+<div class="ui inverted vertical masthead center aligned segment">
+
+    <div class="ui container">
+      <div class="ui large secondary inverted pointing menu">
+
+		<a class="active item" href="#search">Home</a>
+        <a class="item" href="/blocks">Blocks</a>
+        <a class="item" href="/transactions">Transactions</a>
+	 	<div class="ui simple dropdown item">
+	    Representatives
+	    <i class="dropdown icon"></i>
+	    <div class="menu">
+	      <a class="item" href="/super-representatives" >Super Representative</a>
+	      <a class="item" href="/live-votes" >Live votes</a>
+	      <a class="item" href="/representatives" >All candidates</a>
+	    </div>
+	  </div>
+        <a class="item" href="/accounts">Accounts</a>
+        <a class="item" href="/tokens">Tokens</a>
+        <a class="item" href="/charts">Charts</a>
+
+      </div>
+    </div>
+	<br><br>
+    <div class="ui text container">
+      <h1 class="ui inverted header">
+        TRXPL<i class="search icon" style="margin-right:-5px;"></i>RER.io
+      </h1>
+      <h2><a name="search"></a><a name="search"></a>Tron Blockchain Explorer</h2>
+		<div class="ui category search">
+		  <div class="ui massive icon input">
+		    <input name="q" class="prompt" type="text" placeholder="Address, Hash, Token ...">
+		    <i class="search icon"></i>
+		  </div>
+		  <div class="results"></div>
+		</div>
+
+	
+    </div>
+
+  </div>
+
+<div class="ui vertical stripe segment">
+    <div class="ui middle aligned stackable grid container">
+      <div class="row">
+        <div class="six wide column">
+			<b><i class="cube icon"></i> Latest Blocks</b>
+			<ul>
+				{%for block in lastBlocks%}
+					<li><a href="/block/{{block.num}}">{{block.num}}</a></li>
+				{%endfor%}
+			</ul>
+        </div>
+        <div class="six wide column">
+			<b>Latest Transactions</b>
+			<ul>
+				{%for tx in lastTxs%}
+					<li><a href="/tx/{{tx.hash}}">{{tx.hash}}</a></li>
+				{%endfor%}
+			</ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{%endblock%}

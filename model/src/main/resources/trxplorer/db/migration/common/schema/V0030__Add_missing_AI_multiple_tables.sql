@@ -1,0 +1,5 @@
+ALTER TABLE `contract_vote_asset_vote` 
+CHANGE COLUMN `id` `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT ;
+
+ALTER TABLE `contract_vote_witness_vote` 
+CHANGE COLUMN `id` `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT ;

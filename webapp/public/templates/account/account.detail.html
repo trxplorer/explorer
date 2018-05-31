@@ -1,0 +1,329 @@
+{% extends "main" %} {% block title %}Tron address {{tx.hash}}
+informations{% endblock %} {%block description%}Get all informations
+about address #{{tx.hash}} on Tron blockchain{%endblock%} {% block
+header %} {% endblock %} {% block content %}
+
+
+<h1 class="ui dividing header">
+	<small><i class="icon user"></i> <small>{{account.address}} {%if account.name!=null and account.name!='' %}({{account.name}}){%endif%}</small></small>
+</h1>
+
+<div class="ui grid">
+	<div class="row">
+		<div class="eight wide column">
+			<table class="ui very basic table ">
+				<tbody>
+					{%if account.witness!=null%}
+					<tr>
+						<td>URL</td>
+						<td><a href="{{account.witness.url}}" target="blank">{{account.witness.url}}</a></td>
+					</tr>
+					{%endif%}
+					<tr>
+						<td>Created</td>
+						<td>{{account.createTime}}</td>
+					</tr>
+					<tr>
+						<td>Bandwidth</td>
+						<td>{{account.getBandwidthStr()}}</td>
+					</tr>
+					<tr >
+						<td>TRX balance</td>
+						<td>
+							{%if account.frozenBalance >0%}
+							<table class="ui very basic table ">
+								<tbody>
+									<tr>
+										<td>Available</td>
+										<td>{{account.getBalanceStr()}}</td>
+									</tr>
+									<tr>
+										<td>Frozen</td>
+										<td>{{account.getFrozenBalanceStr()}} &nbsp;&nbsp; <small>(Expires: {{account.frozenExpire}})</small></td>
+									</tr>
+									<tr>
+										<td>Total</td>
+										<td>{{account.getTotalBalanceStr()}}</td>
+									</tr>
+								</tbody>
+							</table>
+							{%else%}
+								{{account.getBalanceStr()}}
+							{%endif%}
+						</td>
+					</tr>
+					{%if account.balance>0%}
+					<tr>
+						<td>Rank</td>
+						<td><a href="/accounts">{{account.rank}}</a></td>
+					</tr>
+					{%endif%}
+				</tbody>
+			</table>
+		</div>
+		<div class="eight wide column">
+			<table class="ui very basic table ">
+				<tbody>
+					<tr>
+						<td>QR code</td>
+						<td><a href="#" id="send">[send]</a></td>
+					</tr>
+					{%if account.witness!=null%}
+					<tr>
+						<td>Votes</td>
+						<td>{{account.witness.getVoteCountStr()}}</td>
+					</tr>
+					<tr>
+						<td>Block</td>
+						<td><a href="/blocks?producedBy={{account.address}}">{{account.witness.totalProduced}}</a> produced - {{account.witness.totalMissed}} missed</td>
+					</tr>
+					<tr>
+						<td>Allowance</td>
+						<td>{{account.getAllowanceStr()}}</td>
+					</tr>
+					<tr>
+						<td>Total reward</td>
+						<td>{{account.totalReward}}</td>
+					</tr>
+					{%endif%}
+				</tbody>
+			</table>
+		</div>
+
+	</div>
+</div>
+
+<div class="ui top attached tabular menu">
+  <a href="/address/{{account.address}}" class="{%if account.criteria.tab=='tx'%}active{%endif%} item">Transfers</a>
+  <a href="/address/{{account.address}}?t=ab" class="{%if account.criteria.tab=='ab'%}active{%endif%} item">Asset balances</a>
+  <a href="/address/{{account.address}}?t=ti" class="{%if account.criteria.tab=='ti'%}active{%endif%} item">Token issued</a>
+  <a href="/address/{{account.address}}?t=tp" class="{%if account.criteria.tab=='tp'%}active{%endif%} item">Token participations</a>
+  <a href="/address/{{account.address}}?t=votes" class="{%if account.criteria.tab=='votes'%}active{%endif%} item">Votes</a>
+  <a href="/address/{{account.address}}?t=fh" class="{%if account.criteria.tab=='fh'%}active{%endif%} item">Freeze/Unfreeze history</a>
+  {%if account.witness!=null%}<a href="/address/{{account.address}}?t=aw" class="{%if account.criteria.tab=='aw'%}active{%endif%} item">Allowance widthdrawals</a>{%endif%}
+</div>
+
+
+{%if account.criteria.tab=='tx'%}
+<!-- TRANSACTIONS -->
+<table class="ui striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">Tx</th>
+			<th class="center aligned">Block</th>
+			<th class="center aligned">Timestamp</th>
+			<th class="center aligned">From</th>
+			<th class="center aligned">To</th>
+			<th class="center aligned">Amount</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for tx in account.transactions%}
+		<tr class="center aligned">
+			<td><a href="/tx/{{tx.hash}}">{{tx.shortHash}}</a></td>
+			<td><a href="/block/{{tx.blockNum}}">{{tx.blockNum}}</a></td>
+			<td>{{tx.timestamp}}</td>
+			<td>{% if tx.from!=account.address%}<a href="/address/{{tx.from}}">{{tx.from}}</a>{%else%} {{tx.from}}{%endif%}</td>
+			<td>{% if tx.to!=account.address%}<a href="/address/{{tx.to}}">{{tx.to}}</a>{%else%}{{tx.to}}{%endif%}</td>
+			<td>{{tx.amount}} {{tx.token}}</td>
+		</tr>
+		{%endfor%}
+	</tbody>
+ <tfoot>
+    <tr><th colspan="6">
+		{% include 'partials/pagination' %}
+  </tr></tfoot>
+</table>
+{%endif%}
+
+
+
+{%if account.criteria.tab=='ab'%}
+<!-- ASSET BALANCES -->
+<table class="ui striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">Asset</th>
+			<th class="center aligned">Balance</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for ab in account.assetBalances%}
+		<tr class="center aligned">
+			<td>{{ab.assetName}}</td>
+			<td>{{ab.getBalanceStr()}}</td>
+		</tr>
+		{%endfor%}
+	</tbody>
+ <tfoot>
+    <tr><th colspan="2">
+		{% include 'partials/pagination' %}
+  </tr></tfoot>
+</table>
+{%endif%}
+
+
+{%if account.criteria.tab=='votes'%}
+<!-- VOTES -->
+<table class="ui striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">From</th>
+			<th class="center aligned">To</th>
+			<th class="center aligned">Timestamp</th>
+			<th class="center aligned">Vote count</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for vote in account.votes%}
+		<tr class="center aligned">
+			<td>{% if vote.from!=account.address%}<a href="/address/{{vote.from}}">{{vote.from}}</a>{%else%} {{vote.from}}{%endif%}</td>
+			<td>{% if vote.to!=account.address%}<a href="/address/{{vote.to}}">{{vote.to}}</a>{%else%}{{vote.to}}{%endif%}</td>
+			<td>{{vote.timestamp}}</td>
+			<td>{{vote.getVoteCountStr()}}</td>
+		</tr>
+		{%endfor%}
+	</tbody>
+ <tfoot>
+    <tr><th colspan="4">
+		{% include 'partials/pagination' %}
+  </tr></tfoot>
+</table>
+{%endif%}
+
+
+
+{%if account.criteria.tab=='ti'%}
+<!-- ASSET ISSUE -->
+<table class="ui striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">Name</th>
+			<th class="center aligned">Supply</th>
+			<th class="center aligned">Start date</th>
+			<th class="center aligned">End date</th>
+			<th class="center aligned">Participants</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for assetIssue in account.assetIssues%}
+		<tr class="center aligned">
+			<td><a href="/token/{{assetIssue.id}}">{{assetIssue.name}}</a></td>
+			<td>{{assetIssue.getTotalSupplyStr()}}</td>
+			<td>{{assetIssue.startTime}}</td>
+			<td>{{assetIssue.endTime}}</td>
+			<td>{%if assetIssue.totalParticipants>0%}<a href="/accounts?participateAsset={{assetIssue.name}}">{{assetIssue.totalParticipants}}</a>{%else%}{{assetIssue.totalParticipants}}{%endif%}</td>
+		</tr>
+		{%endfor%}
+	</tbody>
+ <tfoot>
+    <tr><th colspan="5">
+		{% include 'partials/pagination' %}
+  </tr></tfoot>
+</table>
+{%endif%}
+
+
+{%if account.criteria.tab=='tp'%}
+<!-- ASSET PARTICIPATION -->
+<table class="ui striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">Token</th>
+			<th class="center aligned">From</th>
+			<th class="center aligned">To</th>
+			<th class="center aligned">Amount</th>
+			<th class="center aligned">Timestamp</th>
+
+
+		</tr>
+	</thead>
+	<tbody>
+		{%for tp in account.assetParticipations%}
+		<tr class="center aligned">
+			<td>{{tp.assetName}}</td>
+			<td>{% if tp.from!=account.address%}<a href="/address/{{tp.from}}">{{tp.from}}</a>{%else%} {{tp.from}}{%endif%}</td>
+			<td>{% if tp.to!=account.address%}<a href="/address/{{tp.to}}">{{tp.to}}</a>{%else%}{{tp.to}}{%endif%}</td>
+			<td>{{tp.getAmountStr()}}</td>
+			<td>{{tp.timestamp}}</td>
+		</tr>
+		{%endfor%}
+	</tbody>
+ <tfoot>
+    <tr><th colspan="5">
+		{% include 'partials/pagination' %}
+  </tr></tfoot>
+</table>
+{%endif%}
+
+
+{%if account.criteria.tab=='fh'%}
+<!-- FROZEN HISTORY -->
+<table class="ui striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">Frozen Balance</th>
+			<th class="center aligned">Freeze expiration date</th>
+			<th class="center aligned">Unfreeze date</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for fb in account.frozenBalances%}
+		<tr class="center aligned">
+			<td>{{fb.getBalanceStr()}}</td>
+			<td>{{fb.expireTime}}</td>
+			<td>{{fb.unfreezeTime}}</td>
+		</tr>
+		{%endfor%}
+	</tbody>
+ <tfoot>
+    <tr><th colspan="3">
+		{% include 'partials/pagination' %}
+  </tr></tfoot>
+</table>
+{%endif%}
+
+
+{%if account.criteria.tab=='aw'%}
+<!-- ALLOWANCE WITHDRAWALS -->
+<table class="ui striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">Tx Id</th>
+			<th class="center aligned">Timestamp</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for aw in account.allowanceWithdrawals%}
+		<tr class="center aligned">
+			<td>{{aw.txId}}</td>
+			<td>{{aw.timestamp}}</td>
+		</tr>
+		{%endfor%}
+	</tbody>
+ <tfoot>
+    <tr><th colspan="3">
+		{% include 'partials/pagination' %}
+  </tr></tfoot>
+</table>
+{%endif%}
+
+
+<h2 class="ui dividing header">
+	<small><i class="icon comments outline"></i>Comments</small>
+</h2>
+
+{%endblock%}
+
+{%block footerscripts%}
+<script>
+$(function(){
+	console.log(window.TRXWallet)
+	$('#send').click(function(){
+		var data = { type: "TRXWALLET_SIGNATURE_REQUEST", transaction: {type:'freeze',options:{amount:200}} };
+		window.postMessage(data, "*");
+	})	
+})
+
+</script>
+{%endblock%}

@@ -1,0 +1,2 @@
+ALTER TABLE `witness` 
+ADD COLUMN `vote_count` BIGINT UNSIGNED NOT NULL AFTER `id`;

@@ -1,0 +1,26 @@
+{% extends "main" %} 
+
+{% block title %}Search Tron blockchain{% endblock %}
+
+{%block header%}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.13.0/metricsgraphics.min.css" />
+{%endblock%}
+
+{% block content %}
+<h1 class="ui dividing header">Charts</h1>
+
+<div class="ui cards">
+{%for chart in charts%}
+  <div class="card">
+    <div class="content">
+      <div class="header"><a href="/chart/{{chart.type.slug}}">{{chart.title}}</a></div>
+      <div class="description">
+        {{chart.description}}
+      </div>
+    </div>
+  </div>
+{%endfor%}
+</div>
+
+
+{%endblock%}

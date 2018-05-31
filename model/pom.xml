@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>io.trxplorer</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
+	</parent>
+
+
+	<artifactId>model</artifactId>
+
+	<packaging>jar</packaging>
+
+	<name>Model</name>
+
+
+
+	<properties>
+		<jooq.packageName>io.trxplorer.model</jooq.packageName>
+		<createTable.sqlCommand>create database tmp CHARACTER SET utf8</createTable.sqlCommand>
+		<mysql.container.timeout>120000</mysql.container.timeout>
+		<flyway.locations>filesystem:${basedir}/src/main/resources/trxplorer/db/migration/common</flyway.locations>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
+			<version>${jooq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.connector.version}</version>
+		</dependency>
+
+	</dependencies>
+
+
+	<profiles>
+		<profile>
+			<id>docker</id>
+			<activation>
+				<file>
+					<exists>${basedir}/.docker.profile</exists>
+				</file>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.1</version>
+						<configuration>
+							<source>${java.version}</source>
+							<target>${java.version}</target>
+						</configuration>
+					</plugin>
+
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>start-database</id>
+								<phase>generate-sources</phase>
+								<goals>
+
+									<goal>stop</goal>
+									<goal>start</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>stop-database</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<images>
+								<image>
+									<name>mysql:5.7</name>
+									<alias>mysql-test</alias>
+									<run>
+										cd
+										<log>
+											<enabled>true</enabled>
+										</log>
+										<env>
+											<MYSQL_ROOT_PASSWORD>1234</MYSQL_ROOT_PASSWORD>
+										</env>
+										<ports>
+											<port>3307:3306</port>
+										</ports>
+										<wait>
+											<time>${mysql.container.timeout}</time>
+											<tcp>
+												<ports>
+													<port>3306</port>
+												</ports>
+											</tcp>
+										</wait>
+									</run>
+								</image>
+							</images>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>sql-maven-plugin</artifactId>
+
+						<dependencies>
+							<!-- specify the dependent jdbc driver here -->
+							<dependency>
+								<groupId>mysql</groupId>
+								<artifactId>mysql-connector-java</artifactId>
+								<version>${mysql.connector.version}</version>
+							</dependency>
+						</dependencies>
+
+						<configuration>
+							<driver>com.mysql.jdbc.Driver</driver>
+							<url>jdbc:mysql://localhost:3307</url>
+							<username>root</username>
+							<password>1234</password>
+						</configuration>
+
+						<executions>
+
+							<!-- It creates integration test data before running the tests -->
+							<execution>
+								<id>create-db</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<forceMojoExecution>true</forceMojoExecution>
+									<autocommit>true</autocommit>
+									<sqlCommand>${createTable.sqlCommand}</sqlCommand>
+								</configuration>
+							</execution>
+						</executions>
+
+					</plugin>
+					<plugin>
+						<groupId>org.flywaydb</groupId>
+						<artifactId>flyway-maven-plugin</artifactId>
+						<version>${flyway.version}</version>
+						<configuration>
+							<driver>com.mysql.jdbc.Driver</driver>
+							<url>jdbc:mysql://localhost:3307/tmp</url>
+							<user>root</user>
+							<password>1234</password>
+							<schemas>
+								<schema>tmp</schema>
+							</schemas>
+							<locations>
+								<location>${flyway.locations}</location>
+							</locations>
+						</configuration>
+						<executions>
+							<execution>
+								<id>generate-db-model</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>migrate</goal>
+								</goals>
+							</execution>
+						</executions>
+
+					</plugin>
+					<plugin>
+
+						<!-- Specify the maven code generator plugin -->
+						<groupId>org.jooq</groupId>
+						<artifactId>jooq-codegen-maven</artifactId>
+						<version>${jooq.version}</version>
+
+
+						<!-- Manage the plugin's dependency. In this example, we'll use a PostgreSQL
+							database -->
+
+
+						<!-- Specify the plugin configuration. The configuration format is
+							the same as for the standalone code generator -->
+						<configuration>
+
+							<!-- JDBC connection parameters -->
+							<jdbc>
+								<driver>com.mysql.jdbc.Driver</driver>
+								<url>jdbc:mysql://localhost:3307</url>
+								<user>root</user>
+								<password>1234</password>
+							</jdbc>
+
+							<!-- Generator parameters -->
+							<generator>
+								<database>
+									<name>org.jooq.util.mysql.MySQLDatabase</name>
+									<includes>.*</includes>
+									<excludes>
+									</excludes>
+									<inputSchema>tmp</inputSchema>
+									<outputSchema />
+								</database>
+								<target>
+									<packageName>${jooq.packageName}</packageName>
+									<directory>target/generated-sources/jooq</directory>
+								</target>
+								<generate>
+									<pojos>true</pojos>
+									<daos>true</daos>
+								</generate>
+							</generator>
+						</configuration>
+						<executions>
+							<execution>
+								<id>generate-model</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>generate</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.11</version>
+						<executions>
+							<execution>
+								<id>add-source</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>add-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>${project.build.directory}/generated-sources/jooq</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<pluginManagement>
+					<plugins>
+						<!--This plugin's configuration is used to store Eclipse m2e settings
+							only. It has no influence on the Maven build itself. -->
+						<plugin>
+							<groupId>org.eclipse.m2e</groupId>
+							<artifactId>lifecycle-mapping</artifactId>
+							<version>1.0.0</version>
+							<configuration>
+								<lifecycleMappingMetadata>
+									<pluginExecutions>
+										<pluginExecution>
+											<pluginExecutionFilter>
+												<groupId>io.fabric8</groupId>
+												<artifactId>
+													docker-maven-plugin
+												</artifactId>
+												<versionRange>
+													[0.15.9,)
+												</versionRange>
+												<goals>
+													<goal>start</goal>
+												</goals>
+											</pluginExecutionFilter>
+											<action>
+												<ignore />
+											</action>
+										</pluginExecution>
+										<pluginExecution>
+											<pluginExecutionFilter>
+												<groupId>org.flywaydb</groupId>
+												<artifactId>
+													flyway-maven-plugin
+												</artifactId>
+												<versionRange>
+													[4.2.0,)
+												</versionRange>
+												<goals>
+													<goal>migrate</goal>
+												</goals>
+											</pluginExecutionFilter>
+											<action>
+												<ignore />
+											</action>
+										</pluginExecution>
+									</pluginExecutions>
+								</lifecycleMappingMetadata>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+
+		</profile>
+
+	</profiles>
+
+
+
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+
+</project>

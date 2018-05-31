@@ -1,0 +1,101 @@
+{% extends "main" %} {%block content%}
+<div class="ui container three column very relaxed grid"
+	style="margin-top: 50px;">
+
+<div class="row">
+{%if wrongLoginPassword%}
+<div class="ui error message">
+  <div class="header">
+    Mauvais identifiant ou mail / mot de passe
+  </div>
+<p>Les informations de connexion fournies ne sont pas exactes. Merci de réessayer ou sinon réinitialiser votre mot de passe</p>
+</div>
+{%endif%}
+
+{%if pwdUpdated%}
+<div class="ui info message">
+  <div class="header">
+    Votre mot de passe à bien été mis à jour !
+  </div>
+<p>Votre nouveau mot de passe à bien été enregistré, vous pouvez dès à présent l'utiliser pour vous connecter !</p>
+</div>
+{%endif%}
+
+{%if flash.emailConfirmed=="yes"%}
+<div class="ui info message">
+  <div class="header">
+    Adresse email confirmée
+  </div>
+<p>Merci d'avoir confirmé votre adresse mail. Vous pouvez desormais vous connecter avec votre adresse mail et mot de passe !</p>
+</div>
+{%elseif flash.emailConfirmed=="no"%}
+<div class="ui error message">
+  <div class="header">
+    Impossible de valider votre adresse mail
+  </div>
+<p>Les informations fournies pour la validation de votre inscription ne sont pas correctes. Merci de cliquer sur le lien que nous vous avons envoyer. N'hésitez pas à nous contacter si le problème persiste !</p>
+</div>
+{%endif%}
+</div>
+
+	<div class="six wide column">
+		<div class="ui ">
+			<div class="ui inverted middle aligned center aligned grid">
+				<div class="column">
+					<h2 class="ui  image header">
+						<div class="content">Login</div>
+					</h2>
+					<form class="ui large form" action="/auth?client_name=FormClient"
+						method="POST">
+						<div class="ui stacked segment">
+							<div class="field">
+								<div class="ui left icon input">
+									<i class="user icon"></i> <input name="username" value="{{identifiant}}" type="text"
+										placeholder="Adresse mail ou Identifiant">
+								</div>
+							</div>
+							<div class="field">
+								<div class="ui left icon input">
+									<i class="lock icon"></i> <input type="password"
+										name="password" placeholder="Mot de passe">
+								</div>
+							</div>
+							<button class="ui fluid large blue submit button" type="submit">Se connecter</button>
+							<br>
+								<a class="ui fluid large facebook button"  href="/login/facebook"> 
+								<i class="facebook icon" ></i> Se connecter avec Facebook
+								</a>
+							<div class="ui divider"> </div>
+							<a href="/login/reinit">Mot de passe perdu ?</a>
+						</div>
+
+						<div class="ui error message"></div>
+
+					</form>
+
+
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+
+
+</div>
+{%endblock%}
+
+{%block footerscripts%}
+
+<script>
+/**
+$('.button.facebook').click(function(){
+	FB.login(function(response) {
+		console.log(response);
+		window.location.href="/login/facebook"
+	}, {scope: 'public_profile,email'});
+});
+*/
+</script>
+
+{%endblock%}
