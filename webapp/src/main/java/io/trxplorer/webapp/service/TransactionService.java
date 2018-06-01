@@ -230,8 +230,10 @@ public class TransactionService {
 	
 	private void prepareTransactionDTO(TransactionDTO tx) {
 		
-		
-		tx.setAmount(TransactionHelper.getTrxAmount(tx.getAmount()));
+		if (tx.getToken()!=null && tx.getToken().equals("TRX")) {
+			tx.setAmount(TransactionHelper.getTrxAmount(tx.getAmount()));			
+		}
+
 		tx.setShortHash(StringUtils.abbreviate(tx.getHash(), 10));
 	}
 	

@@ -1,7 +1,9 @@
 package io.trxplorer.webapp.dto.account;
 
 import java.sql.Timestamp;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 import io.trxplorer.webapp.dto.asset.AssetIssueDTO;
 import io.trxplorer.webapp.dto.asset.AssetParticipationDTO;
@@ -269,7 +271,7 @@ public class AccountDTO {
 	}
 	
 	public String getBandwidthStr() {
-		return TransactionHelper.getTrxAmount(this.bandwidth);
+		return NumberFormat.getNumberInstance(Locale.US).format(this.bandwidth);
 	}
 	
 	public String getAllowanceStr() {

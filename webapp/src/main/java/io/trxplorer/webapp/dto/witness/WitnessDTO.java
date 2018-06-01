@@ -1,5 +1,8 @@
 package io.trxplorer.webapp.dto.witness;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 import io.trxplorer.webapp.utils.TransactionHelper;
 
 public class WitnessDTO {
@@ -67,7 +70,7 @@ public class WitnessDTO {
 	}
 	
 	public String getVoteCountStr() {
-		return TransactionHelper.getTrxAmount(voteCount);
+		return NumberFormat.getNumberInstance(Locale.US).format(voteCount);
 	}
 	
 }
