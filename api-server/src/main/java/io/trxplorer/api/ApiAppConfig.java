@@ -36,6 +36,10 @@ public class ApiAppConfig{
 	}
 
 	
+	public boolean isTronMainNet() {
+		return this.config.getBoolean("tron.mainNet");
+	}
+	
 	public static class StatusConfig {
 		
 		private Config config;

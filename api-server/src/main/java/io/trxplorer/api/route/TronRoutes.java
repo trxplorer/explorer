@@ -8,6 +8,7 @@ import org.tron.common.utils.ByteArray;
 
 import com.google.inject.Inject;
 
+import io.trxplorer.api.ApiAppConfig;
 import io.trxplorer.api.dto.request.TronBroadcastRequest;
 import io.trxplorer.troncli.TronCli;
 import io.trxplorer.troncli.wallet.BroadcastResult;
@@ -15,10 +16,12 @@ import io.trxplorer.troncli.wallet.BroadcastResult;
 public class TronRoutes {
 
 	private TronCli tronCli;
+	private ApiAppConfig config;
 	
 	@Inject
-	public TronRoutes(TronCli tronService) {
+	public TronRoutes(TronCli tronService,ApiAppConfig config) {
 		this.tronCli = tronService;
+		this.config = config;
 	}
 	
 	@POST
@@ -31,7 +34,7 @@ public class TronRoutes {
 			return this.tronCli.broadcastTransaction(bytes);	    	
 	    }else {
 	    	
-	    	TronCli cli = new TronCli(request.getNode());
+	    	TronCli cli = new TronCli(request.getNode(),this.config.isTronMainNet());
 	    	
 	    	return cli.broadcastTransaction(bytes);
 	    	
