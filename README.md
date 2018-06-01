@@ -42,4 +42,87 @@ $ mvn install
 
 ```
 
+## Running the explorer
+
+In order to run the explorer, you will have to retrieve some data from TRON blockchain explorer first:
+
+**1. Synchronizing the database**
+
+The synchronization node (syncnode module) was built so that it can keep up with TRON high TPS. Multiple instance of the node can be run simultaneously in order to operate and sychronize quickly if necessary.
+
+
+*Start a mysql instance for example with docker*
+
+``` bash
+$ docker run --name mysql -e MYSQL_ROOT_PASSWORD=toto -p 3306:3306 -d mysql:5.7
+```
+
+Then create a schema with the name: trxplorer_dev. You don't have to do anything else, when you will run any of the server modules, flyway will take care of creating/migrate the database schema
+
+
+*To start a single synchronization node run:*
+
+``` bash
+$ cd sync-node
+$ mvn jooby:run
+```
+
+
+*To start multiple nodes simultaneously*
+
+Firs build the project
+``` bash
+$ cd sync-node
+$ mvn install
+```
+
+Then, you will have to assign a node id to each node while running it, by default the node has the id=1. A different port must be set too
+
+For example, this will run two synchronization nodes, that will share the synchronization load
+
+``` bash
+$ java -jar ./target/syncnode-<CurrenVersion>.jar dev application.port=8282 node.id=1 
+$ java -jar ./target/syncnode-<CurrenVersion>.jar dev application.port=8383 node.id=2
+```
+
+**2. Running the api server **
+
+``` bash
+$ cd api-server
+$ mvn jooby:run
+```
+The api server is running on http://localhost:8383
+
+
+**3. Running the search engine (optional, if not present the webapp explorer will fallback on its default basic search engine)**
+
+The search engine is based on redisearch, you can start it as follow:
+
+``` bash
+$ docker run --name redisearch -p 6379:6379 redislabs/redisearch:latest redis-server /data/redis.conf --loadmodule "/usr/lib/redis/modules/redisearch.so"
+```
+
+Then run the search engine:
+
+``` bash
+$ mvn jooby:run
+```
+
+The search engine will start indexing the data and wil also server the search requests from the explorer
+
+**4. Running the webapp (the explorer)**
+
+``` bash
+$ cd webapp
+$ mvn jooby:run
+```
+
+It will start the explorer on http://localhost:8080
+ 
+
+
+
+
+
+
 
