@@ -85,7 +85,7 @@ $ java -jar ./target/syncnode-<CurrenVersion>.jar dev application.port=8282 node
 $ java -jar ./target/syncnode-<CurrenVersion>.jar dev application.port=8383 node.id=2
 ```
 
-**2. Running the api server **
+**2. Running the api server**
 
 ``` bash
 $ cd api-server
