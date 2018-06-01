@@ -1,4 +1,4 @@
-# explorer
+# trxplorer
 TRXPlorer.io - TRON blockchain explorer
 
 > TRXPlorer.io is a blockchain explorer for TRON 
