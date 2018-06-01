@@ -44,19 +44,12 @@ margin-top: 0px;
 }
 
 .eyecatcher {
-background-color: #c53027;
+background-color: #5f5554;
 height: 4px;
 width: 100%;
 }
 
 
-a{
-color: #16806e;
-}
-
-a:hover{
-color: #cc1104;	
-}
 
 .ui.borderless.main.menu a.item{
 color:#524A4A;

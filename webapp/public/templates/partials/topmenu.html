@@ -1,5 +1,5 @@
 <div class="eyecatcher"></div>
- <div class="ui inverted stackable borderless main menu">
+ <div class="ui stackable borderless main menu">
  
     <div class="ui container">
       <a href="/" class="header item">
@@ -34,29 +34,7 @@
   	 </form> 
 
   	  
-		<div class="right menu">
-			  
-			{%if user.identifiant=="anonyme"%}
-				<a class="item" href="/login"><i class="sign in icon"></i> Connexion</a> 
-			{%else%} 
-				
-				<div class="ui dropdown item" >
-					<i class="user icon"></i>
-					{{user.identifiant}}
-					<i class="dropdown icon"></i>
-					
-					<div class="menu">
-						 <a class="item" href="/p"> Mon profil</a>
-						 <a class="item" href="/p/mes-citations">Mes citations </a>
-						 <!-- <a class="item" href="/p/mes-collections">Mes collections</a> -->
-						 <!--<a class="item" href="/p/mes-quiz">Mes quiz</a>--> 
-						<a class="item" href="/logout"><i class="sign out icon"></i> Déconnexion</a>
-					</div>
-				</div>
-		
-			{%endif%}
-						
-		</div>
+
 	  
 
     </div>
