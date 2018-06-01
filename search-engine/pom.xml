@@ -39,8 +39,8 @@
 
 		<dependency>
 			<groupId>com.github.nfleury</groupId>
-			<artifactId>jredisearch</artifactId>
-			<version>3cbf3ec0a6b12896e98c380ae6fe3fa150810a26</version>
+			<artifactId>JRediSearch</artifactId>
+			<version>7ca94a62c5dfa336a6e2cdb195f88e03c9f7acdb</version>
 		</dependency>
 
 		<dependency>
