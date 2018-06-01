@@ -12,6 +12,7 @@ import org.tron.api.GrpcAPI.WitnessList;
 import org.tron.api.WalletGrpc;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.Sha256Hash;
+import org.tron.core.Constant;
 import org.tron.core.Wallet;
 import org.tron.core.capsule.BlockCapsule;
 import org.tron.protos.Protocol.Account;
@@ -38,15 +39,24 @@ public class TronCli {
 	private ManagedChannel channelFull = null;
 	private WalletGrpc.WalletBlockingStub client = null;
 	
+	   byte ADD_PRE_FIX_BYTE_MAINNET = (byte) 0x41;   //41 + address
+	   
+	   byte ADD_PRE_FIX_BYTE_TESTNET = (byte) 0xa0;   //a0 + address
+	
 	private static final Logger logger = LoggerFactory.getLogger(TronCli.class);
 	
 	@Inject
 	public TronCli(Config config) {
-		this(config.getString("tron.fullnode"));
+		this(config.getString("tron.fullnode"),config.getBoolean("tron.mainNet"));
 	}
 
-	public TronCli(String fullNodeAddress) {
-
+	public TronCli(String fullNodeAddress,boolean mainNet) {
+		
+		if (mainNet) {
+			Wallet.setAddressPreFixByte(Constant.ADD_PRE_FIX_BYTE_MAINNET);	
+		}
+		
+		
 		channelFull = ManagedChannelBuilder.forTarget(fullNodeAddress)
 	              .usePlaintext(true)
 	              .build();
@@ -159,17 +169,7 @@ public class TronCli {
 	
 
 	
-	
-	public static void main(String[] args) {
-		
-		TronCli tc = new TronCli("47.254.146.147:50051");
-		
-		System.out.println(tc.getAccountByAddress("XuLKjf8J8aCKgDgA5uczwn1yQNYVPLocY"));
-		
-		
 
-	
-	}
 
 
 
