@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/trxplorer/explorer.svg?branch=master)](https://travis-ci.org/trxplorer/explorer)
+
 # trxplorer
 TRXPlorer.io - TRON blockchain explorer
 
