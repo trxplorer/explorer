@@ -25,26 +25,22 @@ public class ApiApp extends Jooby {
 		use(new Flywaydb());
 
 		
-		on("dev", ()->{
-			
-			use("*", (req,res,chain)->{
+		
+		use("*", (req,res,chain)->{
 
-				//CORS
-				
-				res.header("Access-Control-Allow-Origin", "*");
-				res.header("Access-Control-Allow-Headers", "origin, content-type, accept");
-				
-				if (req.method().equals("OPTIONS")) {
-					res.send(true);
-					return;
-				}
-				
-				
-				chain.next(req, res);
-
-				
-			});
+			//CORS
 			
+			res.header("Access-Control-Allow-Origin", "*");
+			res.header("Access-Control-Allow-Headers", "origin, content-type, accept");
+			
+			if (req.method().equals("OPTIONS")) {
+				res.send(true);
+				return;
+			}
+			
+			
+			chain.next(req, res);
+
 			
 		});
 		
