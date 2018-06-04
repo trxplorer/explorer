@@ -2,7 +2,7 @@
       {{list.info()}}
       </div>
       <div class="ui right floated pagination menu">
-        {%if list.criteria.page!=1%}
+        {%if list.criteria.page>1%}
         <a class="icon item" href="?page={{list.previousPage()}}">
           <i class="left chevron icon"></i>
         </a>

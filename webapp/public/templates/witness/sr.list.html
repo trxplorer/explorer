@@ -1,6 +1,6 @@
 {% extends "main" %}
-{% block title %}Tron current super representative{% endblock %}
-{%block description%}All informations about Tron current super representatives{%endblock%}
+{% block title %}Tron current super representative list{% endblock %}
+{%block description%}All informations about Tron current super representatives. TRON super representatives are elected every 24h and are rewared to produce block and maintain the network{%endblock%}
 
 
 
@@ -13,9 +13,8 @@
 	
 	<div class="row">
 	
-		<div class="eight wide column">
-			<div class="ui blue raised segment">
-				<h2 class="ui header"><small><i class="trophy icon"></i>Current SR</small></h2>
+		<div class="sixteen wide column">
+			<div class="">
 							
 				<div class="ui mini icon info message">
 				  <i class="circle info icon"></i>
@@ -23,7 +22,7 @@
 				    <p>These accounts where elected from previous voting cycle to become current super representatives.</p>
 				  </div>
 				</div>
-				<table class="ui very basic table">
+				<table class="ui striped table">
 					<thead>
 						<tr>
 							<th class="center aligned">URL</th>
@@ -44,35 +43,7 @@
 			</div>
 		</div>
 
-		<div class="eight wide column">
-		
-			
-			
-				<div class="ui orange raised segment">
-				<h2 class="ui header"><small>Next SR election</small></h2>
-				  <p>Time before next super representative election:</p>
-				  <small><a href="/representatives">>> See live votes and next potential super representatives</a></small>
-			
-						
-						<h3 class="ui header"><small>They want to become super representatives, vote for them: </small></h3>
-						
-							<div class="ui very relaxed  aligned divided list">
-							
-							 {%for candidate in candidates%}
-							  <div class="item">
-							    <img class="ui avatar image" src="/images/avatar/small/daniel.jpg">
-							    <div class="content">
-							      <a class="header">{{candidate.url}}</a>
-							      <div class="description">{{candidate.description}}</div>
-							    </div>
-								<div class="right floated content">
-								      <div class="ui button">Vote</div>
-							    </div>
-							  </div>
-							  {%endfor%}
-							</div>
-				</div>
-		</div>
+
 	
 	</div>
 

@@ -1,6 +1,6 @@
 {% extends "main" %}
-{% block title %}Tron block #{{block.num}} informations{% endblock %}
-{%block description%}Get all informations about block #{{block.num}} on Tron blockchain{%endblock%}
+{% block title %}Tron account list and ranking{% endblock %}
+{%block description%}Check all existing account currently on Tron blockchain{%endblock%}
 
 
 
@@ -17,9 +17,6 @@
 			<th class="center aligned">Address</th>
 			<th class="center aligned">Balance</th>
 			<th class="center aligned">Percentage</th>
-			<th class="center aligned">Vote spent</th>
-			<th class="center aligned">Vote received</th>
-			<th class="center aligned">Assets</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -29,9 +26,6 @@
 			<td><a href="/address/{{account.address}}">{{account.address}}</a><br/><small>{{accoun.name}}</small></td>
 			<td>{{account.getBalanceStr()}}</td>
 			<td>{{account.percentage}}</a></td>
-			<td>{{account.voteSpent}}</a></td>
-			<td>{{account.voteReceived}}</a></td>
-			<td>{{account.assetCount}}</a></td>
 		</tr>
 		{%endfor%}
 	</tbody>

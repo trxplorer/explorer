@@ -1,17 +1,16 @@
-{% extends "main" %} {% block title %}Tron address {{tx.hash}}
-informations{% endblock %} {%block description%}Get all informations
-about address #{{tx.hash}} on Tron blockchain{%endblock%} {% block
-header %} {% endblock %} {% block content %}
-
-
+{% extends "main" %} 
+{% block title %}Tron address {{account.address}} {%if account.name!=null and account.name.length>0%}({{account.name}}){%endif%} informations {% endblock %} 
+{%block description%}Get all informations about address #{{account.address}} on Tron blockchain{%endblock%}
+  
+{% block content %}
 <h1 class="ui dividing header">
 	<small><i class="icon user"></i> <small>{{account.address}} {%if account.name!=null and account.name!='' %}({{account.name}}){%endif%}</small></small>
 </h1>
 
-<div class="ui grid">
+<div class="ui fluid grid">
 	<div class="row">
 		<div class="eight wide column">
-			<table class="ui very basic table ">
+			<table class="ui compact definition table ">
 				<tbody>
 					{%if account.witness!=null%}
 					<tr>
@@ -62,12 +61,8 @@ header %} {% endblock %} {% block content %}
 			</table>
 		</div>
 		<div class="eight wide column">
-			<table class="ui very basic table ">
+			<table class="ui compact definition table ">
 				<tbody>
-					<tr>
-						<td>QR code</td>
-						<td><a href="#" id="send">[send]</a></td>
-					</tr>
 					{%if account.witness!=null%}
 					<tr>
 						<td>Votes</td>
@@ -315,15 +310,4 @@ header %} {% endblock %} {% block content %}
 
 {%endblock%}
 
-{%block footerscripts%}
-<script>
-$(function(){
-	console.log(window.TRXWallet)
-	$('#send').click(function(){
-		var data = { type: "TRXWALLET_SIGNATURE_REQUEST", transaction: {type:'freeze',options:{amount:200}} };
-		window.postMessage(data, "*");
-	})	
-})
 
-</script>
-{%endblock%}

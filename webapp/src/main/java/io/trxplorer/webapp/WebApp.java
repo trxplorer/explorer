@@ -26,7 +26,8 @@ import io.trxplorer.webapp.route.WitnessRoutes;
 public class WebApp extends Jooby {
 
 	{
-		
+
+		assets("/img/**","/static/assets/img/{0}");
 		assets("/js/**","/static/assets/js/{0}");
 		assets("/css/**","/static/assets/css/{0}");
 		assets("favicon.ico","/static/assets/favicon.ico");

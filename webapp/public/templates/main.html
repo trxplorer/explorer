@@ -1,10 +1,10 @@
-<html lang="en">
+<html lang="en" class="parallax">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />	 	 
 <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
 <title>{% block title %}{% endblock %} - trxplorer.io</title>
-<meta name="description" content="{%block description%}trxplorer: Tron blockchain explorer and TRX coin tracker.{%endblock%}" />
+<meta name="description" content="{%block description%}Tron blockchain explorer and TRX coin tracker.{%endblock%}" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
 <link rel="stylesheet" href="/css/main.css" />
 <link rel="stylesheet" href="/css/site.css" />
@@ -37,23 +37,44 @@
 		{{breadcrumbs_ld|raw}}
 	{%endif%}
 	
+		
 	{%block content%}
 	{%endblock%}
+	
+	
 	</div>
 	
 	<div class="Site-footer">
 	{%block bottommenu%}
 		<div class="ui inverted vertical footer segment" style="margin-top: 50px;">	
-			<div class="ui container" >
+			<div class="ui grid container" >
+				
 				<div class="row">
-					
-					<div class="eight wide column">
-						<a href="/status">Status</a>
+					<div class="five wide column">
+						<div class="ui inverted link list">
+							<a class="item" href="/status">Status</a>
+							<a class="item" href="https://api.trxplorer.io">API</a>
+						</div>
+					</div>
+
+					<div class="five wide column">
+						<div class="ui inverted link list">
+							<a class="item" href="https://github.com/trxplorer" target="blank"><i class="ui icon github"></i>Github</a>
+						</div>
 					</div>
 					
+					<div class="five wide column">
+						<div class="ui inverted link list">
+							<a class="item" href="https://tron.network/" target="blank">TRON Foundation</a>
+						</div>
+					</div>
+					
+				</div>
+				<div class="row centered">
+					<div ><small>Copyright 2018 - trxplorer.io</small></div>
+				</div>
+				
 			</div>
-				<div ><small>Copyright 2018 - trxplorer.io</small></div>
-		</div>
 			
 		</div>	
 	{%endblock%}
@@ -147,5 +168,6 @@
 	
 
 	{% endblock %}
+
 </body>
 </html>

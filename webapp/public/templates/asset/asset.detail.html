@@ -1,6 +1,7 @@
-{% extends "main" %} {% block title %}Tron address {{tx.hash}}informations{% endblock %} 
+{% extends "main" %} 
+{% block title %}Tron token: {{asset.name}} tracker and informations{% endblock %} 
 
-{%block description%}Get all informations about address #{{tx.hash}} on Tron blockchain{%endblock%}
+{%block description%}Get all informations about token {{asset.name}} on Tron blockchain{%endblock%}
 
  
 {% block content %}

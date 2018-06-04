@@ -12,34 +12,45 @@
 	
 <h1 class="ui dividing header"><small><i class="icon cube"></i>BLOCKS</small></h1>
 
-<p>Total blocks: {{list.totalCount}}</p>
-
-<table class="ui striped table">
-	<thead>
-		<tr>
-			<th class="center aligned">Height</th>
-			<th class="center aligned">Transactions</th>
-			<th class="center aligned">Timestamp</th>
-			<th class="center aligned">Producer</th>
-			<th class="center aligned">Reward</th>
-		</tr>
-	</thead>
-	<tbody>
-		{%for block in list.items%}
-		<tr class="center aligned">
-			<td><a href="/block/{{block.num}}">{{block.num}}</a></td>
-			<td>{%if block.txCount>0 %}<a href="/transactions?block={{block.num}}">{{block.txCount}}</a>{%else%}{{block.txCount}}{%endif%}</td>
-			<td>{{block.timestamp}}</td>
-			<td><a href="/address/{{block.witnessAddress}}">{{block.witness}}</a></td>
-			<td>{{block.reward}}</td>
-		</tr>
-		{%endfor%}
-	</tbody>
- <tfoot>
-    <tr><th colspan="5">
-		{% include 'partials/pagination' %}
-  </tr></tfoot>
-</table>
+<div >
+ 	
+ 	<!-- 
+   <div class="ui labeled button" tabindex="0">
+              <div class="ui green  button">
+                Total blocks
+              </div>
+              <a class="ui green basic left pointing label">
+                {{list.totalCount}}
+              </a>
+    </div>
+     -->
+	<table class="ui striped table">
+		<thead>
+			<tr>
+				<th class="center aligned">Height</th>
+				<th class="center aligned">Transactions</th>
+				<th class="center aligned">Timestamp</th>
+				<th class="center aligned">Producer</th>
+				<th class="center aligned">Reward</th>
+			</tr>
+		</thead>
+		<tbody>
+			{%for block in list.items%}
+			<tr class="center aligned">
+				<td><a href="/block/{{block.num}}">{{block.num}}</a></td>
+				<td>{%if block.txCount>0 %}<a href="/transactions?block={{block.num}}">{{block.txCount}}</a>{%else%}{{block.txCount}}{%endif%}</td>
+				<td>{{block.timestamp}}</td>
+				<td><a href="/address/{{block.witnessAddress}}">{{block.witness}}</a></td>
+				<td>{{block.reward}}</td>
+			</tr>
+			{%endfor%}
+		</tbody>
+	 <tfoot>
+	    <tr><th colspan="5">
+			{% include 'partials/pagination' %}
+	  </tr></tfoot>
+	</table>
+</div>
 
 
 

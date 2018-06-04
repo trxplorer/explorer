@@ -1,15 +1,15 @@
 {% extends "main" %} 
 
-{% block title %}TRON blockchain explorer{% endblock %}
-{%block description%}Trxplorer.io is a blockchain explorer for the Tron protocol. You can track every blocks, transactions, address, and coins/tokens and other assets on the blockchain.{%endblock%}
+{% block title %}TRON Explorer{% endblock %}
+{%block description%}TRXPlorer.io is a blockchain explorer for the Tron protocol. You can track every blocks, transactions, address, and coins/tokens and other assets on the blockchain.{%endblock%}
 
 {% block content %}
 
 <div class="eyecatcher"></div>
-<div class="ui inverted vertical masthead center aligned segment">
+<div class="ui vertical masthead center aligned segment hero">
 
     <div class="ui container">
-      <div class="ui large secondary inverted pointing menu">
+      <div class="ui large secondary pointing menu">
 
 		<a class="active item" href="#search">Home</a>
         <a class="item" href="/blocks">Blocks</a>
@@ -31,7 +31,8 @@
     </div>
 	<br><br>
     <div class="ui text container">
-      <h1 class="ui inverted header">
+     <img alt="" src="/img/logo_30.png" />
+      <h1 class="ui header">
         TRXPL<i class="search icon" style="margin-right:-5px;"></i>RER.io
       </h1>
       <h2><a name="search"></a><a name="search"></a>Tron Blockchain Explorer</h2>
@@ -47,28 +48,116 @@
     </div>
 
   </div>
+<div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
+    <div class="ui stackable grid container">
+      <div class="row">
+			
+			<div class="column">
+			<div class="ui four  statistics">
+			  <div class="red statistic">
+			    <div class="value">
+			      22$
+			    </div>
+			    <div class="label">
+			      Price
+			    </div>
+			  </div>
+			  <div class="orange statistic">
+			    <div class="value">
+			      22
+			    </div>
+			    <div class="label">
+			      Blocks
+			    </div>
+			  </div>
 
-<div class="ui vertical stripe segment">
+			  <div class="green statistic">
+			    <div class="value">
+			      22
+			    </div>
+			    <div class="label">
+			      Blocks
+			    </div>
+			  </div>
+			  <div class="statistic">
+			    <div class="value">
+			      22
+			    </div>
+			    <div class="label">
+			      Votes today
+			    </div>
+			  </div>
+			</div>
+			</div>
+			
+      </div>
+
+      </div>
+</div>
+<div class="ui vertical stripe segment" >
     <div class="ui middle aligned stackable grid container">
       <div class="row">
-        <div class="six wide column">
+        <div class="five wide column">
 			<b><i class="cube icon"></i> Latest Blocks</b>
-			<ul>
-				{%for block in lastBlocks%}
-					<li><a href="/block/{{block.num}}">{{block.num}}</a></li>
-				{%endfor%}
-			</ul>
+	<table class="ui striped compact fixed blue table">
+		<thead>
+			<tr>
+				<th class="center aligned">Height</th>
+				<th class="center aligned">Transactions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{%for block in lastBlocks%}
+			<tr class="center aligned">
+				<td><a href="/block/{{block.num}}">{{block.num}}</a></td>
+				<td>{%if block.txCount>0 %}<a href="/transactions?block={{block.num}}">{{block.txCount}}</a>{%else%}{{block.txCount}}{%endif%}</td>
+			</tr>
+			{%endfor%}
+		</tbody>
+	</table>
+
         </div>
-        <div class="six wide column">
+        <div class="five wide column">
 			<b>Latest Transactions</b>
-			<ul>
-				{%for tx in lastTxs%}
-					<li><a href="/tx/{{tx.hash}}">{{tx.hash}}</a></li>
-				{%endfor%}
-			</ul>
+				<table class="ui striped compact fixed orange table">
+					<thead>
+						<tr>
+							<th class="center aligned">Hash</th>
+							<th class="center aligned">Type</th>
+						</tr>
+					</thead>
+					<tbody>
+						{%for tx in lastTxs%}
+						<tr class="center aligned">
+							<td><a href="/block/{{block.num}}">{{tx.hash}}</a></td>
+							<td></td>
+						</tr>
+						{%endfor%}
+					</tbody>
+				</table>
+        </div>
+        <div class="five wide column">
+			<b>Latest Votes</b>
+				<table class="ui striped compact fixed grey table">
+					<thead>
+						<tr>
+							<th class="center aligned">Hash</th>
+							<th class="center aligned">Type</th>
+						</tr>
+					</thead>
+					<tbody>
+						{%for tx in lastTxs%}
+						<tr class="center aligned">
+							<td><a href="/block/{{block.num}}">{{tx.hash}}</a></td>
+							<td></td>
+						</tr>
+						{%endfor%}
+					</tbody>
+				</table>
         </div>
       </div>
     </div>
-  </div>
+ </div>
 
+ 
 {%endblock%}
