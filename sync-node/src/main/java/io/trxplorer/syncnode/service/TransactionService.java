@@ -7,9 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jooq.DSLContext;
-import org.jooq.exception.DataAccessException;
 import org.jooq.types.UByte;
 import org.jooq.types.ULong;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tron.common.utils.Sha256Hash;
 import org.tron.core.capsule.TransactionCapsule;
 import org.tron.protos.Protocol.Transaction;
@@ -25,7 +26,9 @@ public class TransactionService {
 
 	private DSLContext dslContext;
 	private ContractService contractService;
-
+	
+	private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
+	
 	@Inject
 	public TransactionService(DSLContext dslContext, ContractService contractService) {
 		this.dslContext = dslContext;
@@ -46,7 +49,6 @@ public class TransactionService {
 		 	try {
 				
 		 		TransactionCapsule tc = new TransactionCapsule(transaction);
-		 		//System.out.println("block:"+block.getNum()+" | tc:"+tc.getHash().toString()+" | c:"+Sha256Hash.of(transaction.getRawData().toByteArray()).toString());
 
 			TransactionRecord txRecord = this.dslContext.insertInto(TRANSACTION)
 					.set(TRANSACTION.HASH, Sha256Hash.of(transaction.getRawData().toByteArray()).toString())
@@ -72,7 +74,7 @@ public class TransactionService {
 			// create contracts
 			this.contractService.importContracts(transaction, txRecord.getId());
 			} catch (Exception e) {
-				System.out.println("block:"+block.getNum()+"-"+block.getWitnessAddress()+"============================>"+txTimestamp+"\n"+transaction);
+				logger.error("block:"+block.getNum()+"-"+block.getWitnessAddress()+"============================>"+txTimestamp+"\n"+transaction);
 			}		
 	}
 
