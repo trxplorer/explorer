@@ -6,27 +6,23 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tron.api.GrpcAPI.EmptyMessage;
+import org.tron.api.GrpcAPI.Node;
+import org.tron.api.GrpcAPI.NodeList;
 import org.tron.api.GrpcAPI.NumberMessage;
 import org.tron.api.GrpcAPI.Return;
 import org.tron.api.GrpcAPI.WitnessList;
 import org.tron.api.WalletGrpc;
-import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.Sha256Hash;
 import org.tron.core.Constant;
 import org.tron.core.Wallet;
-import org.tron.core.capsule.BlockCapsule;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.Block;
 import org.tron.protos.Protocol.Transaction;
-import org.tron.protos.Protocol.Transaction.Contract.Builder;
-import org.tron.protos.Protocol.Transaction.Contract.ContractType;
 import org.tron.protos.Protocol.Witness;
 
 import com.google.inject.Inject;
-import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.Message;
 import com.typesafe.config.Config;
 
 import io.grpc.ManagedChannel;
@@ -99,38 +95,36 @@ public class TronCli {
 
 		return result;
 	}
+	
+	
+	public List<Node> getAllNodes() {
+		
+		List<Node> result = new ArrayList<>();
 
-
+		NodeList nodeList = this.client.listNodes(EmptyMessage.newBuilder().build());
+		
+		if (nodeList!=null) {
+			result = nodeList.getNodesList();
+		}
+		
+		return result;
+	}
+	
+	public long getNextMaintenanceTime() {
+		
+		NumberMessage res = this.client.getNextMaintenanceTime(EmptyMessage.newBuilder().build());
+		
+		if (res==null) {
+			return -1;
+		}
+		
+		return res.getNum();
+	}
+	
 	public Block getLastBlock() {
 		return client.getNowBlock(EmptyMessage.newBuilder().build());
 	}
 
-
-	
-	private Transaction createTransaction(Message contract,ContractType contractType) {
-		
-		Builder contractMessage = Transaction.Contract.newBuilder().setType(contractType)
-		.setParameter(Any.pack(contract));
-		
-		Transaction.raw.Builder transactionRawBuilder = Transaction.raw.newBuilder();
-		transactionRawBuilder.addContract(contractMessage);
-		
-		Block lastBlock = this.getLastBlock();
-		BlockCapsule capsule = new BlockCapsule(lastBlock);
-	
-		byte[] blockHash = capsule.getBlockId().getBytes();
-		byte[] refBlockNum = ByteArray.fromLong(capsule.getNum());
-		transactionRawBuilder.setRefBlockHash(ByteString.copyFrom(ByteArray.subArray(blockHash, 8, 16)));
-		transactionRawBuilder.setRefBlockBytes(ByteString.copyFrom(ByteArray.subArray(refBlockNum, 6, 8)));
-		transactionRawBuilder.setTimestamp(System.currentTimeMillis());
-		transactionRawBuilder.setExpiration(lastBlock.getBlockHeader().getRawData().getTimestamp()+(60*1000));		
-		
-		Transaction transaction = Transaction.newBuilder().setRawData(transactionRawBuilder.build()).build();
-		
-		return transaction;
-	
-	}
-	
 
 	public BroadcastResult broadcastTransaction(byte[] bytes) {
 		
