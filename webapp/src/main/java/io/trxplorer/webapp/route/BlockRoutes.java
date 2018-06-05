@@ -39,13 +39,9 @@ public class BlockRoutes {
 		
 		View view = Results.html("block/block.detail");
 		
-		if (NumberUtils.isDigits(num)) {
-			view.put("block",this.blockService.getBlockByNum(Long.valueOf(num)));			
-		}else {
-			view.put("block",this.blockService.getBlockByHash(num));
-		}
-
 		
+		view.put("block",this.blockService.getBlockByNum(Long.valueOf(num)));			
+
 		res.send(view);
 	}
 	

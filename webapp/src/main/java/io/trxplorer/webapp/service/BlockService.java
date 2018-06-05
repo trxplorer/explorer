@@ -67,6 +67,18 @@ public class BlockService {
 		
 		return block;
 	}
+
+	public BlockDTO getBlockByParentHash(String hash) {
+
+		List<Field<?>> fields = new ArrayList<>(Arrays.asList(BLOCK.fields()));
+		fields.add(DSL.select(DSL.max(BLOCK.NUM)).from(BLOCK).asField("maxNum"));
+		
+		BlockDTO block=this.dslContext.select(fields).from(BLOCK).where(BLOCK.PARENT_HASH.eq(hash)).fetchOneInto(BlockDTO.class);
+		
+		setReward(Arrays.asList(block));
+		
+		return block;
+	}
 	
 	public ListDTO<BlockDTO, BlockCriteriaDTO> listBlocks(BlockCriteriaDTO criteria){
 		
