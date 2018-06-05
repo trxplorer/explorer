@@ -11,6 +11,7 @@ import org.jooq.types.UByte;
 import org.jooq.types.ULong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.Account.Frozen;
 import org.tron.protos.Protocol.Vote;
@@ -20,7 +21,6 @@ import com.google.inject.Inject;
 import io.trxplorer.model.tables.records.AccountAssetRecord;
 import io.trxplorer.model.tables.records.AccountRecord;
 import io.trxplorer.model.tables.records.AccountVoteRecord;
-import io.trxplorer.syncnode.utils.Base58;
 import io.trxplorer.troncli.TronCli;
 
 public class AccountService {
@@ -120,7 +120,7 @@ public class AccountService {
 			for(Vote accountVote:tronAccount.getVotesList()) {
 				
 				AccountVoteRecord voteRecord = new AccountVoteRecord();
-				voteRecord.setVoteAddress(Base58.encode58Check(accountVote.getVoteAddress().toByteArray()));
+				voteRecord.setVoteAddress(Wallet.encode58Check(accountVote.getVoteAddress().toByteArray()));
 				voteRecord.setVoteCount(ULong.valueOf(accountVote.getVoteCount()));
 				voteRecord.setAccountId(record.getId());
 				

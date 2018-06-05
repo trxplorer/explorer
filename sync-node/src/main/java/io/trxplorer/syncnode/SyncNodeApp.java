@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import io.trxplorer.syncnode.job.AccountSyncJob;
 import io.trxplorer.syncnode.job.BlockSyncJob;
 import io.trxplorer.syncnode.job.ConsolidationJob;
+import io.trxplorer.syncnode.job.MarketJob;
+import io.trxplorer.syncnode.job.NodeSyncJob;
 import io.trxplorer.syncnode.job.SyncNodeJob;
 import io.trxplorer.syncnode.job.WitnessSyncJob;
 
@@ -32,8 +34,8 @@ public class SyncNodeApp extends Jooby {
 		use(new Flywaydb());
 
 		
-		use(new Quartz(SyncNodeJob.class,BlockSyncJob.class,WitnessSyncJob.class,AccountSyncJob.class,ConsolidationJob.class));
-		//use(new Quartz(ForkCheckJob.class));
+		use(new Quartz(SyncNodeJob.class,BlockSyncJob.class,WitnessSyncJob.class,AccountSyncJob.class,ConsolidationJob.class,NodeSyncJob.class,MarketJob.class));
+
 		
 		onStart(registry -> {
 			

@@ -1,0 +1,2 @@
+ALTER TABLE `market` 
+CHANGE COLUMN `price` `price` DECIMAL(7,7) UNSIGNED NOT NULL ;

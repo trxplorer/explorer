@@ -11,13 +11,13 @@ import org.jooq.impl.DSL;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.tron.common.utils.Sha256Hash;
+import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Block;
 import org.tron.protos.Protocol.Transaction;
 
 import com.google.inject.Inject;
 
 import io.trxplorer.model.tables.records.BlockRecord;
-import io.trxplorer.syncnode.utils.Base58;
 import io.trxplorer.troncli.TronCli;
 
 public class BlockService {
@@ -48,7 +48,7 @@ public class BlockService {
 		String parentHash = Sha256Hash.wrap(block.getBlockHeader().getRawData().getParentHash()).toString();
 		
 		record.setTxCount(UInteger.valueOf(block.getTransactionsCount()));
-		record.setWitnessAddress(Base58.encode58Check(block.getBlockHeader().getRawData().getWitnessAddress().toByteArray()));
+		record.setWitnessAddress(Wallet.encode58Check(block.getBlockHeader().getRawData().getWitnessAddress().toByteArray()));
 		record.setNum(ULong.valueOf(block.getBlockHeader().getRawData().getNumber()));
 		record.setHash(Sha256Hash.of(block.getBlockHeader().getRawData().toByteArray()).toString());
 		record.setParentHash(parentHash);

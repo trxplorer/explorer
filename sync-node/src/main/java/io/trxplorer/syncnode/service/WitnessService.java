@@ -7,12 +7,12 @@ import java.util.List;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
+import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Witness;
 
 import com.google.inject.Inject;
 
 import io.trxplorer.model.tables.records.WitnessRecord;
-import io.trxplorer.syncnode.utils.Base58;
 import io.trxplorer.troncli.TronCli;
 
 public class WitnessService {
@@ -34,7 +34,7 @@ public class WitnessService {
 
 	public void createOrUpdateWitness(Witness tronWitness) {
 		
-		String address = Base58.encode58Check(tronWitness.getAddress().toByteArray());
+		String address = Wallet.encode58Check(tronWitness.getAddress().toByteArray());
 		
 		 WitnessRecord witnessRecord = this.dslContext.select(WITNESS.ID)
 				.from(WITNESS).where(WITNESS.ADDRESS.eq(address)).fetchOneInto(WitnessRecord.class);

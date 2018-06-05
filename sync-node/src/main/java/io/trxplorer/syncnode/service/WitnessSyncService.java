@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jooq.DSLContext;
+import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Witness;
 
 import com.google.inject.Inject;
 
-import io.trxplorer.syncnode.utils.Base58;
 import io.trxplorer.troncli.TronCli;
 
 public class WitnessSyncService {
@@ -31,7 +31,7 @@ public class WitnessSyncService {
 		//create of updated
 		for(Witness witness:this.tronCli.getAllWitnesses()) {
 			
-			currentWitnessAddresses.add(Base58.encode58Check(witness.getAddress().toByteArray()));
+			currentWitnessAddresses.add(Wallet.encode58Check(witness.getAddress().toByteArray()));
 			
 			this.witnessService.createOrUpdateWitness(witness);
 			
