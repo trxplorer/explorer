@@ -34,8 +34,8 @@ public class StatusService {
 		
 		
 		long tronLastBlock = this.tronCli.getLastBlock().getBlockHeader().getRawData().getNumber();
-		long trxplorerLastBlock = this.dslContext.select(DSL.when(DSL.max(BLOCK.NUM).isNotNull(), DSL.max(BLOCK.NUM)).otherwise(DSL.val(ULong.valueOf(-1)))).from(BLOCK).fetchOneInto(Long.class);
-		long blocksMissing = this.dslContext.select(DSL.count()).from(SYNC_BLOCK).where(SYNC_BLOCK.BLOCK_NUM.notIn(DSL.select(BLOCK.NUM).from(BLOCK))).fetchOneInto(Long.class);
+		long trxplorerLastBlock = this.dslContext.select(DSL.max(BLOCK.NUM)).from(BLOCK).fetchOneInto(Long.class);
+		long blocksMissing = tronLastBlock-trxplorerLastBlock;
 		StatusType status = StatusType.WARNING;
 		
 		if (blocksMissing>=0 && blocksMissing<=this.config.getStatus().getOkBlocksLate()) {
@@ -45,13 +45,12 @@ public class StatusService {
 		}
 		
 
-		Long syncRate = this.dslContext.select(DSL.count().divide(24)).from(BLOCK).where("timestamp > DATE_SUB((select max(timestamp) from block), INTERVAL 24 HOUR)").fetchOneInto(Long.class);
 		
 		result.setStatus(status);
 		result.setTronLastBlock(tronLastBlock);
 		result.setTrxplorerLastBlock(trxplorerLastBlock);
 		result.setTotalBlocksMissing(blocksMissing);
-		result.setTrxplorerBlockRate(syncRate);
+
 		
 		return result;
 	}
