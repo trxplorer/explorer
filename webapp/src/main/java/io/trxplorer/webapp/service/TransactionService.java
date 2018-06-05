@@ -2,7 +2,9 @@ package io.trxplorer.webapp.service;
 
 import static io.trxplorer.model.Tables.*;
 
-import java.text.DecimalFormat;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +14,6 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.SelectConditionStep;
-import org.jooq.SelectJoinStep;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
@@ -20,6 +21,7 @@ import org.jooq.types.ULong;
 
 import com.google.inject.Inject;
 
+import io.trxplorer.webapp.dto.account.VoteDTO;
 import io.trxplorer.webapp.dto.common.ListDTO;
 import io.trxplorer.webapp.dto.transaction.TransactionCriteriaDTO;
 import io.trxplorer.webapp.dto.transaction.TransactionDTO;
@@ -36,8 +38,43 @@ public class TransactionService {
 		this.dslContext  = dslContext;
 	}
 	
+	public int getTotalTxLast24h(){
+		
+		LocalDateTime date = LocalDateTime.now().minusDays(1);
 
+		return this.dslContext.select(DSL.count())
+		.from(TRANSACTION)
+		.where(TRANSACTION.TIMESTAMP.gt(Timestamp.valueOf(date)))
+		.fetchOneInto(Integer.class);
+	
+	}
 
+	
+	public int getTotalVotesLast24h() {
+		
+		LocalDateTime date = LocalDateTime.now().minusDays(1);
+		
+		this.dslContext.select(DSL.count())
+		.from(TRANSACTION)
+		.join(CONTRACT_VOTE_WITNESS).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID))
+		.where(TRANSACTION.TIMESTAMP.gt(Timestamp.valueOf(date)))
+		.fetchOneInto(Integer.class);
+		
+		return 0; 
+	}
+	
+	public int getLastestVotes(int limit) {
+
+		this.dslContext.select(TRANSACTION.TIMESTAMP,CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.as("from"),CONTRACT_VOTE_WITNESS.VOTE_ADDRESS,CONTRACT_VOTE_WITNESS.VOTE_COUNT)
+		.from(TRANSACTION)
+		.join(CONTRACT_VOTE_WITNESS).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID))
+		.orderBy(TRANSACTION.TIMESTAMP.desc())
+		.limit(limit)
+		.fetchInto(VoteDTO.class);
+		
+		return 0; 
+	}	
+	
 
 	public TransactionDTO getTxByHash(String hash) {
 		

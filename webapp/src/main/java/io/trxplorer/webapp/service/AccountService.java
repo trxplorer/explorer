@@ -5,7 +5,6 @@ import static io.trxplorer.model.Tables.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
 
 import org.jooq.Condition;
@@ -18,7 +17,6 @@ import org.jooq.SelectOnConditionStep;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.jooq.util.mysql.MySQLDataType;
-import org.tron.protos.Protocol.Transaction;
 
 import com.google.inject.Inject;
 
@@ -60,6 +58,16 @@ public class AccountService {
 	}
 
 
+	public int getTotalAccount() {
+		return this.dslContext.select(DSL.count()).from(ACCOUNT).fetchOneInto(Integer.class);
+	}
+	
+	public List<AccountDTO> getLatestAccounts(int limit){
+		
+		return this.dslContext.select(ACCOUNT.fields()).from(ACCOUNT).orderBy(ACCOUNT.CREATE_TIME.desc()).limit(limit).fetchInto(AccountDTO.class);
+		
+	}
+	
 	public AccountDTO getAccountByAddress(AccountDetailCriteriaDTO accountCriteria) {
 				
 		// for some unknow reason this field has to be converted into varchar in order to return correct value 

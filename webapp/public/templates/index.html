@@ -53,40 +53,41 @@
       <div class="row">
 			
 			<div class="column">
-			<div class="ui four  statistics">
-			  <div class="red statistic">
+			<div class="ui four small statistics">
+			  <div class="small red statistic">
 			    <div class="value">
-			      22$
+			      {{price}}$
 			    </div>
 			    <div class="label">
-			      Price
+			      TRX Price
+			    </div>
+			  </div>
+			  <div class="statistic">
+			    <div class="value">
+			      {{lastTxCount}}
+			    </div>
+			    <div class="label">
+			    	Transactions <br><small>(last 24h)</small>
 			    </div>
 			  </div>
 			  <div class="orange statistic">
 			    <div class="value">
-			      22
+			      {{totalAccounts}}
 			    </div>
 			    <div class="label">
-			      Blocks
+			      Accounts
 			    </div>
 			  </div>
 
 			  <div class="green statistic">
 			    <div class="value">
-			      22
+			      {{lastVotesCount}}
 			    </div>
 			    <div class="label">
-			      Blocks
+			      Vote count<br><small>(last 24h)</small>
 			    </div>
 			  </div>
-			  <div class="statistic">
-			    <div class="value">
-			      22
-			    </div>
-			    <div class="label">
-			      Votes today
-			    </div>
-			  </div>
+
 			</div>
 			</div>
 			
@@ -97,59 +98,63 @@
 <div class="ui vertical stripe segment" >
     <div class="ui middle aligned stackable grid container">
       <div class="row">
-        <div class="five wide column">
-			<b><i class="cube icon"></i> Latest Blocks</b>
-	<table class="ui striped compact fixed blue table">
-		<thead>
-			<tr>
-				<th class="center aligned">Height</th>
-				<th class="center aligned">Transactions</th>
-			</tr>
-		</thead>
-		<tbody>
-			{%for block in lastBlocks%}
-			<tr class="center aligned">
-				<td><a href="/block/{{block.num}}">{{block.num}}</a></td>
-				<td>{%if block.txCount>0 %}<a href="/transactions?block={{block.num}}">{{block.txCount}}</a>{%else%}{{block.txCount}}{%endif%}</td>
-			</tr>
-			{%endfor%}
-		</tbody>
-	</table>
 
-        </div>
         <div class="five wide column">
-			<b>Latest Transactions</b>
-				<table class="ui striped compact fixed orange table">
+			<b><i class="ui icon exchange"></i>Latest Transactions</b>
+				<table class="ui striped compact fixed grey table">
 					<thead>
 						<tr>
 							<th class="center aligned">Hash</th>
 							<th class="center aligned">Type</th>
+							<th class="center aligned">Block</th>
 						</tr>
 					</thead>
 					<tbody>
 						{%for tx in lastTxs%}
 						<tr class="center aligned">
-							<td><a href="/block/{{block.num}}">{{tx.hash}}</a></td>
-							<td></td>
+							<td><a href="/tx/{{tx.hash}}">{{tx.hash}}</a></td>
+							<td>{{tx.type}}</td>
+							<td><a href="/block/{{tx.hash}}">{{tx.blockNum}}</a></td>
 						</tr>
 						{%endfor%}
 					</tbody>
 				</table>
         </div>
         <div class="five wide column">
-			<b>Latest Votes</b>
-				<table class="ui striped compact fixed grey table">
+			<b><i class="ui icon user"></i> Latest Accounts</b>
+				<table class="ui striped compact fixed orange table">
 					<thead>
 						<tr>
-							<th class="center aligned">Hash</th>
-							<th class="center aligned">Type</th>
+							<th class="center aligned">Address</th>
+							<th class="center aligned">Balance</th>
 						</tr>
 					</thead>
 					<tbody>
-						{%for tx in lastTxs%}
+						{%for account in lastestAccounts%}
 						<tr class="center aligned">
-							<td><a href="/block/{{block.num}}">{{tx.hash}}</a></td>
-							<td></td>
+							<td><a href="/address/{{account.address}}">{{account.address}}</a></td>
+							<td>{{account.balanceStr}}</td>
+						</tr>
+						{%endfor%}
+					</tbody>
+				</table>
+        </div>
+        <div class="five wide column">
+			<b><i class="ui icon arrow circle up"></i> Latest Votes</b>
+				<table class="ui striped compact fixed green table">
+					<thead>
+						<tr>
+							<th class="center aligned">From</th>
+							<th class="center aligned">To</th>
+							<th class="center aligned">Vote count</th>
+						</tr>
+					</thead>
+					<tbody>
+						{%for vote in lastesVotes%}
+						<tr class="center aligned">
+							<td><a href="/address/{{vote.from}}">{{vote.from}}</a></td>
+							<td><a href="/address/{{vote.voteAddress}}">{{vote.voteAddress}}</a></td>
+							<td>{{vote.voteCount}}</td>
 						</tr>
 						{%endfor%}
 					</tbody>
