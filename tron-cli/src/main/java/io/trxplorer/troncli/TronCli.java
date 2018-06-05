@@ -35,9 +35,9 @@ public class TronCli {
 	private ManagedChannel channelFull = null;
 	private WalletGrpc.WalletBlockingStub client = null;
 	
-	   byte ADD_PRE_FIX_BYTE_MAINNET = (byte) 0x41;   //41 + address
+	public static final byte ADD_PRE_FIX_BYTE_MAINNET = (byte) 0x41;   //41 + address
 	   
-	   byte ADD_PRE_FIX_BYTE_TESTNET = (byte) 0xa0;   //a0 + address
+	public static final byte ADD_PRE_FIX_BYTE_TESTNET = (byte) 0xa0;   //a0 + address
 	
 	private static final Logger logger = LoggerFactory.getLogger(TronCli.class);
 	
