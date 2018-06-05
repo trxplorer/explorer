@@ -54,26 +54,33 @@ public class TransactionService {
 		
 		LocalDateTime date = LocalDateTime.now().minusDays(1);
 		
-		this.dslContext.select(DSL.count())
+		return this.dslContext.select(DSL.count())
 		.from(TRANSACTION)
 		.join(CONTRACT_VOTE_WITNESS).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID))
 		.where(TRANSACTION.TIMESTAMP.gt(Timestamp.valueOf(date)))
 		.fetchOneInto(Integer.class);
-		
-		return 0; 
+		 
 	}
 	
-	public int getLastestVotes(int limit) {
+	public List<VoteDTO> getLastestVotes(int limit) {
 
-		this.dslContext.select(TRANSACTION.TIMESTAMP,CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.as("from"),CONTRACT_VOTE_WITNESS.VOTE_ADDRESS,CONTRACT_VOTE_WITNESS.VOTE_COUNT)
+		return this.dslContext.select(TRANSACTION.TIMESTAMP,CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.as("from"),CONTRACT_VOTE_WITNESS.VOTE_ADDRESS,CONTRACT_VOTE_WITNESS.VOTE_COUNT)
 		.from(TRANSACTION)
 		.join(CONTRACT_VOTE_WITNESS).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID))
 		.orderBy(TRANSACTION.TIMESTAMP.desc())
 		.limit(limit)
 		.fetchInto(VoteDTO.class);
 		
-		return 0; 
+ 
 	}	
+	
+	public List<TransactionDTO> getLatestTransactions(int limit){
+		return this.dslContext.select(TRANSACTION.HASH,BLOCK.NUM.as("blockNum"))
+		.from(TRANSACTION).join(BLOCK).on(TRANSACTION.BLOCK_ID.eq(BLOCK.ID))
+		.orderBy(TRANSACTION.TIMESTAMP.desc())
+		.limit(limit)
+		.fetchInto(TransactionDTO.class);
+	}
 	
 
 	public TransactionDTO getTxByHash(String hash) {

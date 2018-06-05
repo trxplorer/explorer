@@ -39,11 +39,9 @@ public class IndexRoute {
 		
 		View view = Results.html("index");
 		
-		TransactionCriteriaDTO txCriteria = new TransactionCriteriaDTO();
-		txCriteria.setLimit(10);
-		txCriteria.setPage(1);
+
 		
-		view.put("lastTxs",this.txService.listTransactions(txCriteria).getItems());
+		view.put("lastTxs",this.txService.getLatestTransactions(10));
 		view.put("price",this.marketService.getCurrentAvgPrice());
 		view.put("totalAccounts",this.accountService.getTotalAccount());
 		view.put("lastestAccounts",this.accountService.getLatestAccounts(10));
