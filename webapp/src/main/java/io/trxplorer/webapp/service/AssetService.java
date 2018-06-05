@@ -114,6 +114,8 @@ public class AssetService {
 		.from(CONTRACT_ASSET_ISSUE).where(CONTRACT_ASSET_ISSUE.ID.eq(ULong.valueOf(assetIssueCriteria.getId())))
 		.fetchOneInto(AssetIssueDTO.class);
 		
+		if (result!=null) {
+		
 		if (assetIssueCriteria.getTab().equals("tx")) {
 			
 			TransactionCriteriaDTO txCriteria = new TransactionCriteriaDTO();
@@ -143,8 +145,10 @@ public class AssetService {
 		}
 		
 		
-		
-		result.setCriteria(assetIssueCriteria);
+
+			result.setCriteria(assetIssueCriteria);			
+		}
+
 		
 		return result;
 	}

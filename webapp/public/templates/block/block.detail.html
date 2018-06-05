@@ -32,7 +32,7 @@
 		</tr>
 		<tr>
 			<td>Transactions</td>
-			<td>{{block.txCount}} transactions<a href="/transactions?block={{block.num}}"> &nbsp;&nbsp;[see all]</a></td>
+			<td>{{block.txCount}} transactions<a href="/transactions?block={{block.num}}"> &nbsp;&nbsp;{%if block.txCount>0%}[see all]{%endif%}</a></td>
 		</tr>
 		<tr>
 			<td>Produced by</td>
@@ -49,6 +49,6 @@
 	</tbody>
 </table>
 </div>
-<h2 class="ui dividing header"><small><i class="icon comments outline"></i>Comments</small></h2>
+<!-- <h2 class="ui dividing header"><small><i class="icon comments outline"></i>Comments</small></h2> -->
 
 {%endblock%}

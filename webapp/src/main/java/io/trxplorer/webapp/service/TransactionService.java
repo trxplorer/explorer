@@ -139,8 +139,10 @@ public class TransactionService {
 		.where(TRANSACTION.HASH.eq(hash))
 		.fetchOneInto(TransactionDTO.class);
 		
-		
-		prepareTransactionDTO(result);
+		if (result!=null) {
+			prepareTransactionDTO(result);			
+		}
+
 		
 		return result;
 	}

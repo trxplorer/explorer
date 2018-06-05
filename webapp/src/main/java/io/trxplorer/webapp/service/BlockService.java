@@ -51,7 +51,9 @@ public class BlockService {
 		
 		BlockDTO block=this.dslContext.select(fields).from(BLOCK).where(BLOCK.NUM.eq(ULong.valueOf(num))).fetchOneInto(BlockDTO.class);
 		
-		setReward(Arrays.asList(block));
+		if (block!=null) {
+			setReward(Arrays.asList(block));			
+		}
 		
 		return block;
 	}
@@ -63,7 +65,9 @@ public class BlockService {
 		
 		BlockDTO block=this.dslContext.select(fields).from(BLOCK).where(BLOCK.HASH.eq(hash)).fetchOneInto(BlockDTO.class);
 		
-		setReward(Arrays.asList(block));
+		if (block!=null) {
+			setReward(Arrays.asList(block));			
+		}
 		
 		return block;
 	}
@@ -75,7 +79,10 @@ public class BlockService {
 		
 		BlockDTO block=this.dslContext.select(fields).from(BLOCK).where(BLOCK.PARENT_HASH.eq(hash)).fetchOneInto(BlockDTO.class);
 		
-		setReward(Arrays.asList(block));
+		if (block!=null) {
+			setReward(Arrays.asList(block));			
+		}
+
 		
 		return block;
 	}

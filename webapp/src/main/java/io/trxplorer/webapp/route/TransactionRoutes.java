@@ -3,6 +3,7 @@ package io.trxplorer.webapp.route;
 import org.jooby.Request;
 import org.jooby.Response;
 import org.jooby.Results;
+import org.jooby.Route.Chain;
 import org.jooby.View;
 import org.jooby.mvc.GET;
 import org.jooby.mvc.Path;
@@ -11,6 +12,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import io.trxplorer.webapp.dto.transaction.TransactionCriteriaDTO;
+import io.trxplorer.webapp.dto.transaction.TransactionDTO;
 import io.trxplorer.webapp.service.TransactionService;
 
 @Singleton
@@ -25,15 +27,21 @@ public class TransactionRoutes {
 	
 	@GET
 	@Path(TRXPlorerRoutePaths.Front.TRANSACTION_DETAIL)
-	public void transactionDetail(Request req,Response res) throws Throwable {
+	public void transactionDetail(Request req,Response res,Chain chain) throws Throwable {
 		
 		String txId = req.param("txid").value(); 
 		
 		View view = Results.html("transaction/transaction.detail");
 		
-		view.put("tx",this.txService.getTxByHash(txId));
+		TransactionDTO tx = this.txService.getTxByHash(txId);
 		
-		res.send(view);
+		if (tx==null) {
+			chain.next(req, res);
+		}else {
+			view.put("tx",tx);
+			res.send(view);			
+		}
+
 	}
 	
 	@GET

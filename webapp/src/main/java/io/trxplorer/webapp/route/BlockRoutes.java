@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import io.trxplorer.webapp.dto.block.BlockCriteriaDTO;
+import io.trxplorer.webapp.dto.block.BlockDTO;
 import io.trxplorer.webapp.service.BlockService;
 
 @Singleton
@@ -39,10 +40,20 @@ public class BlockRoutes {
 		
 		View view = Results.html("block/block.detail");
 		
-		
-		view.put("block",this.blockService.getBlockByNum(Long.valueOf(num)));			
+		if (NumberUtils.isDigits(num)) {
+			BlockDTO block = this.blockService.getBlockByNum(Long.valueOf(num));
+			
+			if (block==null) {
+				chain.next(req, res);
+			}else {
+				view.put("block",block);			
+				res.send(view);			
+			}			
+		}else {
+			chain.next(req, res);
+		}
 
-		res.send(view);
+
 	}
 	
 	@GET
