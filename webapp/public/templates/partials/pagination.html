@@ -10,7 +10,7 @@
 		{%for page in list.pages() %}
         <a class="item {%if list.criteria.page==page%}active{%endif%}" href="?page={{page}}{{list.params()}}">{{page}}</a>
         {%endfor%}
-        {%if list.totalCount>list.criteria.limit and list.nextPage()<list.totalCount %}
+        {%if list.criteria.page <list.totalPages() %}
         <a class="icon item" href="?page={{list.nextPage()}}">
           <i class="right chevron icon"></i>
         </a>

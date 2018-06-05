@@ -84,7 +84,7 @@ public class ListDTO<T,C extends CommonCriteriaDTO> {
 		
 		int min = criteria.getPage() == 1 ? 1 : (criteria.getLimit()*(criteria.getPage()-1))+1;
 		int max = min-1 +criteria.getLimit();
-		return String.format("Display from %s to %s on %s items",min, max,totalCount);
+		return String.format("Page %s on %s ",criteria.getPage(), totalPages());
 		
 	}
 	
