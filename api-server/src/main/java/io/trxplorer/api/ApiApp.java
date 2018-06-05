@@ -66,7 +66,11 @@ public class ApiApp extends Jooby {
 		use(TronRoutes.class);
 
 		
-		use(new ApiTool().raml("/doc").swagger("/swagger"));
+		use(new ApiTool()
+				 .filter(route -> {
+				      return route.pattern().startsWith("/v1");
+			    })
+				.raml("/doc").swagger("/swagger"));
 
 	}
 
