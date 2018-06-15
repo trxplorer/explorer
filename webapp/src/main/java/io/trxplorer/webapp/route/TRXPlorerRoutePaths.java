@@ -41,7 +41,9 @@ public interface TRXPlorerRoutePaths {
 		public static final String CHART_LIST = "/charts";		
 		public static final String CHART_DETAIL = "/chart/:name";
 		public static final String CHART_API_DATA = "/chart/api/:type/:since";
-
+		
+		//NODE
+		public static final String NODE_LIST = "/nodes";
 
 		//API
 		public static final String API = "/api";

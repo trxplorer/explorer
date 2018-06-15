@@ -17,6 +17,7 @@ import io.trxplorer.webapp.route.AssetRoutes;
 import io.trxplorer.webapp.route.BlockRoutes;
 import io.trxplorer.webapp.route.ChartRoutes;
 import io.trxplorer.webapp.route.IndexRoute;
+import io.trxplorer.webapp.route.NodeRoute;
 import io.trxplorer.webapp.route.SearchRoutes;
 import io.trxplorer.webapp.route.StatusRoute;
 import io.trxplorer.webapp.route.TransactionRoutes;
@@ -96,6 +97,7 @@ public class WebApp extends Jooby {
 		use(SearchRoutes.class);
 		use(StatusRoute.class);
 		use(TronRoutes.class);
+		use(NodeRoute.class);
 	}
 
 	public static void main(final String... args) {

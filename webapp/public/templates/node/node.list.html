@@ -1,0 +1,55 @@
+{% extends "main" %}
+{% block title %}Tron nodes list{% endblock %}
+{%block description%}See all informations about available nodes on TRON blockchain{%endblock%}
+
+{% block header %} 
+
+
+{% endblock %}
+
+{% block content %}
+
+	
+<h1 class="ui dividing header"><small><i class="icon server"></i>Nodes</small></h1>
+
+<div >
+ 	
+ 	<!-- 
+   <div class="ui labeled button" tabindex="0">
+              <div class="ui green  button">
+                Total blocks
+              </div>
+              <a class="ui green basic left pointing label">
+                {{list.totalCount}}
+              </a>
+    </div>
+     -->
+	<table class="ui striped table">
+		<thead>
+			<tr>
+				<th class="center aligned">Host</th>
+				<th class="center aligned">Port</th>
+				<th class="center aligned">Country</th>
+				<th class="center aligned">City</th>
+			</tr>
+		</thead>
+		<tbody>
+			{%for node in list.items%}
+			<tr class="center aligned">
+				<td>{{node.host}}</td>
+				<td>{{node.port}}</td>
+				<td>{{node.country}}</td>
+				<td>{{node.city}}</td>
+			</tr>
+			{%endfor%}
+		</tbody>
+	 <tfoot>
+	    <tr><th colspan="4">
+			{% include 'partials/pagination' %}
+	  </tr></tfoot>
+	</table>
+</div>
+
+
+
+{%endblock%}
