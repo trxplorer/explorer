@@ -27,7 +27,7 @@ public class NodeRoute {
 	
 	@GET
 	@Path(TRXPlorerRoutePaths.Front.NODE_LIST)
-	public void blockList(Request req,Response res) throws Throwable {
+	public void nodeList(Request req,Response res) throws Throwable {
 		
 		Integer limit = req.param("limit").intValue(500);
 		Integer page = req.param("page").intValue(1);

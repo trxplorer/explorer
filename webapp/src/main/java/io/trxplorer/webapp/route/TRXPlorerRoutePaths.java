@@ -44,7 +44,10 @@ public interface TRXPlorerRoutePaths {
 		
 		//NODE
 		public static final String NODE_LIST = "/nodes";
-
+		
+		//MARKET
+		public static final String MARKET_LIST = "/markets";
+		
 		//API
 		public static final String API = "/api";
 		public static final String API_CHART_TX_SINCE = API+"/chart/tx/:since";

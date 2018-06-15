@@ -1,0 +1,46 @@
+{% extends "main" %}
+{% block title %}Tron exchanges and markets price{% endblock %}
+{%block description%}Get all the prices for all exchanges where you can buy TRX coin{%endblock%}
+
+{% block header %} 
+
+
+{% endblock %}
+
+{% block content %}
+
+	
+<h1 class="ui dividing header"><small><i class="icon chart"></i>Markets</small></h1>
+
+<div >
+ 	
+ 
+	<table class="ui striped table">
+		<thead>
+			<tr>
+				<th class="center aligned">Market</th>
+				<th class="center aligned">Pair</th>
+				<th class="center aligned">Price</th>
+				<th class="center aligned">24h volume</th>
+			</tr>
+		</thead>
+		<tbody>
+			{%for market in markets%}
+			<tr class="center aligned">
+				<td>{{market.market}}</td>
+				<td>{{market.pair}}</td>
+				<td>{{market.price}}$</td>
+				<td>{{market.volume_24h}}$</td>
+			</tr>
+			{%endfor%}
+		</tbody>
+	 <tfoot>
+	    <tr><th colspan="4">
+			{% include 'partials/pagination' %}
+	  </tr></tfoot>
+	</table>
+</div>
+
+
+
+{%endblock%}
