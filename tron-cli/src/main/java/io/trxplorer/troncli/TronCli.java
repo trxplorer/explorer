@@ -28,7 +28,6 @@ import com.typesafe.config.Config;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.trxplorer.troncli.wallet.BroadcastResult;
-import io.trxplorer.troncli.wallet.TransactionUtils;
 
 public class TronCli {
 	
@@ -132,14 +131,6 @@ public class TronCli {
 		try {
 
 			Transaction transaction = Transaction.parseFrom(bytes);
-			boolean validTx = TransactionUtils.validTransaction(transaction);
-
-			
-			if (!validTx) {
-				result.setErrorMsg("Invalid transaction");
-				result.setSuccess(false);
-				return result;
-			}
 			
 			Return bReturn = this.client.broadcastTransaction(transaction);
 			

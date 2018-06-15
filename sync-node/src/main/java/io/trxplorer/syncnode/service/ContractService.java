@@ -10,6 +10,7 @@ import org.jooq.types.UByte;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.tron.common.utils.Sha256Hash;
+import org.tron.core.Wallet;
 import org.tron.protos.Contract.AccountCreateContract;
 import org.tron.protos.Contract.AccountUpdateContract;
 import org.tron.protos.Contract.AssetIssueContract;
@@ -47,7 +48,6 @@ import io.trxplorer.model.tables.records.ContractVoteWitnessRecord;
 import io.trxplorer.model.tables.records.ContractWithdrawBalanceRecord;
 import io.trxplorer.model.tables.records.ContractWitnessCreateRecord;
 import io.trxplorer.model.tables.records.ContractWitnessUpdateRecord;
-import io.trxplorer.syncnode.utils.Base58;
 
 public class ContractService {
 
@@ -200,7 +200,7 @@ public class ContractService {
 	private ContractWithdrawBalanceRecord getWidthdrawBalanceContract(ULong txId, WithdrawBalanceContract contract) {
 		
 		ContractWithdrawBalanceRecord record = new ContractWithdrawBalanceRecord();
-		record.setOwnerAddress(Base58.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
 		record.setTransactionId(txId);		
 		
 		return record;
@@ -209,7 +209,7 @@ public class ContractService {
 	private ContractUnfreezeBalanceRecord getUnFreezeBalanceContract(ULong txId, UnfreezeBalanceContract unfreezeBalanceContract) {
 		
 		ContractUnfreezeBalanceRecord record = new ContractUnfreezeBalanceRecord();
-		record.setOwnerAddress(Base58.encode58Check(unfreezeBalanceContract.getOwnerAddress().toByteArray()));
+		record.setOwnerAddress(Wallet.encode58Check(unfreezeBalanceContract.getOwnerAddress().toByteArray()));
 		record.setTransactionId(txId);		
 		
 		return record;
@@ -218,7 +218,7 @@ public class ContractService {
 	private ContractFreezeBalanceRecord getFreezeBalanceContract(ULong txId, FreezeBalanceContract contract) {
 		
 		ContractFreezeBalanceRecord record = new ContractFreezeBalanceRecord();
-		record.setOwnerAddress(Base58.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
 		record.setFrozenBalance(ULong.valueOf(contract.getFrozenBalance()));
 		record.setFrozenDuration(ULong.valueOf(contract.getFrozenDuration()));
 		record.setTransactionId(txId);
@@ -229,7 +229,7 @@ public class ContractService {
 	private ContractAccountUpdateRecord getCreateAccountUpdateRecord(ULong txId, AccountUpdateContract contract) {
 		
 		ContractAccountUpdateRecord record = new ContractAccountUpdateRecord();
-		record.setOwnerAddress(Base58.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
 		record.setAccountName(contract.getAccountName().toStringUtf8());
 		record.setTransactionId(txId);
 		
@@ -242,7 +242,7 @@ public class ContractService {
 		
 		ContractWitnessUpdateRecord record = new ContractWitnessUpdateRecord();
 		record.setUpdateUrl(contract.getUpdateUrl().toStringUtf8());
-		record.setOwnerAddress(Base58.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
 		record.setTransactionId(txId);
 		
 		return record;
@@ -252,7 +252,7 @@ public class ContractService {
 		
 		ContractWitnessCreateRecord record = new ContractWitnessCreateRecord();
 		record.setUrl(contract.getUrl().toStringUtf8());
-		record.setOwnerAddress(Base58.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
 		record.setTransactionId(txId);
 		
 		return record;
@@ -262,14 +262,14 @@ public class ContractService {
 				
 		List<ContractVoteWitnessRecord> votes= new ArrayList<>();
 		
-		String ownerAddress = Base58.encode58Check(contract.getOwnerAddress().toByteArray());
+		String ownerAddress = Wallet.encode58Check(contract.getOwnerAddress().toByteArray());
 		UByte support = contract.getSupport()==true ? UByte.valueOf((byte)1):UByte.valueOf((byte)0);
 		
 		for(Vote vote:contract.getVotesList()) {
 			
 			ContractVoteWitnessRecord voteRecord = new ContractVoteWitnessRecord();
 			
-			String voteAddress = Base58.encode58Check(vote.getVoteAddress().toByteArray());
+			String voteAddress = Wallet.encode58Check(vote.getVoteAddress().toByteArray());
 
 			voteRecord.setOwnerAddress(ownerAddress);
 			voteRecord.setVoteAddress(voteAddress);
@@ -288,7 +288,7 @@ public class ContractService {
 		
 		
 		
-		String ownerAddress = Base58.encode58Check(contract.getOwnerAddress().toByteArray());
+		String ownerAddress = Wallet.encode58Check(contract.getOwnerAddress().toByteArray());
 		UByte support = contract.getSupport()==true ? UByte.valueOf((byte)1):UByte.valueOf((byte)0);
 		UInteger count = UInteger.valueOf(contract.getCount());
 		
@@ -296,7 +296,7 @@ public class ContractService {
 		
 		for(ByteString voteAddress:contract.getVoteAddressList()) {
 			
-			String voteAddressB58 = Base58.encode58Check(voteAddress.toByteArray());
+			String voteAddressB58 = Wallet.encode58Check(voteAddress.toByteArray());
 			
 			ContractVoteAssetRecord voteRecord = new ContractVoteAssetRecord();
 			
@@ -317,8 +317,8 @@ public class ContractService {
 	private ContractTransferAssetRecord getTransferAssetContractRecord(ULong txId, TransferAssetContract contract) {
 		
 		ContractTransferAssetRecord record = new ContractTransferAssetRecord();
-		record.setOwnerAddress(Base58.encode58Check(contract.getOwnerAddress().toByteArray()));
-		record.setToAddress(Base58.encode58Check(contract.getToAddress().toByteArray()));
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setToAddress(Wallet.encode58Check(contract.getToAddress().toByteArray()));
 		record.setAmount(ULong.valueOf(contract.getAmount()));
 		record.setAssetName(contract.getAssetName().toStringUtf8());
 		record.setTransactionId(txId);
@@ -331,8 +331,8 @@ public class ContractService {
 		
 		ContractTransferRecord record = new ContractTransferRecord();
 		
-		record.setOwnerAddress(Base58.encode58Check(contract.getOwnerAddress().toByteArray()));
-		record.setToAddress(Base58.encode58Check(contract.getToAddress().toByteArray()));
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setToAddress(Wallet.encode58Check(contract.getToAddress().toByteArray()));
 		record.setAmount(ULong.valueOf(contract.getAmount()));
 		record.setTransactionId(txId);
 		
@@ -343,8 +343,8 @@ public class ContractService {
 	private ContractParticipateAssetIssueRecord getParticipateAssetIssueContractRecord(ULong txId, ParticipateAssetIssueContract contract) {
 		
 		ContractParticipateAssetIssueRecord record = new ContractParticipateAssetIssueRecord();
-		record.setOwnerAddress(Base58.encode58Check(contract.getOwnerAddress().toByteArray()));
-		record.setToAddress(Base58.encode58Check(contract.getToAddress().toByteArray()));
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setToAddress(Wallet.encode58Check(contract.getToAddress().toByteArray()));
 		record.setAssetName(contract.getAssetName().toStringUtf8());
 		record.setAmount(ULong.valueOf(contract.getAmount()));
 		record.setTransactionId(txId);
@@ -357,7 +357,7 @@ public class ContractService {
 		//FIXME: determine script type : binary or string ?
 		
 		ContractDeployRecord record = new ContractDeployRecord();
-		record.setOwnerAddress(Base58.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
 		record.setScript(contract.getScript().toStringUtf8());
 		record.setTransactionId(txId);
 		
@@ -367,7 +367,7 @@ public class ContractService {
 	private ContractAssetIssueRecord  getAssetIssueContractRecord(ULong txId, AssetIssueContract contract) {
 
 		ContractAssetIssueRecord record = new ContractAssetIssueRecord(); 
-		record.setOwnerAddress(Base58.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
 		record.setName(contract.getName().toStringUtf8());
 		record.setTotalSupply(ULong.valueOf(contract.getTotalSupply()));
 		record.setTrxNum(UInteger.valueOf(contract.getTrxNum()));
@@ -387,7 +387,7 @@ public class ContractService {
 	private ContractAccountCreateRecord getCreateAccountCreateRecord(ULong txId, AccountCreateContract contract) {
 		
 		ContractAccountCreateRecord record = new ContractAccountCreateRecord();
-		record.setOwnerAddress(Base58.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
 		record.setTransactionId(txId);
 		
 		return record;
