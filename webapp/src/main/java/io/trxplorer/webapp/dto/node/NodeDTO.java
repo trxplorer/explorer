@@ -9,6 +9,18 @@ public class NodeDTO {
 	private String country;
 	
 	private String city;
+	
+	private boolean isUp;
+	
+	
+	
+	public boolean isUp() {
+		return isUp;
+	}
+
+	public void setUp(boolean isUp) {
+		this.isUp = isUp;
+	}
 
 	public String getHost() {
 		return host;

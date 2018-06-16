@@ -29,6 +29,7 @@
 			<tr>
 				<th class="center aligned">Host</th>
 				<th class="center aligned">Port</th>
+				<th class="center aligned">Status</th>
 				<th class="center aligned">Country</th>
 				<th class="center aligned">City</th>
 			</tr>
@@ -38,13 +39,14 @@
 			<tr class="center aligned">
 				<td>{{node.host}}</td>
 				<td>{{node.port}}</td>
+				<td>{%if node.isUp%}<a class="ui small green label">Up</a>{%else%}<a class="ui small red label">Down</a>{%endif%}</td>
 				<td>{{node.country}}</td>
 				<td>{{node.city}}</td>
 			</tr>
 			{%endfor%}
 		</tbody>
 	 <tfoot>
-	    <tr><th colspan="4">
+	    <tr><th colspan="5">
 			{% include 'partials/pagination' %}
 	  </tr></tfoot>
 	</table>
