@@ -66,6 +66,7 @@ public class TransactionService {
 		return this.dslContext.select(TRANSACTION.TIMESTAMP,CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.as("from"),CONTRACT_VOTE_WITNESS.VOTE_ADDRESS,CONTRACT_VOTE_WITNESS.VOTE_COUNT)
 		.from(TRANSACTION)
 		.join(CONTRACT_VOTE_WITNESS).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID))
+		
 		.orderBy(TRANSACTION.TIMESTAMP.desc())
 		.limit(limit)
 		.fetchInto(VoteDTO.class);
@@ -74,8 +75,9 @@ public class TransactionService {
 	}	
 	
 	public List<TransactionDTO> getLatestTransactions(int limit){
+		
 		return this.dslContext.select(TRANSACTION.HASH,BLOCK.NUM.as("blockNum"))
-		.from(TRANSACTION).join(BLOCK).on(TRANSACTION.BLOCK_ID.eq(BLOCK.ID))
+		.from(TRANSACTION).join(BLOCK).on(TRANSACTION.BLOCK_ID.eq(BLOCK.ID)).and(DSL.year(TRANSACTION.TIMESTAMP).gt(TRON_START_YEAR-1)).and(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)))
 		.orderBy(TRANSACTION.TIMESTAMP.desc())
 		.limit(limit)
 		.fetchInto(TransactionDTO.class);
