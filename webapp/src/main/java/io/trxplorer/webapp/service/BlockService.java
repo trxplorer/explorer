@@ -2,6 +2,7 @@ package io.trxplorer.webapp.service;
 
 import static io.trxplorer.model.Tables.*;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,14 +12,16 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record1;
+import org.jooq.Record5;
 import org.jooq.SelectJoinStep;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.impl.DSL;
+import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 
 import com.google.inject.Inject;
 
-import io.trxplorer.troncli.TronCli;
+import io.trxplorer.troncli.TronFullNodeCli;
 import io.trxplorer.webapp.dto.block.BlockCriteriaDTO;
 import io.trxplorer.webapp.dto.block.BlockDTO;
 import io.trxplorer.webapp.dto.common.ListDTO;
@@ -27,10 +30,10 @@ public class BlockService {
 
 	private DSLContext dslContext;
 	private TransactionService txService;
-	private TronCli tronService;
+	private TronFullNodeCli tronService;
 	
 	@Inject
-	public BlockService(DSLContext dslContext,TronCli tronCli,TransactionService txService) {
+	public BlockService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli,TransactionService txService) {
 		this.dslContext = dslContext;
 		this.txService = txService;
 	}
@@ -91,8 +94,8 @@ public class BlockService {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
-		SelectOnConditionStep<?> listQuery = this.dslContext.select(BLOCK.NUM,BLOCK.TIMESTAMP,BLOCK.WITNESS_ADDRESS,BLOCK.TX_COUNT,DSL.when(WITNESS.URL.isNotNull(),WITNESS.URL).otherwise(BLOCK.WITNESS_ADDRESS).as("witness"))
-		.from(BLOCK).leftJoin(WITNESS).on(WITNESS.ADDRESS.eq(BLOCK.WITNESS_ADDRESS));
+		 SelectJoinStep<?> listQuery = this.dslContext.select(BLOCK.NUM,BLOCK.TIMESTAMP,BLOCK.WITNESS_ADDRESS,BLOCK.TX_COUNT,BLOCK.WITNESS_ADDRESS.as("witness"))
+		.from(BLOCK);
 		
 		
 		SelectJoinStep<Record1<Integer>> countQuery = dslContext.select(DSL.count())

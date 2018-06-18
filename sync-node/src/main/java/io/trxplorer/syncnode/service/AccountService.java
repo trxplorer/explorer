@@ -21,27 +21,27 @@ import com.google.inject.Inject;
 import io.trxplorer.model.tables.records.AccountAssetRecord;
 import io.trxplorer.model.tables.records.AccountRecord;
 import io.trxplorer.model.tables.records.AccountVoteRecord;
-import io.trxplorer.troncli.TronCli;
+import io.trxplorer.troncli.TronFullNodeCli;
 
 public class AccountService {
 
 	private DSLContext dslContext;
 	
-	private TronCli tronCli;
+	private TronFullNodeCli tronFullNodeCli;
 	
 	private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 	
 	@Inject
-	public AccountService(DSLContext dslContext,TronCli tronCli) {
+	public AccountService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli) {
 		this.dslContext = dslContext;
-		this.tronCli = tronCli;
+		this.tronFullNodeCli = tronFullNodeCli;
 	}
 	
 	
 	
 	public void createOrUpdateAccount(String address) throws ServiceException {
 		
-		Account tronAccount = this.tronCli.getAccountByAddress(address);
+		Account tronAccount = this.tronFullNodeCli.getAccountByAddress(address);
 		
 		if (tronAccount==null) {
 			logger.error(String.format("Could not find tron account with address: %s", address));

@@ -28,6 +28,10 @@
 			<td>{{tx.timestamp}}</td>
 		</tr>
 		<tr>
+			<td>Status</td>
+			<td>{%if tx.confirmed==true%}<span class="ui small green label">Confirmed</span>{%else%}<a class="ui small red label">Unconfirmed</a>{%endif%}</td>
+		</tr>
+		<tr>
 			<td>From</td>
 			<td><a href="/address/{{tx.from}}">{{tx.from}}</a></td>
 		</tr>

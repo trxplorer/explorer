@@ -30,6 +30,7 @@
 				<th class="center aligned">Height</th>
 				<th class="center aligned">Transactions</th>
 				<th class="center aligned">Timestamp</th>
+				<th class="center aligned">Status</th>
 				<th class="center aligned">Producer</th>
 				<th class="center aligned">Reward</th>
 			</tr>
@@ -40,13 +41,14 @@
 				<td><a href="/block/{{block.num}}">{{block.num}}</a></td>
 				<td>{%if block.txCount>0 %}<a href="/transactions?block={{block.num}}">{{block.txCount}}</a>{%else%}{{block.txCount}}{%endif%}</td>
 				<td>{{block.timestamp}}</td>
-				<td><a href="/address/{{block.witnessAddress}}">{{block.witness}}</a></td>
+				<td>{%if block.confirmed==true%}<span class="ui small green label">Confirmed</span>{%else%}<a class="ui small red label">Unconfirmed</a>{%endif%}</td>
+				<td><a href="/address/{{block.witnessAddress}}">{{block.witnessAddress}}</a></td>
 				<td>{{block.reward}}</td>
 			</tr>
 			{%endfor%}
 		</tbody>
 	 <tfoot>
-	    <tr><th colspan="5">
+	    <tr><th colspan="6">
 			{% include 'partials/pagination' %}
 	  </tr></tfoot>
 	</table>

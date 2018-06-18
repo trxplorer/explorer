@@ -3,6 +3,7 @@ package io.trxplorer.syncnode.service;
 import static io.trxplorer.model.Tables.*;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
 
 import org.jooq.DSLContext;
 import org.jooq.Record2;
@@ -18,19 +19,22 @@ import org.tron.protos.Protocol.Transaction;
 import com.google.inject.Inject;
 
 import io.trxplorer.model.tables.records.BlockRecord;
-import io.trxplorer.troncli.TronCli;
+import io.trxplorer.troncli.TronFullNodeCli;
+import io.trxplorer.troncli.TronSolidityNodeCli;
 
 public class BlockService {
 
 	private DSLContext dslContext;
 	private TransactionService txService;
-	private TronCli tronCli;
+	private TronFullNodeCli tronFullNodeCli;
+	private TronSolidityNodeCli tronSolidityNodeCli;
 	
 	@Inject
-	public BlockService(DSLContext dslContext,TronCli tronCli,TransactionService txService) {
+	public BlockService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli,TronSolidityNodeCli tronSolidityNodeCli,TransactionService txService) {
 		this.dslContext = dslContext;
 		this.txService = txService;
-		this.tronCli = tronCli;
+		this.tronFullNodeCli = tronFullNodeCli;
+		this.tronSolidityNodeCli = tronSolidityNodeCli;
 	}
 	
 	/**
@@ -41,7 +45,7 @@ public class BlockService {
 	public void importBlock(Long blockNum) throws ServiceException {
 		
 		try {
-		Block block = this.tronCli.getBlockByNum(blockNum);
+		Block block = this.tronFullNodeCli.getBlockByNum(blockNum);
 		
 		BlockRecord record = new BlockRecord();
 		
@@ -101,5 +105,33 @@ public class BlockService {
 	}
 
 	
-	
+	public void confirmBlock(Long blockNum) {
+		
+		Block block = this.tronSolidityNodeCli.getBlockByNum(blockNum);
+		
+		if (block!=null && block.getBlockHeader().getRawData().getNumber()==blockNum) {
+
+			this.dslContext.update(BLOCK)
+			.set(BLOCK.CONFIRMED,(byte)1)
+			.where(BLOCK.NUM.eq(ULong.valueOf(blockNum)))
+			.execute();
+			
+			HashSet<String> hashes = new HashSet<>();
+			
+			for(Transaction tx:block.getTransactionsList()) {
+				
+				hashes.add(Sha256Hash.of(tx.getRawData().toByteArray()).toString());
+			
+			}
+			
+			this.dslContext.update(TRANSACTION)
+			.set(TRANSACTION.CONFIRMED,(byte)1)
+			.where(TRANSACTION.HASH.in(hashes))
+			.execute();
+			
+		}
+		
+
+		
+	}
 }

@@ -48,17 +48,17 @@ public class BlockSyncService {
 	 * Decide which blocks will be assigned to this node
 	 * @param currentBlockNum
 	 */
-	public void prepareNodeSync(long currentBlockNum) {
+	public void prepareFullNodeSync(long currentBlockNum) {
 		
 		SyncNode syncNode = this.dslContext.select(SYNC_NODE.fields()).from(SYNC_NODE).where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
 		.fetchOneInto(SyncNode.class);
 		
-		if (syncNode.getStartDate()!=null && syncNode.getEndDate()==null) {
-			logger.info("=> Previous sync didn't seem to went well ... resyncing the batch ...");
-			syncNodeBlocks();
+		if (syncNode.getStartFullDate()!=null && syncNode.getEndFullDate()==null) {
+			logger.info("=> Previous fullnode sync didn't seem to went well ... resyncing the batch ...");
+			syncFullNodeNodeBlocks();
 		}
 		
-		Long maxBlock = this.dslContext.select(DSL.max(SYNC_NODE.SYNC_END)).from(SYNC_NODE).fetchOneInto(Long.class);
+		Long maxBlock = this.dslContext.select(DSL.max(SYNC_NODE.SYNC_END_FULL)).from(SYNC_NODE).fetchOneInto(Long.class);
 		
 		Long syncStart = 0l;
 		Long syncStop = currentBlockNum;
@@ -80,33 +80,94 @@ public class BlockSyncService {
 		}
 		
 		this.dslContext.update(SYNC_NODE)
-		.set(SYNC_NODE.SYNC_START,syncStart)
-		.set(SYNC_NODE.SYNC_END,syncStop)
+		.set(SYNC_NODE.SYNC_START_FULL,syncStart)
+		.set(SYNC_NODE.SYNC_END_FULL,syncStop)
 		.where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
 		.execute();
 		
 		
 	}
 
-	public void syncNodeBlocks() {
+	public void syncFullNodeNodeBlocks() {
 		
 		SyncNode syncNode = this.dslContext.select(SYNC_NODE.fields()).from(SYNC_NODE).where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
 		.fetchOneInto(SyncNode.class);
-		logger.info("==> Ready to sync block from {} to {} ...",syncNode.getSyncStart(),syncNode.getSyncEnd());
+		logger.info("==> Ready to sync full node block from {} to {} ...",syncNode.getSyncStartFull(),syncNode.getSyncEndFull());
 		
 		this.dslContext.update(SYNC_NODE)
-		.set(SYNC_NODE.START_DATE,Timestamp.valueOf(LocalDateTime.now()))
-		.set(SYNC_NODE.END_DATE,DSL.val((Timestamp)null))
+		.set(SYNC_NODE.START_FULL_DATE,Timestamp.valueOf(LocalDateTime.now()))
+		.set(SYNC_NODE.END_FULL_DATE,DSL.val((Timestamp)null))
 		.where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
 		.execute();
 
-		syncBlocks(syncNode.getSyncStart(), syncNode.getSyncEnd());
+		syncBlocks(syncNode.getSyncStartFull(), syncNode.getSyncEndFull());
 
 		this.dslContext.update(SYNC_NODE)
-		.set(SYNC_NODE.END_DATE,Timestamp.valueOf(LocalDateTime.now()))
+		.set(SYNC_NODE.END_FULL_DATE,Timestamp.valueOf(LocalDateTime.now()))
 		.where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
 		.execute();
 
+	}
+	
+	public void syncSolidityNodeBlocks() {
+		
+		SyncNode syncNode = this.dslContext.select(SYNC_NODE.fields()).from(SYNC_NODE).where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
+		.fetchOneInto(SyncNode.class);
+		logger.info("==> Ready to sync solidity block from {} to {} ...",syncNode.getSyncStartSolidity(),syncNode.getSyncEndSolidity());
+		
+		this.dslContext.update(SYNC_NODE)
+		.set(SYNC_NODE.START_SOLIDITY_DATE,Timestamp.valueOf(LocalDateTime.now()))
+		.set(SYNC_NODE.END_SOLIDITY_DATE,DSL.val((Timestamp)null))
+		.where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
+		.execute();
+
+		confirmBlocks(syncNode.getSyncStartSolidity(), syncNode.getSyncEndSolidity());
+
+		this.dslContext.update(SYNC_NODE)
+		.set(SYNC_NODE.END_SOLIDITY_DATE,Timestamp.valueOf(LocalDateTime.now()))
+		.where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
+		.execute();
+
+	}
+	
+	public void prepareSolidityNodeSync(long currentBlockNum) {
+		
+		SyncNode syncNode = this.dslContext.select(SYNC_NODE.fields()).from(SYNC_NODE).where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
+		.fetchOneInto(SyncNode.class);
+		
+		if (syncNode.getStartSolidityDate()!=null && syncNode.getEndSolidityDate()==null) {
+			logger.info("=> Previous solidity node sync didn't seem to went well ... resyncing the batch ...");
+			syncSolidityNodeBlocks();
+		}
+		
+		Long maxBlock = this.dslContext.select(DSL.max(SYNC_NODE.SYNC_END_SOLIDITY)).from(SYNC_NODE).fetchOneInto(Long.class);
+		
+		Long syncStart = 0l;
+		Long syncStop = currentBlockNum;
+		
+		if (maxBlock==null) {
+			maxBlock=0l;
+		}
+		
+		if (maxBlock==0l) {
+			syncStart = 0l;
+			syncStop = (long)config.getSyncBatchSize();		
+		}else {
+			syncStart = maxBlock;
+			syncStop = maxBlock + config.getSyncBatchSize();
+		}
+		
+		if (syncStop>currentBlockNum) {
+			syncStop = currentBlockNum;
+		}
+		
+		this.dslContext.update(SYNC_NODE)
+		.set(SYNC_NODE.SYNC_START_SOLIDITY,syncStart)
+		.set(SYNC_NODE.SYNC_END_SOLIDITY,syncStop)
+		.where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
+		.execute();
+		
+		
 	}
 	
 	public void syncBlocks(long start,long stop) {
@@ -124,10 +185,31 @@ public class BlockSyncService {
 		
 	}
 	
-	public void syncNode(long currentBlockNum) throws ServiceException {
+	public void confirmBlocks(long start,long stop) {
 		
-		this.prepareNodeSync(currentBlockNum);
-		this.syncNodeBlocks();
+		for (long i = start; i < stop; i++) {
+			logger.info("==> Confirming block: {}",i);
+			try {
+				this.blockService.confirmBlock(i);
+			}catch(Exception e) {
+				logger.error("Could not confirm block {}",i,e);
+			}
+			
+		}
+		
+	}
+	
+	public void syncNodeFull(long currentBlockNum) throws ServiceException {
+		
+		this.prepareFullNodeSync(currentBlockNum);
+		this.syncFullNodeNodeBlocks();
+		
+	}
+	
+	public void syncNodeSolidity(long currentBlockNum) throws ServiceException  {
+		
+		this.prepareSolidityNodeSync(currentBlockNum);
+		this.syncSolidityNodeBlocks();
 		
 	}
 	
@@ -227,7 +309,7 @@ public class BlockSyncService {
 		
 	}
 	
-	public void syncBlocks() throws ServiceException {
+	public void syncNodeBlocks() throws ServiceException {
 		
 		//TODO:  use config for batch size
 		List<Long> blocksToSync = lockBlockSync(10);
@@ -243,6 +325,9 @@ public class BlockSyncService {
 		}
 		
 	}
+	
+	
+
 	
 	public List<Long> lockBlockSync(int batchSize) {
 		
@@ -286,5 +371,6 @@ public class BlockSyncService {
 
 		return false;
 	}
+	
 
 }

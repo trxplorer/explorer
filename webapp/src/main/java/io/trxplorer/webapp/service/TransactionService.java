@@ -123,7 +123,7 @@ public class TransactionService {
 		Field<String> tokenField = DSL.when(CONTRACT_TRANSFER.OWNER_ADDRESS.isNotNull(), DSL.value("TRX"))
 				.when(CONTRACT_TRANSFER_ASSET.OWNER_ADDRESS.isNotNull(), CONTRACT_TRANSFER_ASSET.ASSET_NAME).as("token");
 		
-		TransactionDTO result = this.dslContext.select(fromField,toField,amountField,typeField,tokenField,BLOCK.NUM.as("blockNum"),TRANSACTION.TIMESTAMP,TRANSACTION.HASH)
+		TransactionDTO result = this.dslContext.select(fromField,toField,amountField,typeField,tokenField,BLOCK.NUM.as("blockNum"),TRANSACTION.TIMESTAMP,TRANSACTION.HASH,TRANSACTION.CONFIRMED)
 		.from(TRANSACTION)
 		.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
 		.leftJoin(CONTRACT_ACCOUNT_CREATE).on(CONTRACT_ACCOUNT_CREATE.TRANSACTION_ID.eq(TRANSACTION.ID))

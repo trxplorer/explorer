@@ -23,8 +23,18 @@ public class TransactionDTO {
 	
 	private String token;
 	
+	private boolean confirmed;
 	
 	
+	
+	public boolean isConfirmed() {
+		return confirmed;
+	}
+
+	public void setConfirmed(boolean confirmed) {
+		this.confirmed = confirmed;
+	}
+
 	public String getShortHash() {
 		return shortHash;
 	}

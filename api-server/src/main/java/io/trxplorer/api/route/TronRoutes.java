@@ -10,17 +10,17 @@ import com.google.inject.Inject;
 
 import io.trxplorer.api.ApiAppConfig;
 import io.trxplorer.api.dto.request.TronBroadcastRequest;
-import io.trxplorer.troncli.TronCli;
+import io.trxplorer.troncli.TronFullNodeCli;
 import io.trxplorer.troncli.wallet.BroadcastResult;
 
 public class TronRoutes {
 
-	private TronCli tronCli;
+	private TronFullNodeCli tronFullNodeCli;
 	private ApiAppConfig config;
 	
 	@Inject
-	public TronRoutes(TronCli tronService,ApiAppConfig config) {
-		this.tronCli = tronService;
+	public TronRoutes(TronFullNodeCli tronService,ApiAppConfig config) {
+		this.tronFullNodeCli = tronService;
 		this.config = config;
 	}
 	
@@ -31,10 +31,10 @@ public class TronRoutes {
 	    final byte[] bytes = ByteArray.fromHexString(request.getPayload());
 	    
 	    if (StringUtils.isBlank(request.getNode())) {
-			return this.tronCli.broadcastTransaction(bytes);	    	
+			return this.tronFullNodeCli.broadcastTransaction(bytes);	    	
 	    }else {
 	    	
-	    	TronCli cli = new TronCli(request.getNode(),this.config.isTronMainNet());
+	    	TronFullNodeCli cli = new TronFullNodeCli(request.getNode(),this.config.isTronMainNet());
 	    	
 	    	return cli.broadcastTransaction(bytes);
 	    	

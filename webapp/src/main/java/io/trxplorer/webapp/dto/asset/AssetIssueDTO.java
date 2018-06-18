@@ -1,7 +1,9 @@
 package io.trxplorer.webapp.dto.asset;
 
 import java.sql.Timestamp;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 import io.trxplorer.webapp.dto.transaction.TransactionDTO;
 import io.trxplorer.webapp.utils.TransactionHelper;
@@ -192,7 +194,7 @@ public class AssetIssueDTO {
 	}
 
 	public String getTotalSupplyStr() {
-		return TransactionHelper.getTrxAmount(totalSupply);
+		return NumberFormat.getNumberInstance(Locale.US).format(totalSupply);
 	}
 	
 }

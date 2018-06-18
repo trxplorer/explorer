@@ -6,57 +6,50 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tron.api.GrpcAPI.EmptyMessage;
-import org.tron.api.GrpcAPI.Node;
-import org.tron.api.GrpcAPI.NodeList;
 import org.tron.api.GrpcAPI.NumberMessage;
-import org.tron.api.GrpcAPI.Return;
 import org.tron.api.GrpcAPI.WitnessList;
-import org.tron.api.WalletGrpc;
-import org.tron.common.utils.Sha256Hash;
+import org.tron.api.WalletSolidityGrpc;
 import org.tron.core.Constant;
 import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.Block;
-import org.tron.protos.Protocol.Transaction;
 import org.tron.protos.Protocol.Witness;
 
 import com.google.inject.Inject;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.typesafe.config.Config;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.trxplorer.troncli.wallet.BroadcastResult;
 
-public class TronCli {
+public class TronSolidityNodeCli {
 	
 	private ManagedChannel channelFull = null;
-	private WalletGrpc.WalletBlockingStub client = null;
+	private WalletSolidityGrpc.WalletSolidityBlockingStub client = null;
 	
 	public static final byte ADD_PRE_FIX_BYTE_MAINNET = (byte) 0x41;   //41 + address
 	   
 	public static final byte ADD_PRE_FIX_BYTE_TESTNET = (byte) 0xa0;   //a0 + address
 	
-	private static final Logger logger = LoggerFactory.getLogger(TronCli.class);
+	private static final Logger logger = LoggerFactory.getLogger(TronSolidityNodeCli.class);
 	
 	@Inject
-	public TronCli(Config config) {
-		this(config.getString("tron.fullnode"),config.getBoolean("tron.mainNet"));
+	public TronSolidityNodeCli(Config config) {
+		this(config.getString("tron.soliditynode"),config.getBoolean("tron.mainNet"));
 	}
 
-	public TronCli(String fullNodeAddress,boolean mainNet) {
+	public TronSolidityNodeCli(String solidityNodeAddress,boolean mainNet) {
 		
 		if (mainNet) {
 			Wallet.setAddressPreFixByte(Constant.ADD_PRE_FIX_BYTE_MAINNET);	
 		}
 		
 		
-		channelFull = ManagedChannelBuilder.forTarget(fullNodeAddress)
+		channelFull = ManagedChannelBuilder.forTarget(solidityNodeAddress)
 	              .usePlaintext(true)
 	              .build();
 		
-		this.client = WalletGrpc.newBlockingStub(channelFull);
+		this.client = WalletSolidityGrpc.newBlockingStub(channelFull);
 	}
 
 	
@@ -96,61 +89,13 @@ public class TronCli {
 	}
 	
 	
-	public List<Node> getAllNodes() {
-		
-		List<Node> result = new ArrayList<>();
-
-		NodeList nodeList = this.client.listNodes(EmptyMessage.newBuilder().build());
-		
-		if (nodeList!=null) {
-			result = nodeList.getNodesList();
-		}
-		
-		return result;
-	}
-	
-	public long getNextMaintenanceTime() {
-		
-		NumberMessage res = this.client.getNextMaintenanceTime(EmptyMessage.newBuilder().build());
-		
-		if (res==null) {
-			return -1;
-		}
-		
-		return res.getNum();
-	}
 	
 	public Block getLastBlock() {
 		return client.getNowBlock(EmptyMessage.newBuilder().build());
 	}
 
 
-	public BroadcastResult broadcastTransaction(byte[] bytes) {
-		
-		BroadcastResult result = new BroadcastResult();		
-		try {
 
-			Transaction transaction = Transaction.parseFrom(bytes);
-			
-			Return bReturn = this.client.broadcastTransaction(transaction);
-			
-			result.setSuccess(bReturn.getResult());
-			result.setErrorMsg(bReturn.getMessage().toStringUtf8());
-			result.setCode(bReturn.getCode().getNumber());
-			result.setTxId(Sha256Hash.of(transaction.getRawData().toByteArray()).toString());
-			
-			
-			return result;
-			
-		} catch (InvalidProtocolBufferException e) {
-			result.setSuccess(false);
-			result.setErrorMsg("Could not parse transaction");
-		}
-
-		
-		
-		return result;
-	}
 	
 
 

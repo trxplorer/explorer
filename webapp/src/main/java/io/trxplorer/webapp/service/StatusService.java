@@ -8,7 +8,7 @@ import org.jooq.types.ULong;
 
 import com.google.inject.Inject;
 
-import io.trxplorer.troncli.TronCli;
+import io.trxplorer.troncli.TronFullNodeCli;
 import io.trxplorer.webapp.WebAppConfig;
 import io.trxplorer.webapp.dto.status.StatusDTO;
 import io.trxplorer.webapp.dto.status.StatusType;
@@ -17,14 +17,14 @@ import io.trxplorer.webapp.dto.status.StatusType;
 public class StatusService {
 
 	private DSLContext dslContext;
-	private TronCli tronCli;
+	private TronFullNodeCli tronFullNodeCli;
 	private WebAppConfig config;
 	
 	@Inject
-	public StatusService(WebAppConfig config,DSLContext dslContext,TronCli tronCli) {
+	public StatusService(WebAppConfig config,DSLContext dslContext,TronFullNodeCli tronFullNodeCli) {
 		this.config = config;
 		this.dslContext = dslContext;
-		this.tronCli = tronCli;
+		this.tronFullNodeCli = tronFullNodeCli;
 	}
 	
 	
@@ -33,7 +33,7 @@ public class StatusService {
 		StatusDTO result = new StatusDTO();
 		
 		
-		long tronLastBlock = this.tronCli.getLastBlock().getBlockHeader().getRawData().getNumber();
+		long tronLastBlock = this.tronFullNodeCli.getLastBlock().getBlockHeader().getRawData().getNumber();
 		long trxplorerLastBlock = this.dslContext.select(DSL.max(BLOCK.NUM)).from(BLOCK).fetchOneInto(Long.class);
 		long blocksMissing = tronLastBlock-trxplorerLastBlock;
 		StatusType status = StatusType.WARNING;

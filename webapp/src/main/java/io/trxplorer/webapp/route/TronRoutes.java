@@ -7,17 +7,17 @@ import org.tron.common.utils.ByteArray;
 
 import com.google.inject.Inject;
 
-import io.trxplorer.troncli.TronCli;
+import io.trxplorer.troncli.TronFullNodeCli;
 import io.trxplorer.troncli.wallet.BroadcastResult;
 import io.trxplorer.webapp.dto.tron.TronBroadcastRequestDTO;
 
 public class TronRoutes {
 
-	private TronCli tronCli;
+	private TronFullNodeCli tronFullNodeCli;
 	
 	@Inject
-	public TronRoutes(TronCli tronService) {
-		this.tronCli = tronService;
+	public TronRoutes(TronFullNodeCli tronService) {
+		this.tronFullNodeCli = tronService;
 	}
 	
 	@POST
@@ -26,7 +26,7 @@ public class TronRoutes {
 
 	    final byte[] bytes = ByteArray.fromHexString(request.getPayload());
 	    
-		return this.tronCli.broadcastTransaction(bytes);
+		return this.tronFullNodeCli.broadcastTransaction(bytes);
 	}
 	
 	

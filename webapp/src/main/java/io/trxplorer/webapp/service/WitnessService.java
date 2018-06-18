@@ -16,7 +16,7 @@ import org.jooq.impl.DSL;
 
 import com.google.inject.Inject;
 
-import io.trxplorer.troncli.TronCli;
+import io.trxplorer.troncli.TronFullNodeCli;
 import io.trxplorer.webapp.dto.common.ListDTO;
 import io.trxplorer.webapp.dto.witness.WitnessDTO;
 import io.trxplorer.webapp.dto.witness.WitnessListCriteriaDTO;
@@ -24,13 +24,13 @@ import io.trxplorer.webapp.dto.witness.WitnessListCriteriaDTO;
 public class WitnessService {
 
 	private DSLContext dslContext;
-	private TronCli tronCli;
+	private TronFullNodeCli tronFullNodeCli;
 	
 	
 	@Inject
-	public WitnessService(DSLContext dslContext,TronCli tronService) {
+	public WitnessService(DSLContext dslContext,TronFullNodeCli tronService) {
 		this.dslContext = dslContext;
-		this.tronCli = tronService;
+		this.tronFullNodeCli = tronService;
 	}
 	
 	

@@ -38,9 +38,9 @@
 
 
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>io.trxplorer</groupId>
 			<artifactId>tron-cli</artifactId>
-			<version>${project.version}</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

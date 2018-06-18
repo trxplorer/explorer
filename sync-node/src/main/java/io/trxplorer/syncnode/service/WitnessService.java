@@ -13,20 +13,20 @@ import org.tron.protos.Protocol.Witness;
 import com.google.inject.Inject;
 
 import io.trxplorer.model.tables.records.WitnessRecord;
-import io.trxplorer.troncli.TronCli;
+import io.trxplorer.troncli.TronFullNodeCli;
 
 public class WitnessService {
 
 	private DSLContext dslContext;
-	private TronCli tronCli;
+	private TronFullNodeCli tronFullNodeCli;
 	private AccountService accountService;
 	
 	
 	
 	@Inject
-	public WitnessService(DSLContext dslContext,TronCli tronCli,AccountService accountService) {
+	public WitnessService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli,AccountService accountService) {
 		this.dslContext = dslContext;
-		this.tronCli = tronCli;
+		this.tronFullNodeCli = tronFullNodeCli;
 		this.accountService = accountService;
 	}
 	

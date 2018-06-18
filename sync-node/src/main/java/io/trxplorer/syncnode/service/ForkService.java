@@ -10,17 +10,17 @@ import org.tron.protos.Protocol.BlockHeader.raw;
 
 import com.google.inject.Inject;
 
-import io.trxplorer.troncli.TronCli;
+import io.trxplorer.troncli.TronFullNodeCli;
 
 public class ForkService {
 
 	private DSLContext dslContext;
-	private TronCli tronCli;
+	private TronFullNodeCli tronFullNodeCli;
 
 	@Inject
-	public ForkService(DSLContext dslContext,TronCli tronService) {
+	public ForkService(DSLContext dslContext,TronFullNodeCli tronService) {
 		this.dslContext = dslContext;
-		this.tronCli = tronService;
+		this.tronFullNodeCli = tronService;
 	}
 	
 	
@@ -31,7 +31,7 @@ public class ForkService {
 		io.trxplorer.model.tables.pojos.Block syncedBlock = this.getBlock(blockNum);
 		
 		
-		Block tronBlock = this.tronCli.getBlockByNum(syncedBlock.getNum().longValue());
+		Block tronBlock = this.tronFullNodeCli.getBlockByNum(syncedBlock.getNum().longValue());
 		
 		if (!isSameBlock(syncedBlock, tronBlock)) {
 			

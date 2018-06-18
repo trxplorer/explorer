@@ -20,7 +20,7 @@ import org.jooq.util.mysql.MySQLDataType;
 
 import com.google.inject.Inject;
 
-import io.trxplorer.troncli.TronCli;
+import io.trxplorer.troncli.TronFullNodeCli;
 import io.trxplorer.webapp.dto.account.AccountDTO;
 import io.trxplorer.webapp.dto.account.AccountDetailCriteriaDTO;
 import io.trxplorer.webapp.dto.account.AccountListCriteria;
@@ -40,7 +40,7 @@ public class AccountService {
 
 	private DSLContext dslContext;
 	
-	private TronCli tronCli;
+	private TronFullNodeCli tronFullNodeCli;
 
 	private TransactionService txService;
 
@@ -49,9 +49,9 @@ public class AccountService {
 	private AssetService assetService;
 	
 	@Inject
-	public AccountService(DSLContext dslContext,TronCli tronCli,TransactionService txService,WitnessService witnessService,AssetService assetService) {
+	public AccountService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli,TransactionService txService,WitnessService witnessService,AssetService assetService) {
 		this.dslContext = dslContext;
-		this.tronCli = tronCli;
+		this.tronFullNodeCli = tronFullNodeCli;
 		this.txService = txService;
 		this.witnessService = witnessService;
 		this.assetService = assetService;

@@ -18,22 +18,22 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import static io.trxplorer.model.Tables.*;
 
 import io.trxplorer.model.tables.records.NodeRecord;
-import io.trxplorer.troncli.TronCli;
+import io.trxplorer.troncli.TronFullNodeCli;
 
 public class NodeSyncService {
 
 	private DSLContext dslContext;
-	private TronCli tronCli;
+	private TronFullNodeCli tronFullNodeCli;
 
 	@Inject
-	public NodeSyncService(DSLContext dslContext,TronCli tronCli) {
+	public NodeSyncService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli) {
 		this.dslContext = dslContext;
-		this.tronCli = tronCli;
+		this.tronFullNodeCli = tronFullNodeCli;
 	}
 	
 	public void syncNodes() {
 		
-		List<Node> nodes = this.tronCli.getAllNodes();
+		List<Node> nodes = this.tronFullNodeCli.getAllNodes();
 		
 		for(Node node:nodes) {
 			

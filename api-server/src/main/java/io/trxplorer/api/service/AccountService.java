@@ -35,21 +35,21 @@ import io.trxplorer.api.dto.common.ListResult;
 import io.trxplorer.api.dto.transaction.TransactionCriteria;
 import io.trxplorer.api.dto.transaction.TransactionDTO;
 import io.trxplorer.api.dto.witness.AllowanceWidthdrawDTO;
-import io.trxplorer.troncli.TronCli;
+import io.trxplorer.troncli.TronFullNodeCli;
 
 public class AccountService {
 
 	private DSLContext dslContext;
 	
-	private TronCli tronCli;
+	private TronFullNodeCli tronFullNodeCli;
 
 	private WitnessService witnessService;
 
 	
 	@Inject
-	public AccountService(DSLContext dslContext,TronCli tronCli,WitnessService witnessService) {
+	public AccountService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli,WitnessService witnessService) {
 		this.dslContext = dslContext;
-		this.tronCli = tronCli;
+		this.tronFullNodeCli = tronFullNodeCli;
 		this.witnessService = witnessService;
 	}
 	
@@ -104,7 +104,7 @@ public class AccountService {
 		}
 		
 		try {
-			Account tronAccount = this.tronCli.getAccountByAddress(address);
+			Account tronAccount = this.tronFullNodeCli.getAccountByAddress(address);
 			result.setBandwidth(tronAccount.getNetUsage());
 		}catch(Throwable e) {
 			//e.printStackTrace();

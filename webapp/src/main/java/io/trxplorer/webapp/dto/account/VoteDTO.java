@@ -1,6 +1,8 @@
 package io.trxplorer.webapp.dto.account;
 
 import java.sql.Timestamp;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import io.trxplorer.webapp.utils.TransactionHelper;
 
@@ -57,7 +59,7 @@ public class VoteDTO {
 	}
 	
 	public String getVoteCountStr() {
-		return TransactionHelper.getTrxAmount(voteCount);
+		return NumberFormat.getNumberInstance(Locale.US).format(voteCount);
 	}
 	
 }

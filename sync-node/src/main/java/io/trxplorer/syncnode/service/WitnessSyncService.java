@@ -9,19 +9,19 @@ import org.tron.protos.Protocol.Witness;
 
 import com.google.inject.Inject;
 
-import io.trxplorer.troncli.TronCli;
+import io.trxplorer.troncli.TronFullNodeCli;
 
 public class WitnessSyncService {
 
 	private DSLContext dslContext;
 	private WitnessService witnessService;
-	private TronCli tronCli;
+	private TronFullNodeCli tronFullNodeCli;
 
 	@Inject
-	public WitnessSyncService(DSLContext dslContext,WitnessService witnessService,TronCli tronCli) {
+	public WitnessSyncService(DSLContext dslContext,WitnessService witnessService,TronFullNodeCli tronFullNodeCli) {
 		this.dslContext = dslContext;
 		this.witnessService = witnessService;
-		this.tronCli = tronCli;
+		this.tronFullNodeCli = tronFullNodeCli;
 	}
 	
 	public void syncWitnesses() {
@@ -29,7 +29,7 @@ public class WitnessSyncService {
 		List<String> currentWitnessAddresses = new ArrayList<>();
 		
 		//create of updated
-		for(Witness witness:this.tronCli.getAllWitnesses()) {
+		for(Witness witness:this.tronFullNodeCli.getAllWitnesses()) {
 			
 			currentWitnessAddresses.add(Wallet.encode58Check(witness.getAddress().toByteArray()));
 			
