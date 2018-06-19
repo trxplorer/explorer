@@ -1,5 +1,5 @@
 {% extends "main" %} 
-{% block title %}Tron address {{account.address}} {%if account.name!=null and account.name.length>0%}({{account.name}}){%endif%} informations {% endblock %} 
+{% block title %}Tron address {%if account.name!=null and account.name.length>0%}({{account.name}}){%endif%} {{account.address}} informations {% endblock %} 
 {%block description%}Get all informations about address #{{account.address}} on Tron blockchain{%endblock%}
   
 {% block content %}
@@ -51,12 +51,6 @@
 							{%endif%}
 						</td>
 					</tr>
-					{%if account.balance>0%}
-					<tr>
-						<td>Rank</td>
-						<td><a href="/accounts">{{account.rank}}</a></td>
-					</tr>
-					{%endif%}
 				</tbody>
 			</table>
 		</div>

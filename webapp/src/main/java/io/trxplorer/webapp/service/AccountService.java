@@ -70,23 +70,14 @@ public class AccountService {
 	
 	public AccountDTO getAccountByAddress(AccountDetailCriteriaDTO accountCriteria) {
 				
-		// for some unknow reason this field has to be converted into varchar in order to return correct value 
-		Field<?> percentageField = ACCOUNT.BALANCE.divide(DSL.field(DSL.select(DSL.sum(ACCOUNT.BALANCE)).from(ACCOUNT))).cast(MySQLDataType.VARCHAR).as("percentage");
-		
-		Field<?> rankField = DSL.field("@rank := @rank + 1").cast(Long.class).as("rank");
-		
-		
-		Table<Record> dummyTable = DSL.select().from("select @rank := 0").asTable("dummy");
-		;
 		
 		Field<?> frozenBalanceField = DSL.select(ACCOUNT_FROZEN.BALANCE).from(ACCOUNT_FROZEN).where(ACCOUNT_FROZEN.ACCOUNT_ID.eq(ACCOUNT.ID).and(ACCOUNT_FROZEN.EXPIRE_TIME.gt(DSL.currentTimestamp()))).orderBy(ACCOUNT_FROZEN.EXPIRE_TIME.desc()).limit(1).asField("frozenBalance");
 		Field<?> frozenExpireField = DSL.select(ACCOUNT_FROZEN.EXPIRE_TIME).from(ACCOUNT_FROZEN).where(ACCOUNT_FROZEN.ACCOUNT_ID.eq(ACCOUNT.ID).and(ACCOUNT_FROZEN.EXPIRE_TIME.gt(DSL.currentTimestamp()))).orderBy(ACCOUNT_FROZEN.EXPIRE_TIME.desc()).limit(1).asField("frozenExpire");
 		
 		
-		Table<?> mainTable = DSL.select(ACCOUNT.ACCOUNT_NAME.as("name"),ACCOUNT.TYPE,ACCOUNT.IS_WITNESS,ACCOUNT.CREATE_TIME,ACCOUNT.ADDRESS,ACCOUNT.BALANCE,ACCOUNT.ALLOWANCE,ACCOUNT.BANDWIDTH,rankField,percentageField,frozenBalanceField,frozenExpireField)
-				.from(ACCOUNT).crossJoin("(SELECT @rank := 0) as t").orderBy(ACCOUNT.BALANCE.desc()).asTable("accountRank");
 		
-		AccountDTO result = this.dslContext.select(mainTable.fields()).from(mainTable).where(mainTable.field(ACCOUNT.ADDRESS.getName(),String.class).eq(accountCriteria.getAddress())).fetchOneInto(AccountDTO.class);
+		AccountDTO result = this.dslContext.select(ACCOUNT.ACCOUNT_NAME.as("name"),ACCOUNT.TYPE,ACCOUNT.IS_WITNESS,ACCOUNT.CREATE_TIME,ACCOUNT.ADDRESS,ACCOUNT.BALANCE,ACCOUNT.ALLOWANCE,ACCOUNT.BANDWIDTH,frozenBalanceField,frozenExpireField)
+				.from(ACCOUNT).where(ACCOUNT.ADDRESS.eq(accountCriteria.getAddress())).fetchOneInto(AccountDTO.class);
 		
 		if (result==null) {
 			return null;
@@ -177,17 +168,8 @@ public class AccountService {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
-		// for some unknow reason this field has to be converted into varchar in order to return correct value 
-		Field<?> percentageField = ACCOUNT.BALANCE.divide(DSL.field(DSL.select(DSL.sum(ACCOUNT.BALANCE)).from(ACCOUNT).where(ACCOUNT.BALANCE.gt(0l)))).cast(MySQLDataType.VARCHAR).as("percentage");
 		
-		Field<?> rankField = DSL.field("@rank := @rank + 1").cast(Long.class).as("rank");
-		
-		Table<Record> dummyTable = DSL.select().from("select @rank := 0").asTable("dummy");
-		;
-		Table<?> mainTable = DSL.select(ACCOUNT.ADDRESS,ACCOUNT.BALANCE,rankField,percentageField)
-				.from(ACCOUNT).crossJoin("(SELECT @rank := 0) as t").where(ACCOUNT.BALANCE.gt(0l)).orderBy(ACCOUNT.BALANCE.desc()).asTable("accountRank");
-		
-		SelectJoinStep<?> listQuery = this.dslContext.select(mainTable.fields()).from(mainTable);
+		SelectJoinStep<?> listQuery = this.dslContext.select(ACCOUNT.ADDRESS,ACCOUNT.ACCOUNT_NAME.as("name"),ACCOUNT.BALANCE,ACCOUNT.CREATE_TIME).from(ACCOUNT);
 		
 		
 		SelectJoinStep<Record1<Integer>> countQuery = dslContext.select(DSL.count())
@@ -196,7 +178,7 @@ public class AccountService {
 		
 		Integer totalCount = countQuery.where(ACCOUNT.BALANCE.gt(0l)).fetchOneInto(Integer.class);
 		
-		List<AccountDTO> items = listQuery.where(conditions).orderBy(mainTable.field(ACCOUNT.BALANCE.getName()).desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(AccountDTO.class);
+		List<AccountDTO> items = listQuery.where(conditions).orderBy(ACCOUNT.CREATE_TIME.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(AccountDTO.class);
 		
 		
 		

@@ -1,5 +1,5 @@
 {% extends "main" %}
-{% block title %}Tron account list and ranking{% endblock %}
+{% block title %}Tron account and address list{% endblock %}
 {%block description%}Check all existing account currently on Tron blockchain{%endblock%}
 
 
@@ -13,19 +13,19 @@
 <table class="ui striped table">
 	<thead>
 		<tr>
-			<th class="center aligned">Rank</th>
 			<th class="center aligned">Address</th>
+			<th class="center aligned">Name</th>
 			<th class="center aligned">Balance</th>
-			<th class="center aligned">Percentage</th>
+			<th class="center aligned">Created time</th>
 		</tr>
 	</thead>
 	<tbody>
 		{%for account in list.items%}
 		<tr class="center aligned">
-			<td>{{account.rank}}</td>
-			<td><a href="/address/{{account.address}}">{{account.address}}</a><br/><small>{{accoun.name}}</small></td>
+			<td><a href="/address/{{account.address}}">{{account.address}}</a></td>
+			<td>{%if account.name!=null and account.name.length>0%}{{account.name}}{%else%}-{%endif%}</td>
 			<td>{{account.getBalanceStr()}}</td>
-			<td>{{account.percentage}}</a></td>
+			<td>{{account.createTime}}</a></td>
 		</tr>
 		{%endfor%}
 	</tbody>
