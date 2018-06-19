@@ -11,6 +11,8 @@ public class AssetIssueDetailCriteriaDTO extends CommonCriteriaDTO{
 	
 	private String id;
 	
+	private String name;
+	
 	@Override
 	public Map<String, String> params() {
 		
@@ -20,6 +22,13 @@ public class AssetIssueDetailCriteriaDTO extends CommonCriteriaDTO{
 		return map;
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public String getId() {
 		return id;

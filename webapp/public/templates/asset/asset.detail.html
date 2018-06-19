@@ -1,7 +1,7 @@
 {% extends "main" %} 
-{% block title %}Tron token: {{asset.name}} tracker and informations{% endblock %} 
+{% block title %}Tron token: {{asset.name}} tracker, priace and informations{% endblock %} 
 
-{%block description%}Get all informations about token {{asset.name}} on Tron blockchain{%endblock%}
+{%block description%}Get all informations about {{asset.name}} token on Tron blockchain{%endblock%}
 
  
 {% block content %}
@@ -49,8 +49,8 @@
 </div>
 
 <div class="ui top attached tabular menu">
-  <a href="/token/{{asset.id}}" class="{%if asset.criteria.tab=='tx'%}active{%endif%} item">Transfers</a>
-  <a href="/token/{{asset.id}}?t=tp" class="{%if asset.criteria.tab=='tp'%}active{%endif%} item">Participants</a>
+  <a href="/token/{{asset.name}}" class="{%if asset.criteria.tab=='tx'%}active{%endif%} item">Transfers</a>
+  <a href="/token/{{asset.name}}?t=tp" class="{%if asset.criteria.tab=='tp'%}active{%endif%} item">Participants</a>
 </div>
 
 

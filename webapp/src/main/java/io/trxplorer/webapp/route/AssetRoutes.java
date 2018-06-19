@@ -35,7 +35,6 @@ public class AssetRoutes {
 		
 		String tab = req.param("t").value("tx");
 		
-		//FIXME: Token doesn't have unique names currently : use surrogate key until fixed (https://github.com/tronprotocol/java-tron/issues/635)
 		String assetName = req.param("assetName").value(null); 
 		
 		View view = Results.html("asset/asset.detail");
@@ -43,7 +42,7 @@ public class AssetRoutes {
 		AssetIssueDetailCriteriaDTO criteria = new AssetIssueDetailCriteriaDTO();
 		criteria.setLimit(limit);
 		criteria.setPage(page);
-		criteria.setId(assetName);
+		criteria.setName(assetName);
 		criteria.setTab(tab);
 
 		AssetIssueDTO assetIssue = this.assetService.getAssetDetails(criteria);

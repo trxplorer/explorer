@@ -109,9 +109,8 @@ public class AssetService {
 
 	public AssetIssueDTO getAssetDetails(AssetIssueDetailCriteriaDTO assetIssueCriteria) {
 		
-		//FIXME: SURROGATE KEY SHOULDN'T BE USED HERE !! (https://github.com/tronprotocol/java-tron/issues/635)
 		AssetIssueDTO result = this.dslContext.select(CONTRACT_ASSET_ISSUE.ID,CONTRACT_ASSET_ISSUE.OWNER_ADDRESS.as("issuer"),CONTRACT_ASSET_ISSUE.NAME,CONTRACT_ASSET_ISSUE.TOTAL_SUPPLY,CONTRACT_ASSET_ISSUE.TRX_NUM,CONTRACT_ASSET_ISSUE.NUM,CONTRACT_ASSET_ISSUE.START_TIME,CONTRACT_ASSET_ISSUE.END_TIME,CONTRACT_ASSET_ISSUE.DECAY_RATIO,CONTRACT_ASSET_ISSUE.VOTE_SCORE,CONTRACT_ASSET_ISSUE.DESCRIPTION,CONTRACT_ASSET_ISSUE.URL)
-		.from(CONTRACT_ASSET_ISSUE).where(CONTRACT_ASSET_ISSUE.ID.eq(ULong.valueOf(assetIssueCriteria.getId())))
+		.from(CONTRACT_ASSET_ISSUE).where(CONTRACT_ASSET_ISSUE.NAME.eq(assetIssueCriteria.getName()))
 		.fetchOneInto(AssetIssueDTO.class);
 		
 		if (result!=null) {
