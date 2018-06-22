@@ -20,7 +20,7 @@ public class WitnessSyncJob {
 		this.witnessSyncService = witnessSyncService;
 	}
 	
-	@Scheduled("30s")
+	@Scheduled("15s")
 	public void syncWitness() {
 		
 		

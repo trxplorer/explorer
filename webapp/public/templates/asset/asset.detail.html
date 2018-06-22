@@ -7,7 +7,7 @@
 {% block content %}
 
 <h1 class="ui dividing header">
-	<small>Token: <small>{{asset.name}}</small></small>
+	<small>Token: <small>{{asset.name}} {%if asset.abbr!=null and asset.abbr.length>0%}({{asset.abbr}}){%endif%}</small></small>
 </h1>
 
 <div class="ui grid">

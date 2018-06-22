@@ -54,7 +54,7 @@ public class WitnessService {
 							
 					
 				}else {
-					
+
 					this.dslContext.update(WITNESS)
 					.set(WITNESS.URL,tronWitness.getUrl())
 					.set(WITNESS.TOTAL_PRODUCED,ULong.valueOf(tronWitness.getTotalProduced()))

@@ -28,7 +28,7 @@ public class WitnessSyncService {
 		
 		List<String> currentWitnessAddresses = new ArrayList<>();
 		
-		//create of updated
+		//create or updated
 		for(Witness witness:this.tronFullNodeCli.getAllWitnesses()) {
 			
 			currentWitnessAddresses.add(Wallet.encode58Check(witness.getAddress().toByteArray()));
