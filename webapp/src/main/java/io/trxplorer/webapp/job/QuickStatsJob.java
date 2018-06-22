@@ -169,6 +169,7 @@ public class QuickStatsJob {
 		//Total account balance
 		this.totalAccountBalance = this.dslContext.select(DSL.sum(ACCOUNT.BALANCE))
 		.from(ACCOUNT)
+		.where(ACCOUNT.BALANCE.gt(0l))
 		.fetchOneInto(Long.class);
 		
 		//Total up nodes
