@@ -42,7 +42,7 @@ public class NodeService {
 		
 		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
 		
-		List<NodeDTO> items = listQuery.where(conditions).orderBy(NODE.LAST_UPDATED.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(NodeDTO.class);
+		List<NodeDTO> items = listQuery.where(conditions).orderBy(NODE.UP.desc(),NODE.LAST_UPDATED.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(NodeDTO.class);
 		
 		
 		ListDTO<NodeDTO, NodeCriteriaDTO> result = new ListDTO<NodeDTO, NodeCriteriaDTO>(criteria, items, totalCount);

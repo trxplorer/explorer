@@ -13,13 +13,33 @@ public class WitnessDTO {
 	
 	private long totalMissed;
 	
+	private long lastBlock;
+	
 	private String url;
 	
 	private String shortUrl;
 	
 	private String address;
 	
+	private String name;
 	
+	
+	
+	public long getLastBlock() {
+		return lastBlock;
+	}
+
+	public void setLastBlock(long lastBlock) {
+		this.lastBlock = lastBlock;
+	}
+
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
 	
 	public String getShortUrl() {
 		return shortUrl;
@@ -48,7 +68,7 @@ public class WitnessDTO {
 	public long getTotalProduced() {
 		return totalProduced;
 	}
-
+	
 	public void setTotalProduced(long totalProduced) {
 		this.totalProduced = totalProduced;
 	}
@@ -73,4 +93,7 @@ public class WitnessDTO {
 		return NumberFormat.getNumberInstance(Locale.US).format(voteCount);
 	}
 	
+	public String getTotalProducedStr() {
+		return NumberFormat.getNumberInstance(Locale.US).format(totalProduced);
+	}
 }

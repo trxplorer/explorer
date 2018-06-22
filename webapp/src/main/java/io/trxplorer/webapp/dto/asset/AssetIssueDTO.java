@@ -14,6 +14,8 @@ public class AssetIssueDTO {
 	
 	private String name;
 	
+	private String abbr;
+	
 	private String shortName;
 	
 	private long totalSupply;
@@ -47,7 +49,13 @@ public class AssetIssueDTO {
 	private AssetIssueDetailCriteriaDTO criteria;
 	
 	
+	public String getAbbr() {
+		return abbr;
+	}
 	
+	public void setAbbr(String abbr) {
+		this.abbr = abbr;
+	}
 	
 	public AssetIssueDetailCriteriaDTO getCriteria() {
 		return criteria;

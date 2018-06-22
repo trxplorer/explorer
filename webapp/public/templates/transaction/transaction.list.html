@@ -12,6 +12,52 @@
 	
 <h1 class="ui dividing header"><small><i class="icon exchange"></i>Transactions</small></h1>
 	
+<div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
+    <div class="ui stackable grid container">
+      <div class="row">
+			
+			<div class="column">
+			<div class="ui four small statistics">
+			  <div class="small grey statistic">
+			    <div class="value">
+			      <small>{{stats.totalTx}}</small>
+			    </div>
+			    <div class="label">
+			      Total transactions
+			    </div>
+			  </div>
+			  <div class="small green statistic">
+			    <div class="value">
+			      <small>{{stats.totalTxConfirmed}}</small>
+			    </div>
+			    <div class="label">
+			    	TX confirmed
+			    </div>
+			  </div>
+			  <div class="yellow statistic">
+			    <div class="value">
+			      <small>{{stats.totalTx6h}}</small>
+			    </div>
+			    <div class="label">
+			      TX Last 6h
+			    </div>
+			  </div>
+
+			  <div class="orange statistic">
+			    <div class="value">
+			      <small>{{stats.totalTx24h}}</small>
+			    </div>
+			    <div class="label">
+			      TX Last 24h
+			    </div>
+			  </div>
+			</div>
+			</div>
+			
+      </div>
+
+      </div>
+</div>
 
 <table class="ui striped table">
 	<thead>

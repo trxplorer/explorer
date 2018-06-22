@@ -12,6 +12,7 @@ import org.jooq.conf.Settings;
 
 import io.trxplorer.webapp.filter.SearchEngineFilter;
 import io.trxplorer.webapp.job.ChartGeneratorJob;
+import io.trxplorer.webapp.job.QuickStatsJob;
 import io.trxplorer.webapp.route.AccountRoutes;
 import io.trxplorer.webapp.route.AssetRoutes;
 import io.trxplorer.webapp.route.BlockRoutes;
@@ -46,7 +47,7 @@ public class WebApp extends Jooby {
 		use(new Jackson());
 		use(new Flywaydb());
 
-		use(new Quartz(ChartGeneratorJob.class));
+		use(new Quartz(ChartGeneratorJob.class,QuickStatsJob.class));
 		
 		on("dev", ()->{
 			

@@ -369,6 +369,7 @@ public class ContractService {
 		ContractAssetIssueRecord record = new ContractAssetIssueRecord(); 
 		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
 		record.setName(contract.getName().toStringUtf8());
+		record.setAbbr(contract.getAbbr().toStringUtf8());
 		record.setTotalSupply(ULong.valueOf(contract.getTotalSupply()));
 		record.setTrxNum(UInteger.valueOf(contract.getTrxNum()));
 		record.setNum(UInteger.valueOf(contract.getNum()));

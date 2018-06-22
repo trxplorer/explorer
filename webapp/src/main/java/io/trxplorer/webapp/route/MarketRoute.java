@@ -11,6 +11,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import io.trxplorer.webapp.dto.node.NodeCriteriaDTO;
+import io.trxplorer.webapp.job.QuickStatsJob;
 import io.trxplorer.webapp.service.MarketService;
 import io.trxplorer.webapp.service.NodeService;
 
@@ -18,10 +19,12 @@ import io.trxplorer.webapp.service.NodeService;
 public class MarketRoute {
 
 	private MarketService marketService;
+	private QuickStatsJob quickStats;
 
 	@Inject
-	public MarketRoute(MarketService marketService) {
+	public MarketRoute(MarketService marketService,QuickStatsJob quickStats) {
 		this.marketService = marketService;
+		this.quickStats = quickStats;
 	}
 	
 	
@@ -33,6 +36,8 @@ public class MarketRoute {
 		View view = Results.html("market/market.list");
 		
 		view.put("markets",this.marketService.getMarkets());
+		
+		view.put("stats",this.quickStats.getMarketData());
 		
 		res.send(view);
 	}

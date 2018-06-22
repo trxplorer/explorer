@@ -1,5 +1,7 @@
 package io.trxplorer.webapp.route;
 
+import java.util.HashMap;
+
 import org.jooby.Request;
 import org.jooby.Response;
 import org.jooby.Results;
@@ -11,65 +13,47 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import io.trxplorer.webapp.dto.witness.WitnessListCriteriaDTO;
+import io.trxplorer.webapp.job.QuickStatsJob;
 import io.trxplorer.webapp.service.WitnessService;
 
 @Singleton
 public class WitnessRoutes {
 
 	private WitnessService witnessService;
+	private QuickStatsJob quickStats;
 
 	@Inject
-	public WitnessRoutes(WitnessService transactionService) {
+	public WitnessRoutes(WitnessService transactionService,QuickStatsJob quickStats) {
 		this.witnessService = transactionService;
+		this.quickStats = quickStats;
 	}
 	
 	
 	@GET
 	@Path(TRXPlorerRoutePaths.Front.REPRESENTATIVE_LIST)
-	public void representativeList(Request req,Response res) throws Throwable {
+	public void superRepresentativeList(Request req,Response res) throws Throwable {
 		
-		Integer limit = req.param("limit").intValue(20);
+
 		Integer page = req.param("page").intValue(1);
 		
 		
-		WitnessListCriteriaDTO criteria = new WitnessListCriteriaDTO();
+		WitnessListCriteriaDTO srCriteria = new WitnessListCriteriaDTO();
 		
-		criteria.setLimit(limit);
-		criteria.setPage(page);
-		criteria.setSuperRepresentative(false);
-		criteria.setRandomCandidates(true);
+		srCriteria.setLimit(200);
+		srCriteria.setPage(page);
+		
 		
 		View view = Results.html("witness/witness.list");
 		
-		view.put("list",this.witnessService.listWitnesses(criteria));
+		view.put("list",this.witnessService.listWitnesses(srCriteria));
+
+		HashMap<String, Object> stats = new HashMap<>();
+		stats.put("totalRepresentatives", quickStats.getTotalRepresentative());
+		stats.put("totalRepresentatives24h", quickStats.getTotalRepresentative24h());
+		stats.put("bestRep6h", quickStats.getBestRep6h());
+		stats.put("bestRepAll", quickStats.getBestRepAll());
 		
-		res.send(view);
-	}
-	
-	@GET
-	@Path(TRXPlorerRoutePaths.Front.SUPER_REPRESENTATIVE_LIST)
-	public void superRepresentativeList(Request req,Response res) throws Throwable {
-		
-		Integer limit = req.param("limit").intValue(20);
-		Integer page = req.param("page").intValue(1);
-		
-		
-		WitnessListCriteriaDTO criteria = new WitnessListCriteriaDTO();
-		
-		criteria.setLimit(limit);
-		criteria.setPage(page);
-		criteria.setSuperRepresentative(true);
-		
-		View view = Results.html("witness/sr.list");
-		
-		WitnessListCriteriaDTO candidatesCriteria = new WitnessListCriteriaDTO();
-		candidatesCriteria.setLimit(15);
-		candidatesCriteria.setPage(1);
-		candidatesCriteria.setRandomCandidates(true);
-		candidatesCriteria.setSuperRepresentative(false);
-		
-		view.put("list",this.witnessService.listWitnesses(criteria));
-		view.put("candidates", this.witnessService.listWitnesses(candidatesCriteria).getItems());
+		view.put("stats",stats);
 		
 		res.send(view);
 	}

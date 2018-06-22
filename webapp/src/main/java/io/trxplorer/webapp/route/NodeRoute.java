@@ -1,5 +1,7 @@
 package io.trxplorer.webapp.route;
 
+import java.util.HashMap;
+
 import org.jooby.Request;
 import org.jooby.Response;
 import org.jooby.Results;
@@ -11,16 +13,20 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import io.trxplorer.webapp.dto.node.NodeCriteriaDTO;
+import io.trxplorer.webapp.job.QuickStatsJob;
 import io.trxplorer.webapp.service.NodeService;
 
 @Singleton
 public class NodeRoute {
 
 	private NodeService nodeService;
+	private QuickStatsJob quickStats;
+	
 
 	@Inject
-	public NodeRoute(NodeService nodeService) {
+	public NodeRoute(NodeService nodeService,QuickStatsJob quickStats) {
 		this.nodeService = nodeService;
+		this.quickStats = quickStats;
 	}
 	
 	
@@ -41,7 +47,15 @@ public class NodeRoute {
 
 		View view = Results.html("node/node.list");
 		
+		HashMap<String, Object> stats = new HashMap<>();
+		stats.put("totalNodesUp", quickStats.getTotalNodesUp());
+		stats.put("totalNodes24h", quickStats.getTotalNodes24h());
+		stats.put("topNodeCountry", quickStats.getTopNodeCountry());
+
+		
 		view.put("list",this.nodeService.listNodes(criteria));
+		view.put("stats",stats);
+		
 		
 		res.send(view);
 	}

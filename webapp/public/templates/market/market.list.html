@@ -12,9 +12,49 @@
 	
 <h1 class="ui dividing header"><small><i class="icon chart line"></i>Markets</small></h1>
 
+
+
 <div >
  	
- 
+ <div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
+    <div class="ui stackable grid container">
+      <div class="row">
+			
+			<div class="column">
+			<div class="ui three small statistics">
+			  <div class="small red statistic">
+			    <div class="value">
+			      <small>{{stats.price}}$</small>
+			    </div>
+			    <div class="label">
+			      Avg. price
+			    </div>
+			  </div>
+			  <div class="small green statistic">
+			    <div class="value">
+			      <small>{{stats.volume}}$</small>
+			    </div>
+			    <div class="label">
+			    	24h volume
+			    </div>
+			  </div>
+			  <div class="statistic">
+			    <div class="value">
+			      {{stats.totalMarkets}}
+			    </div>
+			    <div class="label">
+			      Markets 
+			    </div>
+			  </div>
+
+
+			</div>
+			</div>
+			
+      </div>
+
+      </div>
+</div>
 	<table class="ui striped table">
 		<thead>
 			<tr>

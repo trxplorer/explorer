@@ -1,5 +1,7 @@
 package io.trxplorer.webapp.route;
 
+import java.util.HashMap;
+
 import org.jooby.Request;
 import org.jooby.Response;
 import org.jooby.Results;
@@ -14,16 +16,19 @@ import com.google.inject.Singleton;
 import io.trxplorer.webapp.dto.asset.AssetIssueDTO;
 import io.trxplorer.webapp.dto.asset.AssetIssueDetailCriteriaDTO;
 import io.trxplorer.webapp.dto.asset.AssetIssueListCriteriaDTO;
+import io.trxplorer.webapp.job.QuickStatsJob;
 import io.trxplorer.webapp.service.AssetService;
 
 @Singleton
 public class AssetRoutes {
 
 	private AssetService assetService;
+	private QuickStatsJob quickStats;
 
 	@Inject
-	public AssetRoutes(AssetService blockService) {
+	public AssetRoutes(AssetService blockService,QuickStatsJob quickStats) {
 		this.assetService = blockService;
+		this.quickStats = quickStats;
 	}
 	
 	@GET
@@ -74,6 +79,13 @@ public class AssetRoutes {
 		View view = Results.html("asset/asset.list");
 		
 		view.put("list",this.assetService.listAssetIssues(criteria));
+		
+		HashMap<String, Object> stats = new HashMap<>();
+		stats.put("totalTokens", quickStats.getTotalTokens());
+		stats.put("totalTokens24h", quickStats.getTotalTokens24h());
+		
+		view.put("stats",stats);
+		
 		
 		res.send(view);
 	}

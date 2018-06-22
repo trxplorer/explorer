@@ -14,16 +14,53 @@
 
 <div >
  	
- 	<!-- 
-   <div class="ui labeled button" tabindex="0">
-              <div class="ui green  button">
-                Total blocks
-              </div>
-              <a class="ui green basic left pointing label">
-                {{list.totalCount}}
-              </a>
-    </div>
-     -->
+<div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
+    <div class="ui stackable grid container">
+      <div class="row">
+			
+			<div class="column">
+			<div class="ui four small statistics">
+			  <div class="small grey statistic">
+			    <div class="value">
+			      <small>{{stats.totalBlocks}}</small>
+			    </div>
+			    <div class="label">
+			      Total blocks
+			    </div>
+			  </div>
+			  <div class="small green statistic">
+			    <div class="value">
+			      <small>{{stats.totalBlocksConfirmed}}</small>
+			    </div>
+			    <div class="label">
+			    	Blocks confirmed
+			    </div>
+			  </div>
+			  <div class="yellow statistic">
+			    <div class="value">
+			      <small>{{stats.totalBlocks6h}}</small>
+			    </div>
+			    <div class="label">
+			      Blocks Last 6h
+			    </div>
+			  </div>
+
+			  <div class="orange statistic">
+			    <div class="value">
+			      <small>{{stats.totalBlocks24h}}</small>
+			    </div>
+			    <div class="label">
+			      Blocks Last 24h
+			    </div>
+			  </div>
+			</div>
+			</div>
+			
+      </div>
+
+      </div>
+</div>
+
 	<table class="ui striped table">
 		<thead>
 			<tr>

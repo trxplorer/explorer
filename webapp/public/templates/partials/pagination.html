@@ -1,6 +1,7 @@
       <div class="ui left floated pagination">
       {{list.info()}}
       </div>
+      {%if list.totalPages>1%}
       <div class="ui right floated pagination menu">
         {%if list.criteria.page>1%}
         <a class="icon item" href="?page={{list.previousPage()}}">
@@ -16,3 +17,4 @@
         </a>
         {%endif%}
       </div>
+      {%endif%}

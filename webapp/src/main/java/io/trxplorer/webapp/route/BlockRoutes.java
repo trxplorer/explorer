@@ -1,12 +1,14 @@
 package io.trxplorer.webapp.route;
 
+import java.util.HashMap;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jooby.Request;
 import org.jooby.Response;
 import org.jooby.Results;
-import org.jooby.View;
 import org.jooby.Route.Chain;
+import org.jooby.View;
 import org.jooby.mvc.GET;
 import org.jooby.mvc.Path;
 
@@ -15,16 +17,19 @@ import com.google.inject.Singleton;
 
 import io.trxplorer.webapp.dto.block.BlockCriteriaDTO;
 import io.trxplorer.webapp.dto.block.BlockDTO;
+import io.trxplorer.webapp.job.QuickStatsJob;
 import io.trxplorer.webapp.service.BlockService;
 
 @Singleton
 public class BlockRoutes {
 
 	private BlockService blockService;
-
+	private QuickStatsJob quickStats;
+	
 	@Inject
-	public BlockRoutes(BlockService blockService) {
+	public BlockRoutes(BlockService blockService,QuickStatsJob quickStats) {
 		this.blockService = blockService;
+		this.quickStats = quickStats;
 	}
 	
 	@GET
@@ -73,7 +78,14 @@ public class BlockRoutes {
 
 		View view = Results.html("block/block.list");
 		
+		HashMap<String, Object> stats = new HashMap<>();
+		stats.put("totalBlocks", quickStats.getTotalBlocks());
+		stats.put("totalBlocks6h", quickStats.getBlocks6h());
+		stats.put("totalBlocks24h", quickStats.getBlocks24h());
+		stats.put("totalBlocksConfirmed", quickStats.getTotalBlocksConfirmed());
+		
 		view.put("list",this.blockService.listBlocks(criteria));
+		view.put("stats",stats);
 		
 		res.send(view);
 	}

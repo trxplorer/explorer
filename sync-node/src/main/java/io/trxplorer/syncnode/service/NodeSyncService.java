@@ -1,5 +1,7 @@
 package io.trxplorer.syncnode.service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +62,7 @@ public class NodeSyncService {
 			.set(NODE.HOST,node.getAddress().getHost().toStringUtf8())
 			.set(NODE.PORT,node.getAddress().getPort())
 			.set(NODE.UP,(byte)1)
+			.set(NODE.DATE_CREATED,Timestamp.valueOf(LocalDateTime.now()))
 			.execute();
 			
 		}

@@ -24,7 +24,7 @@ public class ChartGeneratorJob {
 	}
 	
 	
-	@Scheduled("1h")
+	@Scheduled("1h; delay=1h")
 	public void generateChart() throws ParseException {
 		//FIXME: should be done every 24h, without regenerating everything 
 		DateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");

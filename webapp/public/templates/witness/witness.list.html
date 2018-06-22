@@ -1,45 +1,111 @@
 {% extends "main" %}
-{% block title %}Tron representative candidates{% endblock %}
-{%block description%}List of all TRON's candidate to become super representatives{%endblock%}
+{% block title %}Tron representatives and super reprensetatives ranking list{% endblock %}
+{%block description%}All informations about Tron current super representatives and their ranking. TRON super representatives are elected every 6h and are rewared to produce block and maintain the network{%endblock%}
 
 
 
 {% block content %}
 
 	
-<h1 class="ui dividing header"><small>Candidates</small></h1>
-	
-<div class="ui mini icon info message">
-  <i class="circle info icon"></i>
-  <div class="content">
-    <p>These accounts represents candidates to become super representatives. Some of them might already have been elected as a super representative. Current elected super representatives are not part of this list.</p>
-  </div>
+<h1 class="ui dividing header"><small>Representatives</small></h1>
+
+<div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
+    <div class="ui stackable grid container">
+      <div class="row">
+			
+			<div class="column">
+			<div class="ui four small statistics">
+			  <div class="small green statistic">
+			    <div class="value">
+			      {{stats.totalRepresentatives}}
+			    </div>
+			    <div class="label">
+			      Representatives
+			    </div>
+			  </div>
+			  <div class="statistic">
+			    <div class="value">
+			      {{stats.totalRepresentatives24h}}
+			    </div>
+			    <div class="label">
+			    	New representatives <br><small>(last 24h)</small>
+			    </div>
+			  </div>
+			  <div class="yellow statistic">
+			    <div class="value">
+			      {{stats.bestRep6h.percentage}}%
+			    </div>
+			    <small style="text-align: center;"><a href="/address/{{stats.bestRep6h.address}}">{{stats.bestRep6h.address}}</a></small>
+			    <div class="label">
+			      Best producer <br><small>(last 6h)</small>
+			    </div>
+			  </div>
+
+			  <div class="orange statistic">
+			    <div class="value">
+			      {{stats.bestRepAll.percentage}}%
+			    </div>
+			    <small style="text-align: center;"><a href="/address/{{stats.bestRepAll.address}}">{{stats.bestRepAll.address}}</a></small>
+			    <div class="label">
+			      Best producer <br><small>(All time)</small>
+			    </div>
+			  </div>
+			</div>
+			</div>
+			
+      </div>
+
+      </div>
 </div>
 
-<table class="ui striped table">
-	<thead>
-		<tr>
-			<th class="center aligned">URL</th>
-			<th class="center aligned">Blocks produced</th>
-			<th class="center aligned">Blocks missed</th>
-			<th class="center aligned">Votes</th>
-		</tr>
-	</thead>
-	<tbody>
-		{%for witness in list.items%}
-		<tr class="center aligned">
-			<td><a href="/address/{{witness.address}}">{{witness.shortUrl}}</a></td>
-			<td>{%if witness.totalProduced > 0 %}<a href="/blocks?producedBy={{witness.address}}">{{witness.totalProduced}}</a>{%else%}{{witness.totalProduced}}{%endif%}</td>
-			<td>{{witness.totalMissed}} </a></td>
-			<td>{%if witness.voteCount > 0 %}<a href="/address/{{witness.address}}?t=votes">{{witness.getVoteCountStr()}}</a>{%else%}{{witness.getVoteCountStr()}}{%endif%}</td>
-		</tr>
-		{%endfor%}
-	</tbody>
- <tfoot>
-    <tr><th colspan="5">
-		{% include 'partials/pagination' %}
-  </tr></tfoot>
-</table>
+
+	<table class="ui striped blue table">
+	{%if list.criteria.page==1%}
+		<thead>
+			<tr>
+				<th class="center aligned" colspan="7">Super representatives</th>
+			</tr>
+		</thead>
+	{%endif%}
+		<thead>
+			<tr>
+				<th class="center aligned">Rank</th>
+				<th class="center aligned">Address</th>
+				<th class="center aligned">URL</th>
+				<th class="center aligned">Last block</th>
+				<th class="center aligned">Blocks produced</th>
+				<th class="center aligned">Blocks missed</th>
+				<th class="center aligned">Votes</th>
+			</tr>
+		</thead>
+		<tbody>
+			{%for witness in list.items%}
+
+			{%if list.criteria.page==1 and loop.index==28%}
+			<tr>
+				<th class="center aligned" colspan="7">Representatives</th>
+			</tr>						
+			{%endif%}
+			
+			<tr class="center aligned">
+				<td>{{loop.index+1}}</td>
+				<td><a href="/address/{{witness.address}}">{{witness.address}}</a>{%if witness.name!=null and witness.name.length>0%}<br>{{witness.name}}{%endif%}</td>
+				<td><a href="{{witness.shortUrl}}" target="blank">{{witness.shortUrl}}</a></td>
+				<td>{%if witness.lastBlock!=0%}<a href="/block/{{witness.lastBlock}}">{{witness.lastBlock}}</a>{%else%}{{witness.lastBlock}}{%endif%}</td>
+				<td>{%if witness.totalProduced > 0 %}<a href="/blocks?producedBy={{witness.address}}">{{witness.getTotalProducedStr()}}</a>{%else%}{{witness.getTotalProducedStr()}}{%endif%}</td>
+				<td>{{witness.totalMissed}}</td>
+				<td>{%if witness.voteCount > 0 %}<a href="/address/{{witness.address}}?t=votes">{{witness.getVoteCountStr()}}</a>{%else%}{{witness.getVoteCountStr()}}{%endif%}</td>
+			</tr>
+
+			{%endfor%}
+		</tbody>
+		 <tfoot>
+		    <tr><th colspan="7">
+				{% include 'partials/pagination' %}
+		  </tr></tfoot>
+	</table>
+
+
 
 
 

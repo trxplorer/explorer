@@ -94,7 +94,7 @@ public class BlockService {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
-		 SelectJoinStep<?> listQuery = this.dslContext.select(BLOCK.NUM,BLOCK.TIMESTAMP,BLOCK.WITNESS_ADDRESS,BLOCK.TX_COUNT,BLOCK.WITNESS_ADDRESS.as("witness"))
+		 SelectJoinStep<?> listQuery = this.dslContext.select(BLOCK.NUM,BLOCK.CONFIRMED,BLOCK.TIMESTAMP,BLOCK.WITNESS_ADDRESS,BLOCK.TX_COUNT,BLOCK.WITNESS_ADDRESS.as("witness"))
 		.from(BLOCK);
 		
 		

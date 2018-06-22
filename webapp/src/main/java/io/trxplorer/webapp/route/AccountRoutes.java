@@ -17,16 +17,19 @@ import com.google.inject.Singleton;
 import io.trxplorer.webapp.dto.account.AccountDTO;
 import io.trxplorer.webapp.dto.account.AccountDetailCriteriaDTO;
 import io.trxplorer.webapp.dto.account.AccountListCriteria;
+import io.trxplorer.webapp.job.QuickStatsJob;
 import io.trxplorer.webapp.service.AccountService;
 
 @Singleton
 public class AccountRoutes {
 
 	private AccountService accountService;
+	private QuickStatsJob quickStats;
 
 	@Inject
-	public AccountRoutes(AccountService transactionService) {
+	public AccountRoutes(AccountService transactionService,QuickStatsJob quickStats) {
 		this.accountService = transactionService;
+		this.quickStats = quickStats;
 	}
 	
 	@GET
@@ -74,6 +77,14 @@ public class AccountRoutes {
 		View view = Results.html("account/account.list");
 		
 		view.put("list",this.accountService.listAccounts(criteria));
+		
+		HashMap<String, Object> stats = new HashMap<>();
+		stats.put("totalAccounts", quickStats.getTotalAccounts());
+		stats.put("totalAccounts24h", quickStats.getTotalAccounts24h());
+		stats.put("totalAccountBalance", quickStats.getTotalAccountBalance());
+
+		
+		view.put("stats",stats);
 		
 		res.send(view);
 	}

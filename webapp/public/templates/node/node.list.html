@@ -13,17 +13,49 @@
 <h1 class="ui dividing header"><small><i class="icon server"></i>Nodes</small></h1>
 
 <div >
- 	
- 	<!-- 
-   <div class="ui labeled button" tabindex="0">
-              <div class="ui green  button">
-                Total blocks
-              </div>
-              <a class="ui green basic left pointing label">
-                {{list.totalCount}}
-              </a>
-    </div>
-     -->
+
+<div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
+    <div class="ui stackable grid container">
+      <div class="row">
+			
+			<div class="column">
+			<div class="ui three small statistics">
+			  <div class="small green statistic">
+			    <div class="value">
+			      <small>{{stats.totalNodesUp}}</small>
+			    </div>
+			    <div class="label">
+			      Total nodes running
+			    </div>
+			  </div>
+			  <div class="small yellow statistic">
+			    <div class="value">
+			      <small>{{stats.totalNodes24h}}</small>
+			    </div>
+			    <div class="label">
+			    	New nodes <small>last 24h</small>
+			    </div>
+			  </div>
+			  <div class="statistic">
+			    <div class="text value">
+			      {{stats.topNodeCountry.country.toLowerCase()}}<br>{{stats.topNodeCountry.nodes}} nodes<br><br>
+			    </div>
+			    <div class="label">
+			      Top country 
+			    </div>
+			  </div>
+
+
+			</div>
+			</div>
+			
+      </div>
+
+      </div>
+</div>
+
+
+
 	<table class="ui striped table">
 		<thead>
 			<tr>
