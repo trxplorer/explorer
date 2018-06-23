@@ -220,6 +220,8 @@ public class QuickStatsJob {
 		.and(MARKET.MONTH.eq(month))
 		.and(MARKET.YEAR.eq(year))
 		.and(MARKET.SOURCE.eq("CMC"))
+		.orderBy(MARKET.LAST_UPDATE.desc())
+		.limit(1)
 		.fetchOne();
 		
 		this.marketData = new HashMap<>();

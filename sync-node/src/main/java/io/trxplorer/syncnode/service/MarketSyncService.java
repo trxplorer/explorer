@@ -101,6 +101,7 @@ public class MarketSyncService {
 				.and(MARKET.MONTH.eq(month))
 				.and(MARKET.YEAR.eq(year)))
 				.and(MARKET.SOURCE.eq(market.getSource()))
+				.and(MARKET.SOURCE.eq(market.getPair()))
 		.fetchOneInto(UInteger.class);
 		
 		if (id==null) {

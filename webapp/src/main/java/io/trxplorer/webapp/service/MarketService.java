@@ -35,6 +35,8 @@ public class MarketService {
 				.and(MARKET.MONTH.eq(month))
 				.and(MARKET.YEAR.eq(year))
 				.and(MARKET.SOURCE.eq("CMC"))
+				.orderBy(MARKET.LAST_UPDATE.desc())
+				.limit(1)
 				.fetchOneInto(BigDecimal.class);
 		
 	}
@@ -48,10 +50,11 @@ public class MarketService {
 		
 		return this.dslContext.select(MARKET.SOURCE.as("market"),MARKET.PRICE,MARKET.PAIR,MARKET.VOLUME_24H)
 				.from(MARKET)
-				.where(MARKET.DAY.eq(day))
+				.where(MARKET.SOURCE.ne("CMC"))
+				.and(MARKET.DAY.eq(day))
 				.and(MARKET.MONTH.eq(month))
 				.and(MARKET.YEAR.eq(year))
-				.and(MARKET.SOURCE.ne("CMC"))
+				.groupBy(MARKET.SOURCE,MARKET.PAIR)
 				.orderBy(MARKET.VOLUME_24H.desc())
 				.fetchInto(MarketDTO.class);
 	}
