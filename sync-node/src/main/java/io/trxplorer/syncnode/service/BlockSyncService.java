@@ -115,22 +115,27 @@ public class BlockSyncService {
 		.fetchOneInto(SyncNode.class);
 		logger.info("==> Ready to sync solidity block from {} to {} ...",syncNode.getSyncStartSolidity(),syncNode.getSyncEndSolidity());
 		
-		this.dslContext.update(SYNC_NODE)
-		.set(SYNC_NODE.START_SOLIDITY_DATE,Timestamp.valueOf(LocalDateTime.now()))
-		.set(SYNC_NODE.END_SOLIDITY_DATE,DSL.val((Timestamp)null))
-		.where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
-		.execute();
+		
+		if (syncNode!=null && syncNode.getSyncStartSolidity()!=null &&  syncNode.getSyncEndSolidity()!=null) {
+			
+			this.dslContext.update(SYNC_NODE)
+			.set(SYNC_NODE.START_SOLIDITY_DATE,Timestamp.valueOf(LocalDateTime.now()))
+			.set(SYNC_NODE.END_SOLIDITY_DATE,DSL.val((Timestamp)null))
+			.where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
+			.execute();
+		
+			confirmBlocks(syncNode.getSyncStartSolidity(), syncNode.getSyncEndSolidity());
 
-		confirmBlocks(syncNode.getSyncStartSolidity(), syncNode.getSyncEndSolidity());
+			this.dslContext.update(SYNC_NODE)
+			.set(SYNC_NODE.END_SOLIDITY_DATE,Timestamp.valueOf(LocalDateTime.now()))
+			.where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
+			.execute();			
+		}
 
-		this.dslContext.update(SYNC_NODE)
-		.set(SYNC_NODE.END_SOLIDITY_DATE,Timestamp.valueOf(LocalDateTime.now()))
-		.where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
-		.execute();
 
 	}
 	
-	public void prepareSolidityNodeSync(long currentBlockNum) {
+	public boolean prepareSolidityNodeSync(long currentBlockNum) {
 		
 		SyncNode syncNode = this.dslContext.select(SYNC_NODE.fields()).from(SYNC_NODE).where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
 		.fetchOneInto(SyncNode.class);
@@ -142,12 +147,17 @@ public class BlockSyncService {
 		
 		Long maxBlock = this.dslContext.select(DSL.max(SYNC_NODE.SYNC_END_SOLIDITY)).from(SYNC_NODE).fetchOneInto(Long.class);
 		
+		Long maxBlockAvailable = this.dslContext.select(DSL.max(BLOCK.NUM)).from(BLOCK).fetchOneInto(Long.class);
+		
+
+		
 		Long syncStart = 0l;
 		Long syncStop = currentBlockNum;
 		
 		if (maxBlock==null) {
 			maxBlock=0l;
 		}
+
 		
 		if (maxBlock==0l) {
 			syncStart = 0l;
@@ -161,13 +171,23 @@ public class BlockSyncService {
 			syncStop = currentBlockNum;
 		}
 		
+		// wait for block to be available first before confirming
+		if (maxBlockAvailable==null) {
+			logger.info("===> skiping sync for now, no max block available");
+			return false;
+		}
+		if (maxBlockAvailable!=null && maxBlockAvailable<syncStop) {
+			logger.info("===> skiping sync for now: syncstop = {}, max block available = {}",syncStop,maxBlockAvailable);
+			return false;
+		}
+		
 		this.dslContext.update(SYNC_NODE)
 		.set(SYNC_NODE.SYNC_START_SOLIDITY,syncStart)
 		.set(SYNC_NODE.SYNC_END_SOLIDITY,syncStop)
 		.where(SYNC_NODE.NODE_ID.eq(config.getNodeId()))
 		.execute();
 		
-		
+		return true;
 	}
 	
 	public void syncBlocks(long start,long stop) {
@@ -208,8 +228,10 @@ public class BlockSyncService {
 	
 	public void syncNodeSolidity(long currentBlockNum) throws ServiceException  {
 		
-		this.prepareSolidityNodeSync(currentBlockNum);
-		this.syncSolidityNodeBlocks();
+		boolean ok = this.prepareSolidityNodeSync(currentBlockNum);
+		if (ok) {
+			this.syncSolidityNodeBlocks();
+		}
 		
 	}
 	
