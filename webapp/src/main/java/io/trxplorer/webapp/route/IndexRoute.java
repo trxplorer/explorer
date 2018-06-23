@@ -10,27 +10,24 @@ import org.jooby.mvc.Path;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import io.trxplorer.webapp.dto.transaction.TransactionCriteriaDTO;
+import io.trxplorer.webapp.job.QuickStatsJob;
 import io.trxplorer.webapp.service.AccountService;
-import io.trxplorer.webapp.service.BlockService;
-import io.trxplorer.webapp.service.MarketService;
 import io.trxplorer.webapp.service.TransactionService;
 
 @Singleton
 public class IndexRoute {
 
 	
-	private BlockService blockService;
+
 	private TransactionService txService;
-	private MarketService marketService;
 	private AccountService accountService;
+	private QuickStatsJob quickStats;
 	
 	@Inject
-	public IndexRoute(BlockService blockService,TransactionService txService,MarketService marketService,AccountService accountService) {
-		this.blockService = blockService;
+	public IndexRoute(TransactionService txService,AccountService accountService,QuickStatsJob quickStats) {
 		this.txService = txService;
-		this.marketService = marketService;
 		this.accountService = accountService;
+		this.quickStats = quickStats;
 	}
 	
 	@GET
@@ -42,12 +39,12 @@ public class IndexRoute {
 
 		
 		view.put("lastTxs",this.txService.getLatestTransactions(10));
-		view.put("price",this.marketService.getCurrentAvgPrice());
-		view.put("totalAccounts",this.accountService.getTotalAccount());
+		view.put("price",this.quickStats.getMarketData().get("price"));
+		view.put("totalAccounts",this.quickStats.getTotalAccounts());
 		view.put("lastestAccounts",this.accountService.getLatestAccounts(10));
 		view.put("latestVotes",this.txService.getLastestVotes(10));
-		view.put("lastTxCount",this.txService.getTotalTxLast24h());
-		view.put("lastVotesCount",this.txService.getTotalVotesLast24h());
+		view.put("lastTxCount",this.quickStats.getTx24h());
+		view.put("lastVotesCount",this.quickStats.getVotes().get("last24hCount"));
 		
 
 		res.send(view);

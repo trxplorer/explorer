@@ -57,6 +57,8 @@ public class QuickStatsJob {
 	
 	private HashMap<String,Object> marketData;
 	
+	private HashMap<String,Object> votes;
+	
 	@Inject
 	public QuickStatsJob(DSLContext dslContext) {
 		this.dslContext = dslContext;
@@ -239,6 +241,23 @@ public class QuickStatsJob {
 		
 		this.marketData.put("totalMarkets", totalMarkets);
 		
+		//Votes
+
+		
+		Integer last24hVotesCount = this.dslContext.select(DSL.count())
+		.from(TRANSACTION)
+		.join(CONTRACT_VOTE_WITNESS).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID))
+		.where(TRANSACTION.TIMESTAMP.gt(Timestamp.valueOf(last24hDate)))
+		.fetchOneInto(Integer.class);
+		
+		this.votes = new HashMap<>();
+		
+		this.votes.put("last24hCount", last24hVotesCount);
+		
+	}
+	
+	public HashMap<String, Object> getVotes() {
+		return votes;
 	}
 	
 	public Integer getTotalTokens() {
