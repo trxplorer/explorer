@@ -226,11 +226,11 @@ public class TransactionService {
 		}
 	
 
-		Table<?> tmpTable = DSL.select(TRANSACTION.ID,TRANSACTION.HASH,TRANSACTION.TIMESTAMP,TRANSACTION.BLOCK_ID).from(TRANSACTION).where(conditions).orderBy(TRANSACTION.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).asTable("tmp");
+		Table<?> tmpTable = DSL.select(TRANSACTION.ID,TRANSACTION.HASH,TRANSACTION.TIMESTAMP,TRANSACTION.BLOCK_ID,TRANSACTION.CONFIRMED).from(TRANSACTION).where(conditions).orderBy(TRANSACTION.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).asTable("tmp");
 		
 
 
-		SelectOnConditionStep<?> listQuery = this.dslContext.select(fromField,toField,amountField,typeField,BLOCK.NUM.as("blockNum"),tokenField,tmpTable.field(TRANSACTION.TIMESTAMP.getName()),tmpTable.field(TRANSACTION.HASH.getName()))
+		SelectOnConditionStep<?> listQuery = this.dslContext.select(fromField,toField,amountField,typeField,BLOCK.NUM.as("blockNum"),tokenField,tmpTable.field(TRANSACTION.TIMESTAMP.getName()),tmpTable.field(TRANSACTION.HASH.getName()),tmpTable.field(TRANSACTION.CONFIRMED.getName()))
 		.from(tmpTable)
 		.join(BLOCK).on(BLOCK.ID.eq(tmpTable.field(TRANSACTION.BLOCK_ID.getName(),ULong.class)))
 		.leftJoin(CONTRACT_ACCOUNT_CREATE).on(CONTRACT_ACCOUNT_CREATE.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
