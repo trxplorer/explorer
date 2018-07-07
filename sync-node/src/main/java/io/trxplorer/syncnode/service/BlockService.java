@@ -53,12 +53,12 @@ public class BlockService {
 		
 		String parentHash = Sha256Hash.wrap(block.getBlockHeader().getRawData().getParentHash()).toString();
 	
-		
+		//Sha256Hash.of(block.getBlockHeader().getRawData().toByteArray()).toString()
 	
 		record.setTxCount(UInteger.valueOf(block.getTransactionsCount()));
 		record.setWitnessAddress(Wallet.encode58Check(block.getBlockHeader().getRawData().getWitnessAddress().toByteArray()));
 		record.setNum(ULong.valueOf(block.getBlockHeader().getRawData().getNumber()));
-		record.setHash(Sha256Hash.of(block.getBlockHeader().getRawData().toByteArray()).toString());
+		//record.setHash(Sha256Hash.wrap(Sha256Hash.of(block.getBlockHeader().getRawData().toByteArray()).getBytes()).toString());
 		record.setParentHash(parentHash);
 		record.setTimestamp(Timestamp.valueOf(Instant.ofEpochMilli(block.getBlockHeader().getRawData().getTimestamp()).atOffset(ZoneOffset.UTC).toLocalDateTime()));
 		record.setSize(UInteger.valueOf(block.getSerializedSize()));

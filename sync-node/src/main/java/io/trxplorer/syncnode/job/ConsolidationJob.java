@@ -22,11 +22,11 @@ public class ConsolidationJob {
 		this.witnessService = witnessService;
 	}
 	
-	@Scheduled("1m")
+	@Scheduled("3s")
 	public void consolidateBlocks() {
 		
 
-		//this.blockService.updateMissingBlocksHash();
+		this.blockService.updateMissingBlocksHash();
 		
 		this.blockService.updateMissingWitnessId();
 		
