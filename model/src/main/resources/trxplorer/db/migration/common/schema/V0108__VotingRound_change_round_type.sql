@@ -1,0 +1,2 @@
+ALTER TABLE `voting_round` 
+CHANGE COLUMN `round` `round` INT UNSIGNED NULL DEFAULT NULL ;

@@ -1,0 +1,5 @@
+CREATE TABLE `block_error` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `block` BIGINT UNSIGNED NOT NULL,
+  `error` TEXT NOT NULL,
+  PRIMARY KEY (`id`));
