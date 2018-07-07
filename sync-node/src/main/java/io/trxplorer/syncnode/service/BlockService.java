@@ -68,6 +68,10 @@ public class BlockService {
 		record.attach(this.dslContext.configuration());
 		record.store();
 		
+		if (blockNum>0) {
+			this.dslContext.update(BLOCK).set(BLOCK.HASH,parentHash).where(BLOCK.NUM.eq(ULong.valueOf(blockNum-1))).execute();
+		}
+		
 		// Create transactions
 		for(Transaction transaction:block.getTransactionsList()) {
 			this.txService.importTransaction(transaction, record);

@@ -9,9 +9,9 @@ public class TronCliTest {
 	@Test
 	public void testFullNodeCli() {
 		
-		TronFullNodeCli cli = new TronFullNodeCli("47.254.146.147:50051",true);
+		TronFullNodeCli cli = new TronFullNodeCli("18.196.99.16:50051",true);
 		
-		System.out.println(cli.getNextMaintenanceTime());
+		System.out.println(cli.getAllNodes().size());
 		
 		
 	}
