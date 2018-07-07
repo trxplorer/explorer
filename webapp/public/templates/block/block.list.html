@@ -69,7 +69,6 @@
 				<th class="center aligned">Timestamp</th>
 				<th class="center aligned">Status</th>
 				<th class="center aligned">Producer</th>
-				<th class="center aligned">Reward</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -80,12 +79,11 @@
 				<td>{{block.timestamp}}</td>
 				<td>{%if block.confirmed==true%}<span class="ui small green label">Confirmed</span>{%else%}<a class="ui small red label">Unconfirmed</a>{%endif%}</td>
 				<td><a href="/address/{{block.witnessAddress}}">{{block.witnessAddress}}</a></td>
-				<td>{{block.reward}}</td>
 			</tr>
 			{%endfor%}
 		</tbody>
 	 <tfoot>
-	    <tr><th colspan="6">
+	    <tr><th colspan="5">
 			{% include 'partials/pagination' %}
 	  </tr></tfoot>
 	</table>
