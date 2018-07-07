@@ -140,9 +140,12 @@ public class QuickStatsJob {
 		.fetchOne();
 		;
 		
-		this.bestRep6h = new HashMap<>();
-		this.bestRep6h.put("address", repBest6h.get(0));
-		this.bestRep6h.put("percentage", repBest6h.get(1));
+		if (bestRep6h!=null) {
+			this.bestRep6h = new HashMap<>();
+			this.bestRep6h.put("address", repBest6h.get(0));
+			this.bestRep6h.put("percentage", repBest6h.get(1));			
+		}
+
 
 		//Representative best all
 		Record2<String, Integer> repBestAll = this.dslContext.select(BLOCK.WITNESS_ADDRESS,DSL.count().divide(totalBlocks).multiply(100).as("count"))
@@ -225,11 +228,14 @@ public class QuickStatsJob {
 		.orderBy(MARKET.LAST_UPDATE.desc())
 		.limit(1)
 		.fetchOne();
-		
+
 		this.marketData = new HashMap<>();
-		
-		this.marketData.put("price", marketData.get(0));
-		this.marketData.put("volume",  NumberFormat.getNumberInstance(Locale.US).format(marketData.get(1)));
+		if (marketData!=null) {
+
+			this.marketData.put("price", marketData.get(0));
+			this.marketData.put("volume",  NumberFormat.getNumberInstance(Locale.US).format(marketData.get(1)));			
+		}
+
 		
 
 		int totalMarkets = this.dslContext.select(DSL.count())
@@ -239,7 +245,10 @@ public class QuickStatsJob {
 				.groupBy(MARKET.SOURCE).asTable())
 		.fetchOneInto(Integer.class);
 		
-		this.marketData.put("totalMarkets", totalMarkets);
+
+		this.marketData.put("totalMarkets", totalMarkets);			
+
+
 		
 		//Votes
 
