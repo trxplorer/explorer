@@ -3,6 +3,8 @@ package io.trxplorer.syncnode.service;
 import static io.trxplorer.model.Tables.*;
 
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +41,18 @@ public class TransactionService {
 
 		// create transaction
 		
-		 	Timestamp txTimestamp = new Timestamp(transaction.getRawData().getTimestamp());
-		 	Timestamp txExpirationTimestamp = new Timestamp(transaction.getRawData().getExpiration());
+		 	Timestamp txTimestamp = Timestamp.valueOf(Instant.ofEpochMilli(transaction.getRawData().getTimestamp()).atOffset(ZoneOffset.UTC).toLocalDateTime());
+		 	Timestamp txExpirationTimestamp = Timestamp.valueOf(Instant.ofEpochMilli(transaction.getRawData().getExpiration()).atOffset(ZoneOffset.UTC).toLocalDateTime());
 		 	
 		 	// FIXME: ugly patch because some transactions have some very weird strange (years with 5 digits ...)
 		 	// Remove once problem gets corrected on tron side
 		 	txTimestamp = ServiceHelper.isTimeStampValid(txTimestamp.toString()) ? txTimestamp : block.getTimestamp(); 
-		 	txExpirationTimestamp = ServiceHelper.isTimeStampValid(txExpirationTimestamp.toString()) ? txExpirationTimestamp : null;		
+		 	txExpirationTimestamp = ServiceHelper.isTimeStampValid(txExpirationTimestamp.toString()) ? txExpirationTimestamp : null;
+		 	
+		 	if (txTimestamp.before(block.getTimestamp())) {
+		 		txTimestamp = block.getTimestamp();
+		 	}
+		 	
 		 	try {
 				
 		 		TransactionCapsule tc = new TransactionCapsule(transaction);
@@ -74,7 +81,11 @@ public class TransactionService {
 			// create contracts
 			this.contractService.importContracts(transaction, txRecord.getId());
 			} catch (Exception e) {
-				logger.error("block:"+block.getNum()+"-"+block.getWitnessAddress()+"============================>"+txTimestamp+"\n"+transaction);
+				logger.error("block:"+block.getNum()+"-"+block.getWitnessAddress()+"============================>"+txTimestamp+"\n"+transaction,e);
+				this.dslContext.insertInto(BLOCK_ERROR)
+				.set(BLOCK_ERROR.BLOCK,block.getNum())
+				.set(BLOCK_ERROR.ERROR,e.getMessage())
+				.execute();
 			}		
 	}
 

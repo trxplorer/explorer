@@ -3,6 +3,8 @@ package io.trxplorer.syncnode.service;
 import static io.trxplorer.model.Tables.*;
 
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.HashSet;
 
 import org.jooq.DSLContext;
@@ -50,14 +52,15 @@ public class BlockService {
 		BlockRecord record = new BlockRecord();
 		
 		String parentHash = Sha256Hash.wrap(block.getBlockHeader().getRawData().getParentHash()).toString();
+	
 		
+	
 		record.setTxCount(UInteger.valueOf(block.getTransactionsCount()));
 		record.setWitnessAddress(Wallet.encode58Check(block.getBlockHeader().getRawData().getWitnessAddress().toByteArray()));
 		record.setNum(ULong.valueOf(block.getBlockHeader().getRawData().getNumber()));
 		record.setHash(Sha256Hash.of(block.getBlockHeader().getRawData().toByteArray()).toString());
 		record.setParentHash(parentHash);
-		record.setTxtrieroot(block.getBlockHeader().getRawData().getTxTrieRoot().toString());
-		record.setTimestamp(new Timestamp(block.getBlockHeader().getRawData().getTimestamp()));
+		record.setTimestamp(Timestamp.valueOf(Instant.ofEpochMilli(block.getBlockHeader().getRawData().getTimestamp()).atOffset(ZoneOffset.UTC).toLocalDateTime()));
 		record.setSize(UInteger.valueOf(block.getSerializedSize()));
 
 		
@@ -70,6 +73,11 @@ public class BlockService {
 			this.txService.importTransaction(transaction, record);
 		}
 		}catch(ServiceException e) {
+			
+			this.dslContext.insertInto(BLOCK_ERROR)
+			.set(BLOCK_ERROR.BLOCK,ULong.valueOf(blockNum))
+			.set(BLOCK_ERROR.ERROR,e.getMessage())
+			.execute();
 			
 			throw new ServiceException("Could not import block:"+blockNum);
 			

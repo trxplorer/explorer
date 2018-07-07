@@ -109,11 +109,11 @@ public class AccountService {
 			
 		}
 		
+		this.dslContext.delete(ACCOUNT_VOTE).where(ACCOUNT_VOTE.ACCOUNT_ID.eq(record.getId())).execute();
 		
 		// Update account votes (= current votes)
 		if (tronAccount.getVotesList()!=null && tronAccount.getVotesList().size()>0) {
 			
-			this.dslContext.delete(ACCOUNT_VOTE).where(ACCOUNT_VOTE.ACCOUNT_ID.eq(record.getId())).execute();
 			
 			List<AccountVoteRecord> accountVoteRecords = new ArrayList<>();
 			
@@ -121,7 +121,7 @@ public class AccountService {
 				
 				AccountVoteRecord voteRecord = new AccountVoteRecord();
 				voteRecord.setVoteAddress(Wallet.encode58Check(accountVote.getVoteAddress().toByteArray()));
-				voteRecord.setVoteCount(ULong.valueOf(accountVote.getVoteCount()));
+				voteRecord.setVoteCount(accountVote.getVoteCount());
 				voteRecord.setAccountId(record.getId());
 				
 				accountVoteRecords.add(voteRecord);

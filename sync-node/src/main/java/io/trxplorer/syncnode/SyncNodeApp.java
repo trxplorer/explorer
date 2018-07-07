@@ -17,6 +17,7 @@ import io.trxplorer.syncnode.job.ConsolidationJob;
 import io.trxplorer.syncnode.job.MarketJob;
 import io.trxplorer.syncnode.job.NodeSyncJob;
 import io.trxplorer.syncnode.job.SyncNodeJob;
+import io.trxplorer.syncnode.job.VotingRoundJob;
 import io.trxplorer.syncnode.job.WitnessSyncJob;
 
 public class SyncNodeApp extends Jooby {

@@ -11,7 +11,7 @@ public class TronCliTest {
 		
 		TronFullNodeCli cli = new TronFullNodeCli("47.254.146.147:50051",true);
 		
-		System.out.println(cli.getLastBlock().getBlockHeader().getRawData().getNumber());
+		System.out.println(cli.getNextMaintenanceTime());
 		
 		
 	}

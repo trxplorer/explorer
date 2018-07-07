@@ -4,7 +4,7 @@ DROP TRIGGER IF EXISTS block_AFTER_INSERT$$
 
 CREATE DEFINER = CURRENT_USER TRIGGER `block_AFTER_INSERT` AFTER INSERT ON `block` FOR EACH ROW
 BEGIN
-insert ignore into sync_account(address,date_created,origin) values(new.witness_address,now(),'block');
+insert ignore into sync_account(address,date_created,origin,tx_timestamp) values(new.witness_address,now(),'block',new.timestamp);
 END$$
 
 DELIMITER ;

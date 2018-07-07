@@ -1,6 +1,8 @@
 package io.trxplorer.syncnode.service;
 
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -365,7 +367,7 @@ public class ContractService {
 	}
 
 	private ContractAssetIssueRecord  getAssetIssueContractRecord(ULong txId, AssetIssueContract contract) {
-
+		
 		ContractAssetIssueRecord record = new ContractAssetIssueRecord(); 
 		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
 		record.setName(contract.getName().toStringUtf8());
@@ -373,8 +375,8 @@ public class ContractService {
 		record.setTotalSupply(ULong.valueOf(contract.getTotalSupply()));
 		record.setTrxNum(UInteger.valueOf(contract.getTrxNum()));
 		record.setNum(UInteger.valueOf(contract.getNum()));
-		record.setStartTime(new Timestamp(contract.getStartTime()));
-		record.setEndTime(new Timestamp(contract.getEndTime()));
+		record.setStartTime(Timestamp.valueOf(Instant.ofEpochMilli(contract.getStartTime()).atOffset(ZoneOffset.UTC).toLocalDateTime()));
+		record.setEndTime(Timestamp.valueOf(Instant.ofEpochMilli(contract.getEndTime()).atOffset(ZoneOffset.UTC).toLocalDateTime()));
 		record.setVoteScore(contract.getVoteScore());
 		record.setDescription(contract.getDescription().toStringUtf8());
 		record.setUrl(contract.getUrl().toStringUtf8());
