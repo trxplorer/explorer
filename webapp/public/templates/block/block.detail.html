@@ -24,7 +24,7 @@
 		{%endif%}
 		<tr>
 			<td>Parent Hash</td>
-			<td><a href="/block/{{block.num-1}}">{{block.parentHash}}</a></td>
+			<td>{%if block.num>0%}<a href="/block/{{block.num-1}}">{{block.parentHash}}</a>{%else%}<span>{{block.parentHash}}</span>{%endif%}</td>
 		</tr>
 		<tr>
 			<td>Timestamp</td>
@@ -40,7 +40,7 @@
 		</tr>
 		<tr>
 			<td>Produced by</td>
-			<td><a href="/address/{{block.witnessAddress}}">{{block.witnessAddress}}</a></td>
+			<td ><a href="/address/{{block.witnessAddress}}">{{block.witnessAddress}}</a></td>
 		</tr>
 		<tr>
 			<td>Block Reward</td>
