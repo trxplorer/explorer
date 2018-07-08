@@ -44,6 +44,7 @@
 	<thead>
 		<tr>
 			<th class="center aligned">Name</th>
+			<th class="center aligned">Abbreviation</th>
 			<th class="center aligned">Supply</th>
 			<th class="center aligned">Start date</th>
 			<th class="center aligned">End date</th>
@@ -54,6 +55,7 @@
 		{%for asset in list.items%}
 		<tr class="center aligned">
 			<td><a href="/token/{{asset.name}}" title="{{asset.name}}">{{asset.shortName}}</a></td>
+			<td>{{asset.abbr}}</td>
 			<td>{{asset.getTotalSupplyStr()}}</td>
 			<td>{{asset.startTime}}</td>
 			<td>{{asset.endTime}}</a></td>
@@ -62,7 +64,7 @@
 		{%endfor%}
 	</tbody>
  <tfoot>
-    <tr><th colspan="5">
+    <tr><th colspan="6">
 		{% include 'partials/pagination' %}
   </tr></tfoot>
 </table>
