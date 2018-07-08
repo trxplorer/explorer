@@ -139,9 +139,9 @@ public class QuickStatsJob {
 		.limit(1)
 		.fetchOne();
 		;
-		
-		if (bestRep6h!=null) {
-			this.bestRep6h = new HashMap<>();
+
+		this.bestRep6h = new HashMap<>();
+		if (repBest6h!=null) {
 			this.bestRep6h.put("address", repBest6h.get(0));
 			this.bestRep6h.put("percentage", repBest6h.get(1));			
 		}
