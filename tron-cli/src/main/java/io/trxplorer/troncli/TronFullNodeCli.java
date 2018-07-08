@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tron.api.GrpcAPI.BlockLimit;
+import org.tron.api.GrpcAPI.BlockList;
 import org.tron.api.GrpcAPI.EmptyMessage;
 import org.tron.api.GrpcAPI.Node;
 import org.tron.api.GrpcAPI.NodeList;
@@ -81,6 +83,13 @@ public class TronFullNodeCli {
 		return this.client.getBlockByNum(NumberMessage.newBuilder().setNum(blockNum).build());
 	}
 
+	
+	public List<Block> getBlocks(long start,long stop) {
+		
+		BlockList blockByLimitNext = this.client.getBlockByLimitNext(BlockLimit.newBuilder().setStartNum(start).setEndNum(stop).build());
+		
+		return blockByLimitNext.getBlockList();
+	}
 	
 	public List<Witness> getAllWitnesses() {
 
