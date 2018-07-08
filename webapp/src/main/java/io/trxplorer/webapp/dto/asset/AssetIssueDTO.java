@@ -205,4 +205,13 @@ public class AssetIssueDTO {
 		return NumberFormat.getNumberInstance(Locale.US).format(totalSupply);
 	}
 	
+	public String getTrxNumStr() {
+		return NumberFormat.getNumberInstance(Locale.US).format(trxNum);
+	}
+	
+	public String getNumStr() {
+		return NumberFormat.getNumberInstance(Locale.US).format(num);
+	}
+	
+	
 }

@@ -33,7 +33,7 @@
 					</tr>
 					<tr>
 						<td>Exchange rate</td>
-						<td>{{asset.num}} {{asset.name}} = {{asset.trxNum}} TRX</td>
+						<td>{{asset.getNumStr()}} {{asset.name}} = {{asset.getTrxNumStr()}} TRX (1 {{asset.name}} = {{asset.trxNum/asset.num}} TRX)</td>
 					</tr>
 					<tr>
 						<td>Description</td>
@@ -56,7 +56,7 @@
 
 <!-- TRANSACTIONS -->
 {%if asset.criteria.tab=='tx'%}
-<table class="ui striped table">
+<table class="ui fixed striped table">
 	<thead>
 		<tr>
 			<th class="center aligned">Hash</th>
@@ -70,12 +70,12 @@
 	<tbody>
 		{%for tx in asset.transactions%}
 		<tr class="center aligned">
-			<td><a href="/tx/{{tx.hash}}"></a></td>
+			<td><a href="/tx/{{tx.hash}}">{{tx.hash}}</a></td>
 			<td><a href="/block/{{tx.blockNum}}">{{tx.blockNum}}</a></td>
 			<td>{{tx.timestamp}}</td>
 			<td>{% if tx.from!=account.address%}<a href="/address/{{tx.from}}">{{tx.from}}</a>{%else%} {{tx.from}}{%endif%}</td>
 			<td>{% if tx.to!=account.address%}<a href="/address/{{tx.to}}">{{tx.to}}</a>{%else%}{{tx.to}}{%endif%}</td>
-			<td>{{tx.amount}} {{tx.token}}</td>
+			<td>{{tx.getTokenAmountStr()}} {{tx.token}}</td>
 		</tr>
 		{%endfor%}
 	</tbody>

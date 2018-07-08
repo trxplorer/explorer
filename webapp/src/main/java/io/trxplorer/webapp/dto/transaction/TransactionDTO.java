@@ -1,5 +1,8 @@
 package io.trxplorer.webapp.dto.transaction;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 import io.trxplorer.webapp.utils.TransactionHelper;
 
 public class TransactionDTO {
@@ -110,5 +113,10 @@ public class TransactionDTO {
 	public String getAmountStr() {
 		return TransactionHelper.getTrxAmount(amount);
 	}
+	
+	public String getTokenAmountStr() {
+		return NumberFormat.getNumberInstance(Locale.US).format(Long.valueOf(amount));
+	}
+	
 	
 }
