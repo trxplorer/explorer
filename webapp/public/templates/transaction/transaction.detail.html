@@ -35,14 +35,18 @@
 			<td>From</td>
 			<td><a href="/address/{{tx.from}}">{{tx.from}}</a></td>
 		</tr>
+		{%if tx.to !=null%}
 		<tr>
 			<td>To</td>
 			<td><a href="/address/{{tx.to}}">{{tx.to}}</a></td>
 		</tr>
+		{%endif%}
+		{%if tx.amount !=null%}
 		<tr>
 			<td>Amount</td>
 			<td>{{tx.amount}} {{tx.token}}</td>
 		</tr>
+		{%endif%}
 	</tbody>
 </table>
 
