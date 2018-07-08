@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -164,8 +165,11 @@ public class TransactionService {
 		
 		//remove invalid transactions (wrong dates)
 		//FIXME: remove as fixed in tron
-		conditions.add(DSL.year(TRANSACTION.TIMESTAMP).gt(TRON_START_YEAR-1));
-		conditions.add(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)));
+		if (criteria.getBlock()==null || !criteria.getBlock().equals("0") ) {
+			conditions.add(DSL.year(TRANSACTION.TIMESTAMP).gt(TRON_START_YEAR-1));
+			conditions.add(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)));			
+		}
+
 		
 		Field<String> fromField = DSL.when(CONTRACT_ACCOUNT_CREATE.OWNER_ADDRESS.isNotNull(), CONTRACT_ACCOUNT_CREATE.OWNER_ADDRESS)
 		.when(CONTRACT_ACCOUNT_UPDATE.OWNER_ADDRESS.isNotNull(), CONTRACT_ACCOUNT_UPDATE.OWNER_ADDRESS)
