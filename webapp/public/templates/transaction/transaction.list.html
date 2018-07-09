@@ -76,7 +76,7 @@
 		<tr class="center aligned">
 			<td><a href="/tx/{{tx.hash}}">{{tx.shortHash}}</a></td>
 			<td><a href="/block/{{tx.blockNum}}">{{tx.blockNum}}</a></td>
-			<td>{{tx.timestamp}}</td>
+			<td><span class="timestamp">{{tx.timestamp}}</span></td>
 			<td>{%if tx.confirmed==true%}<span class="ui small green label">Confirmed</span>{%else%}<a class="ui small red label">Unconfirmed</a>{%endif%}</td>
 			<td><a href="/address/{{tx.from}}">{{tx.from}}</a></td>
 			<td><a href="/address/{{tx.to}}">{{tx.to}}</a></td>

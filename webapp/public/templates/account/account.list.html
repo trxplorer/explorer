@@ -67,7 +67,7 @@
 			<td><a href="/address/{{account.address}}">{{account.address}}</a></td>
 			<td>{%if account.name!=null and account.name.length>0%}{{account.name}}{%else%}-{%endif%}</td>
 			<td>{{account.getBalanceStr()}}</td>
-			<td>{{account.createTime}}</a></td>
+			<td><span class="timestamp">{{account.createTime}}</span></td>
 		</tr>
 		{%endfor%}
 	</tbody>

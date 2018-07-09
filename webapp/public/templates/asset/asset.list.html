@@ -57,8 +57,8 @@
 			<td><a href="/token/{{asset.name}}" title="{{asset.name}}">{{asset.shortName}}</a></td>
 			<td>{{asset.abbr}}</td>
 			<td>{{asset.getTotalSupplyStr()}}</td>
-			<td>{{asset.startTime}}</td>
-			<td>{{asset.endTime}}</a></td>
+			<td><span class="timestamp">{{asset.startTime}}</span></td>
+			<td><span class="timestamp">{{asset.endTime}}</span></td>
 			<td><a href="/address/{{asset.issuer}}">{{asset.issuer}}</a></td>
 		</tr>
 		{%endfor%}
