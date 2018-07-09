@@ -34,6 +34,21 @@ public class SearchService {
 		return false;
 	}
 	
+	public boolean blockNumExists(String num) {
+		
+		String result = this.dslContext.select(BLOCK.NUM)
+		.from(BLOCK).where(BLOCK.NUM.eq(ULong.valueOf(num)))
+		.fetchOneInto(String.class)
+		;
+		
+		if (result!=null) {
+			return true;
+		}
+		
+		return false;
+	}	
+	
+	
 	public String getBlockNumByHash(String hash) {
 		
 		String result = this.dslContext.select(BLOCK.NUM)
@@ -86,6 +101,31 @@ public class SearchService {
 		}
 		
 		return false;	
+	}
+	
+	public boolean accountByNameExists(String address) {
+		
+		String result = this.dslContext.select(ACCOUNT.ADDRESS)
+		.from(ACCOUNT).where(ACCOUNT.ACCOUNT_NAME.eq(address)).limit(1)
+		.fetchOneInto(String.class)
+		;
+		
+		if (result!=null) {
+			return true;
+		}
+		
+		return false;	
+	}
+	
+	public String getAccountAddressByAccountName(String accountName) {
+		
+		String result = this.dslContext.select(ACCOUNT.ADDRESS)
+		.from(ACCOUNT).where(ACCOUNT.ACCOUNT_NAME.eq(accountName)).limit(1)
+		.fetchOneInto(String.class)
+		;
+		
+		
+		return result;	
 	}
 	
 }
