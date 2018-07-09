@@ -22,17 +22,17 @@ public class ConsolidationJob {
 		this.witnessService = witnessService;
 	}
 	
-	@Scheduled("3s")
+	//@Scheduled("1s")
 	public void consolidateBlocks() {
 		
 
-		this.blockService.updateMissingBlocksHash();
+		//this.blockService.updateMissingBlocksHash();
 		
 		this.blockService.updateMissingWitnessId();
 		
 	}
 	
-	@Scheduled("1m")
+	//@Scheduled("1m")
 	public void consolidateWitness() {
 		
 		this.witnessService.updateMissingAccountId();
