@@ -1,5 +1,7 @@
 package io.trxplorer.webapp.dto.common;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +36,7 @@ public class ListDTO<T,C extends CommonCriteriaDTO> {
 		
 		int start = currentPage>5 ? currentPage-2 : 1; 
 		
-		int maxPage = totalCount / limit; 
+		int maxPage = new BigDecimal(totalCount).divide(new BigDecimal(limit), RoundingMode.CEILING).intValue(); 
 		
 		for (int i = start; i < start+5; i++) {
 			
