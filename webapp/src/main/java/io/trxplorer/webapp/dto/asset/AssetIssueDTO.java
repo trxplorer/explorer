@@ -206,7 +206,7 @@ public class AssetIssueDTO {
 	}
 	
 	public String getTrxNumStr() {
-		return NumberFormat.getNumberInstance(Locale.US).format(trxNum);
+		return TransactionHelper.getTrxAmount(trxNum);
 	}
 	
 	public String getNumStr() {
