@@ -9,20 +9,25 @@ import org.apache.commons.lang3.StringUtils;
 
 public class TransactionHelper {
 
-	private final static BigDecimal TRX= BigDecimal.valueOf(1000000l);
+	private final static long TRX= 1000000l;
 	
 	public static String getTrxAmount(String amount) {
 		
 		
 		if (StringUtils.isNotBlank(amount)) {
-			
-			return NumberFormat.getNumberInstance(Locale.US).format(new BigDecimal(amount).divide(TRX,6, RoundingMode.DOWN));
+			NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+			nf.setMaximumFractionDigits(7);
+			return nf.format(new BigDecimal(amount).divide(new BigDecimal(TRX)));
 		}
 			return ""; 
 	}
 	
 	public static String getTrxAmount(long value) {
-			return  NumberFormat.getNumberInstance(Locale.US).format(new BigDecimal(value).divide(TRX,6, RoundingMode.DOWN));
+			NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+			nf.setMaximumFractionDigits(7);
+			return  nf.format(new BigDecimal(value).divide(new BigDecimal(TRX)));
 
 	}
+
+	
 }
