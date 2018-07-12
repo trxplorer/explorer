@@ -21,7 +21,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import io.trxplorer.model.tables.pojos.Market;
-import io.trxplorer.webapp.utils.TransactionHelper;
+import io.trxplorer.service.utils.TransactionHelper;
 
 @Singleton
 @DisallowConcurrentExecution

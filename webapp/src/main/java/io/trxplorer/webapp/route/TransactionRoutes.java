@@ -13,10 +13,10 @@ import org.jooby.mvc.Path;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import io.trxplorer.webapp.dto.transaction.TransactionCriteriaDTO;
-import io.trxplorer.webapp.dto.transaction.TransactionDTO;
+import io.trxplorer.service.common.TransactionService;
+import io.trxplorer.service.dto.transaction.TransactionCriteriaDTO;
+import io.trxplorer.service.dto.transaction.TransactionDTO;
 import io.trxplorer.webapp.job.QuickStatsJob;
-import io.trxplorer.webapp.service.TransactionService;
 
 @Singleton
 public class TransactionRoutes {

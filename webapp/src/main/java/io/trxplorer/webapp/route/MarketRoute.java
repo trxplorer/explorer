@@ -10,10 +10,10 @@ import org.jooby.mvc.Path;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import io.trxplorer.webapp.dto.node.NodeCriteriaDTO;
+import io.trxplorer.service.common.MarketService;
+import io.trxplorer.service.common.NodeService;
+import io.trxplorer.service.dto.node.NodeCriteriaDTO;
 import io.trxplorer.webapp.job.QuickStatsJob;
-import io.trxplorer.webapp.service.MarketService;
-import io.trxplorer.webapp.service.NodeService;
 
 @Singleton
 public class MarketRoute {

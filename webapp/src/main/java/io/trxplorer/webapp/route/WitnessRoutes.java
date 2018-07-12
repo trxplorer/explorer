@@ -12,9 +12,9 @@ import org.jooby.mvc.Path;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import io.trxplorer.webapp.dto.witness.WitnessListCriteriaDTO;
+import io.trxplorer.service.common.WitnessService;
+import io.trxplorer.service.dto.witness.WitnessListCriteriaDTO;
 import io.trxplorer.webapp.job.QuickStatsJob;
-import io.trxplorer.webapp.service.WitnessService;
 
 @Singleton
 public class WitnessRoutes {

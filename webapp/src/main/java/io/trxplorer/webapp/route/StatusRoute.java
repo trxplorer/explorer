@@ -10,7 +10,7 @@ import org.jooby.mvc.Path;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import io.trxplorer.webapp.service.StatusService;
+import io.trxplorer.service.common.StatusService;
 
 @Singleton
 public class StatusRoute {

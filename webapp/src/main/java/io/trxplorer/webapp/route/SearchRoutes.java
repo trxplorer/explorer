@@ -13,9 +13,9 @@ import org.jooby.mvc.Path;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import io.trxplorer.service.common.SearchService;
+import io.trxplorer.service.dto.search.SearchResultDTO;
 import io.trxplorer.webapp.WebAppConfig;
-import io.trxplorer.webapp.dto.search.SearchResultDTO;
-import io.trxplorer.webapp.service.SearchService;
 
 @Singleton
 public class SearchRoutes {

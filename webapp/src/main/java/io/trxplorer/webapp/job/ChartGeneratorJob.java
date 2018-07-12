@@ -11,7 +11,7 @@ import org.jooby.quartz.Scheduled;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import io.trxplorer.webapp.service.ChartService;
+import io.trxplorer.service.common.ChartService;
 
 @Singleton
 public class ChartGeneratorJob {

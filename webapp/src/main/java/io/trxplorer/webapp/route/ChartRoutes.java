@@ -20,9 +20,9 @@ import org.jooby.mvc.Path;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import io.trxplorer.webapp.dto.chart.ChartItemDTO;
-import io.trxplorer.webapp.dto.chart.ChartType;
-import io.trxplorer.webapp.service.ChartService;
+import io.trxplorer.service.common.ChartService;
+import io.trxplorer.service.dto.chart.ChartItemDTO;
+import io.trxplorer.service.dto.chart.ChartType;
 
 @Singleton
 public class ChartRoutes {

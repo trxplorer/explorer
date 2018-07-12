@@ -7,9 +7,9 @@ import org.tron.common.utils.ByteArray;
 
 import com.google.inject.Inject;
 
+import io.trxplorer.service.dto.tron.TronBroadcastRequestDTO;
 import io.trxplorer.troncli.TronFullNodeCli;
 import io.trxplorer.troncli.wallet.BroadcastResult;
-import io.trxplorer.webapp.dto.tron.TronBroadcastRequestDTO;
 
 public class TronRoutes {
 

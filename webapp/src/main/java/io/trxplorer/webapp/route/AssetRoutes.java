@@ -13,11 +13,11 @@ import org.jooby.mvc.Path;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import io.trxplorer.webapp.dto.asset.AssetIssueDTO;
-import io.trxplorer.webapp.dto.asset.AssetIssueDetailCriteriaDTO;
-import io.trxplorer.webapp.dto.asset.AssetIssueListCriteriaDTO;
+import io.trxplorer.service.common.AssetService;
+import io.trxplorer.service.dto.asset.AssetIssueDTO;
+import io.trxplorer.service.dto.asset.AssetIssueDetailCriteriaDTO;
+import io.trxplorer.service.dto.asset.AssetIssueListCriteriaDTO;
 import io.trxplorer.webapp.job.QuickStatsJob;
-import io.trxplorer.webapp.service.AssetService;
 
 @Singleton
 public class AssetRoutes {

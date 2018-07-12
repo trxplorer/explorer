@@ -14,11 +14,11 @@ import com.google.common.io.BaseEncoding;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import io.trxplorer.webapp.dto.account.AccountDTO;
-import io.trxplorer.webapp.dto.account.AccountDetailCriteriaDTO;
-import io.trxplorer.webapp.dto.account.AccountListCriteria;
+import io.trxplorer.service.common.AccountService;
+import io.trxplorer.service.dto.account.AccountDTO;
+import io.trxplorer.service.dto.account.AccountDetailCriteriaDTO;
+import io.trxplorer.service.dto.account.AccountListCriteria;
 import io.trxplorer.webapp.job.QuickStatsJob;
-import io.trxplorer.webapp.service.AccountService;
 
 @Singleton
 public class AccountRoutes {

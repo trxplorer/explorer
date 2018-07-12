@@ -13,11 +13,11 @@ import org.jooby.mvc.Path;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import io.trxplorer.webapp.dto.block.BlockCriteriaDTO;
-import io.trxplorer.webapp.dto.vote.VotingRoundListCriteriaDTO;
+import io.trxplorer.service.common.BlockService;
+import io.trxplorer.service.common.VoteService;
+import io.trxplorer.service.dto.block.BlockCriteriaDTO;
+import io.trxplorer.service.dto.vote.VotingRoundListCriteriaDTO;
 import io.trxplorer.webapp.job.QuickStatsJob;
-import io.trxplorer.webapp.service.BlockService;
-import io.trxplorer.webapp.service.VoteService;
 
 @Singleton
 public class VoteRoundRoutes {
