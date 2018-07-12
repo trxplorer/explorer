@@ -35,7 +35,7 @@ public class SyncNodeApp extends Jooby {
 		use(new Flywaydb());
 
 		
-		use(new Quartz(SyncNodeJob.class,BlockSyncJob.class,WitnessSyncJob.class,AccountSyncJob.class,NodeSyncJob.class,MarketJob.class));
+		use(new Quartz(SyncNodeJob.class,BlockSyncJob.class,WitnessSyncJob.class,AccountSyncJob.class,NodeSyncJob.class,MarketJob.class,VotingRoundJob.class));
 
 		
 		onStart(registry -> {

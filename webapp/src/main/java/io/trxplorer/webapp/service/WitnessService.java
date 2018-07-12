@@ -75,6 +75,7 @@ public class WitnessService {
 		
 	}
 	
+	
 	private void prepareWitnessDTO(List<WitnessDTO> witnesses) {
 		
 		for(WitnessDTO witness:witnesses) {
@@ -84,5 +85,7 @@ public class WitnessService {
 		}
 		
 	}
+	
+	
 	
 }

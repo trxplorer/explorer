@@ -24,6 +24,7 @@ import io.trxplorer.webapp.route.SearchRoutes;
 import io.trxplorer.webapp.route.StatusRoute;
 import io.trxplorer.webapp.route.TransactionRoutes;
 import io.trxplorer.webapp.route.TronRoutes;
+import io.trxplorer.webapp.route.VoteRoundRoutes;
 import io.trxplorer.webapp.route.WitnessRoutes;
 
 public class WebApp extends Jooby {
@@ -95,6 +96,7 @@ public class WebApp extends Jooby {
 		use(AccountRoutes.class);
 		use(AssetRoutes.class);
 		use(WitnessRoutes.class);
+		use(VoteRoundRoutes.class);
 		use(ChartRoutes.class);
 		use(SearchRoutes.class);
 		use(StatusRoute.class);

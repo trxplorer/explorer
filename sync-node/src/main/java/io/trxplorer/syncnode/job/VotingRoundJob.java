@@ -15,6 +15,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Record5;
+import org.jooq.SelectConditionStep;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.jooq.types.UInteger;
@@ -25,6 +26,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import io.trxplorer.model.tables.ContractVoteWitness;
+import io.trxplorer.model.tables.VotingRound;
 import io.trxplorer.model.tables.VotingRoundVote;
 import io.trxplorer.model.tables.records.ContractVoteWitnessRecord;
 import io.trxplorer.model.tables.records.VotingRoundRecord;
@@ -94,126 +96,152 @@ public class VotingRoundJob {
 			
 		}
 		
-		this.dslContext.batchInsert(records).execute();
+
+		this.dslContext.batchInsert(records).execute();	
+			
+		VotingRound vr = VOTING_ROUND.as("vr");
+		
+		Table<Record2<Object, UInteger>> tmp = DSL.select(DSL.field("@rownum := @rownum+1").as("round"),VOTING_ROUND.ID).from(VOTING_ROUND).crossJoin("(select @rownum:=0) tmp").orderBy(VOTING_ROUND.END_DATE.asc()).asTable("tmp");
+		
+		this.dslContext.update(vr)
+		.set(vr.ROUND,DSL.select(DSL.field("round",UInteger.class)).from(tmp).where(vr.ID.eq(tmp.field("id",UInteger.class))))
+		.execute();					
 
 		
 	}
 	
-	//@Scheduled("10s")
+	@Scheduled("5m")
 	public void createVoteRound() {
 		
-		long nextMaintenanceTime = this.fullNodeCli.getNextMaintenanceTime();
 		
-		
-		VotingRoundRecord round = this.dslContext.select(VOTING_ROUND.fields())
+		List<VotingRoundRecord> rounds = this.dslContext.select(VOTING_ROUND.fields())
 		.from(VOTING_ROUND)
 		.where(VOTING_ROUND.SYNC_END.isNull())
-		.orderBy(VOTING_ROUND.START_DATE.asc())
-		.limit(1)
-		.fetchOneInto(VotingRoundRecord.class);
+		.and(VOTING_ROUND.END_DATE.lt(DSL.select(DSL.max(BLOCK.TIMESTAMP)).from(BLOCK)))
+		.orderBy(VOTING_ROUND.START_DATE.desc())
+		.fetchInto(VotingRoundRecord.class);
 
+		
+		for(VotingRoundRecord round:rounds) {
+			
+			this.computeRoundVotes(round);
+			
+		}
+				
+	}
+	
+	
+	private void computeRoundVotes(VotingRoundRecord round) {
+		
+		
 		this.dslContext.update(VOTING_ROUND)
 		.set(VOTING_ROUND.SYNC_START,Timestamp.valueOf(LocalDateTime.now()))
 		.where(VOTING_ROUND.ID.eq(round.getId()))
 		.execute();
 
-		
-		//set votes for current round
 
-		ContractVoteWitness cvw = CONTRACT_VOTE_WITNESS.as("cvw");
-		 Table<Record5<UInteger, String, String, ULong, Timestamp>> latestVotesIdsTable = DSL.select(DSL.val(round.getId()).as("roundId"),cvw.OWNER_ADDRESS,cvw.VOTE_ADDRESS,cvw.VOTE_COUNT,TRANSACTION.TIMESTAMP)
-		.from(cvw)
-		.join(TRANSACTION).on(cvw.field(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.getName(),ULong.class).eq(TRANSACTION.ID))
-		.and(TRANSACTION.TIMESTAMP.lt(round.getEndDate()))
-		.and(TRANSACTION.TIMESTAMP.eq(DSL.select(DSL.max(TRANSACTION.TIMESTAMP))
-				.from(CONTRACT_VOTE_WITNESS)
-				.join(TRANSACTION).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID))
-				.and(TRANSACTION.TIMESTAMP.lt(round.getEndDate()))
-				.where(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.eq(cvw.field(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.getName(),String.class)))
-				)
-				
-			)
-		.asTable("t1");
-		
-		
-		this.dslContext.deleteFrom(VOTING_ROUND_VOTE)
-		.where(VOTING_ROUND_VOTE.VOTING_ROUND_ID.eq(round.getId()))
-		.execute();
-		
-		this.dslContext.insertInto(VOTING_ROUND_VOTE)
-		.columns(VOTING_ROUND_VOTE.VOTING_ROUND_ID,VOTING_ROUND_VOTE.OWNER_ADDRESS,VOTING_ROUND_VOTE.VOTE_ADDRESS,VOTING_ROUND_VOTE.VOTE_COUNT,VOTING_ROUND_VOTE.TIMESTAMP)
-		.select(DSL.select(latestVotesIdsTable.field(0, UInteger.class),latestVotesIdsTable.field(1,String.class),latestVotesIdsTable.field(2,String.class),latestVotesIdsTable.field(3,ULong.class),latestVotesIdsTable.field(4,Timestamp.class))
-				.from(latestVotesIdsTable))
-		.execute();
-		
-		
-		//set votes lost for current round 
-		this.dslContext.deleteFrom(VOTING_ROUND_VOTE_LOST)
-		.where(VOTING_ROUND_VOTE_LOST.VOTING_ROUND_ID.eq(round.getId()))
-		.execute();
-		
-		VotingRoundVote vrv = VOTING_ROUND_VOTE.as("vrv");
-		
-		this.dslContext.insertInto(VOTING_ROUND_VOTE_LOST)
-		.columns(VOTING_ROUND_VOTE.VOTING_ROUND_ID,VOTING_ROUND_VOTE.OWNER_ADDRESS,VOTING_ROUND_VOTE.VOTE_ADDRESS,VOTING_ROUND_VOTE.VOTE_COUNT,VOTING_ROUND_VOTE.TIMESTAMP)		
-		.select(	
-		DSL.select(vrv.VOTING_ROUND_ID,vrv.OWNER_ADDRESS,vrv.VOTE_ADDRESS,vrv.VOTE_COUNT,vrv.TIMESTAMP)
-		.from(vrv)
-		.where(vrv.OWNER_ADDRESS.in(DSL.select(CONTRACT_UNFREEZE_BALANCE.OWNER_ADDRESS)
-				.from(CONTRACT_UNFREEZE_BALANCE).join(TRANSACTION).on(TRANSACTION.ID.eq(CONTRACT_UNFREEZE_BALANCE.TRANSACTION_ID))
-				.where(CONTRACT_UNFREEZE_BALANCE.OWNER_ADDRESS.eq(vrv.OWNER_ADDRESS))
-				.and(TRANSACTION.TIMESTAMP.gt(vrv.TIMESTAMP)
-				.and(TRANSACTION.TIMESTAMP.lt(round.getEndDate()))
-			))
-			.and(vrv.VOTING_ROUND_ID.eq(round.getId()))))
-		.execute()
-		;
-		
-		//set stats for current round
-//		Table<Record2<String, BigDecimal>> totalVotesPerAddress = DSL.select(CONTRACT_VOTE_WITNESS.VOTE_ADDRESS,DSL.sum(CONTRACT_VOTE_WITNESS.VOTE_COUNT).as("total_votes"))
-//		.from(VOTING_ROUND_VOTE)
-//		.join(CONTRACT_VOTE_WITNESS).on(CONTRACT_VOTE_WITNESS.ID.eq(VOTING_ROUND_VOTE.CONTRACT_VOTE_ID))
-//		.where(VOTING_ROUND_VOTE.VOTING_ROUND_ID.eq(round.getId()))
-//		.groupBy(CONTRACT_VOTE_WITNESS.VOTE_ADDRESS)
-//		.orderBy(DSL.field("total_votes").desc())
-//		.asTable("t1");
-//		
-//		
-//		Table<?> totalVotesPerAddressWithPosition = DSL.select(totalVotesPerAddress.field(CONTRACT_VOTE_WITNESS.VOTE_ADDRESS.getName()),DSL.field("total_votes"),DSL.field("@rownum:= @rownum+1").as("position"))
-//		.from(totalVotesPerAddress).crossJoin("(SELECT @rownum := 0) as t").asTable("t2");
-//		
-//		
-//		
-//		this.dslContext.deleteFrom(VOTING_ROUND_STATS)
-//		.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
-//		.execute();		
-		
-//		this.dslContext.insertInto(VOTING_ROUND_STATS)
-//		.columns(VOTING_ROUND_STATS.VOTING_ROUND_ID,VOTING_ROUND_STATS.ADDRESS,VOTING_ROUND_STATS.TOTAL_VOTES,VOTING_ROUND_STATS.POSITION)
-//		.select(DSL.select(DSL.val(round.getId()),
-//				totalVotesPerAddressWithPosition.field(CONTRACT_VOTE_WITNESS.VOTE_ADDRESS.getName(),String.class),
-//				totalVotesPerAddressWithPosition.field("total_votes",ULong.class),
-//				totalVotesPerAddressWithPosition.field("position",UInteger.class))
-//				.from(totalVotesPerAddressWithPosition)
-//		).execute();
-
-		
-		//mark round as completed if not the last one
-		Instant instant = Instant.ofEpochMilli(nextMaintenanceTime);
-		
-		LocalDateTime maintenanceTime = instant.atZone(ZoneOffset.UTC).toLocalDateTime();
-		Timestamp nextMaintenanceTS = Timestamp.valueOf(maintenanceTime);
-		
-		if (round.getEndDate().before(nextMaintenanceTS)) {
+		List<String> addresses = this.dslContext.select(WITNESS.ADDRESS).from(WITNESS).fetchInto(String.class); 
+		 
+		for(String witnessAddress : addresses) {
 			
-			this.dslContext.update(VOTING_ROUND)
-			.set(VOTING_ROUND.SYNC_END,Timestamp.valueOf(LocalDateTime.now()))
-			.where(VOTING_ROUND.ID.eq(round.getId()))
+			this.dslContext.deleteFrom(VOTING_ROUND_VOTE)
+			.where(VOTING_ROUND_VOTE.VOTING_ROUND_ID.eq(round.getId()))
+			.and(VOTING_ROUND_VOTE.VOTE_ADDRESS.eq(witnessAddress))
 			.execute();
 			
+			this.dslContext.deleteFrom(VOTING_ROUND_VOTE_LOST)
+			.where(VOTING_ROUND_VOTE_LOST.VOTING_ROUND_ID.eq(round.getId()))
+			.and(VOTING_ROUND_VOTE_LOST.VOTE_ADDRESS.eq(witnessAddress))
+			.execute();
+			
+			this.dslContext.deleteFrom(VOTING_ROUND_STATS)
+			.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
+			.and(VOTING_ROUND_STATS.ADDRESS.eq(witnessAddress))
+			.execute();
+			
+			//set votes for current round
+
+			ContractVoteWitness cvw = CONTRACT_VOTE_WITNESS.as("cvw");
+			 Table<Record5<UInteger, String, String, ULong, Timestamp>> latestVotesIdsTable = DSL.select(DSL.val(round.getId()).as("roundId"),cvw.OWNER_ADDRESS,cvw.VOTE_ADDRESS,cvw.VOTE_COUNT,BLOCK.TIMESTAMP)
+			.from(cvw)
+			.join(TRANSACTION).on(cvw.field(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.getName(),ULong.class).eq(TRANSACTION.ID))
+			.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID)).and(BLOCK.TIMESTAMP.lt(round.getEndDate()))
+			.where(cvw.VOTE_ADDRESS.eq(witnessAddress))
+			.and(BLOCK.TIMESTAMP.eq(DSL.select(DSL.max(BLOCK.TIMESTAMP))
+					.from(CONTRACT_VOTE_WITNESS)
+					.join(TRANSACTION).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID))
+					.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
+					.and(BLOCK.TIMESTAMP.lt(round.getEndDate()))
+					.where(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.eq(cvw.field(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.getName(),String.class)))
+					)
+					
+				)
+			.asTable("t1");
+			
+			this.dslContext.insertInto(VOTING_ROUND_VOTE)
+			.columns(VOTING_ROUND_VOTE.VOTING_ROUND_ID,VOTING_ROUND_VOTE.OWNER_ADDRESS,VOTING_ROUND_VOTE.VOTE_ADDRESS,VOTING_ROUND_VOTE.VOTE_COUNT,VOTING_ROUND_VOTE.TIMESTAMP)
+			.select(DSL.select(latestVotesIdsTable.field(0, UInteger.class),latestVotesIdsTable.field(1,String.class),latestVotesIdsTable.field(2,String.class),latestVotesIdsTable.field(3,Long.class),latestVotesIdsTable.field(4,Timestamp.class))
+					.from(latestVotesIdsTable))
+			.execute();
+			
+			
+			//add vote lost for current round
+			VotingRoundVote vrv = VOTING_ROUND_VOTE.as("vrv");
+			
+			this.dslContext.insertInto(VOTING_ROUND_VOTE_LOST)
+			.columns(VOTING_ROUND_VOTE.VOTING_ROUND_ID,VOTING_ROUND_VOTE.OWNER_ADDRESS,VOTING_ROUND_VOTE.VOTE_ADDRESS,VOTING_ROUND_VOTE.VOTE_COUNT,VOTING_ROUND_VOTE.TIMESTAMP)		
+			.select(	
+			DSL.select(vrv.VOTING_ROUND_ID,vrv.OWNER_ADDRESS,vrv.VOTE_ADDRESS,vrv.VOTE_COUNT,vrv.TIMESTAMP)
+			.from(vrv)
+			.where(vrv.TIMESTAMP.lt(DSL.select(DSL.max(BLOCK.TIMESTAMP))
+					.from(CONTRACT_UNFREEZE_BALANCE)
+					.join(TRANSACTION).on(TRANSACTION.ID.eq(CONTRACT_UNFREEZE_BALANCE.TRANSACTION_ID))
+					.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
+					.where(CONTRACT_UNFREEZE_BALANCE.OWNER_ADDRESS.eq(vrv.OWNER_ADDRESS))
+					.and(BLOCK.TIMESTAMP.lt(round.getEndDate()))
+				))
+			.and(vrv.VOTE_ADDRESS.eq(witnessAddress))
+			.and(vrv.VOTING_ROUND_ID.eq(round.getId()))
+			)
+			.execute()
+			;
+			
+			//build stats for current round/witness
+			this.dslContext.insertInto(VOTING_ROUND_STATS)
+			.set(VOTING_ROUND_STATS.ADDRESS,witnessAddress)
+			.set(VOTING_ROUND_STATS.VOTING_ROUND_ID,round.getId())
+			.set(VOTING_ROUND_STATS.VOTE_COUNT,DSL.select(DSL.sum(VOTING_ROUND_VOTE.VOTE_COUNT).cast(ULong.class))
+					.from(VOTING_ROUND_VOTE)
+					.where(VOTING_ROUND_VOTE.VOTING_ROUND_ID.eq(round.getId()))
+					.and(VOTING_ROUND_VOTE.VOTE_ADDRESS.eq(witnessAddress)))
+			.set(VOTING_ROUND_STATS.VOTE_LOST_COUNT,DSL.select(DSL.sum(VOTING_ROUND_VOTE_LOST.VOTE_COUNT).cast(ULong.class))
+					.from(VOTING_ROUND_VOTE_LOST)
+					.where(VOTING_ROUND_VOTE_LOST.VOTING_ROUND_ID.eq(round.getId()))
+					.and(VOTING_ROUND_VOTE_LOST.VOTE_ADDRESS.eq(witnessAddress)))			
+			.execute();
+
 		}
 		
-				
+		
+		SelectConditionStep<Record1<ULong>> totalRoundVoteCount = DSL.select(DSL.sum(VOTING_ROUND_STATS.VOTE_COUNT).minus(DSL.sum(VOTING_ROUND_STATS.VOTE_LOST_COUNT)).cast(ULong.class)).from(VOTING_ROUND_STATS).where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()));
+		
+		//update round vote count
+		this.dslContext.update(VOTING_ROUND)
+		.set(VOTING_ROUND.VOTE_COUNT,totalRoundVoteCount)
+		.where(VOTING_ROUND.ID.eq(round.getId()))
+		.execute();
+		
+		
+		//mark round sync as completed			
+		this.dslContext.update(VOTING_ROUND)
+		.set(VOTING_ROUND.SYNC_END,Timestamp.valueOf(LocalDateTime.now()))
+		.where(VOTING_ROUND.ID.eq(round.getId()))
+		.execute();
+			
+		
+		
+		
 	}
+	
 	
 }

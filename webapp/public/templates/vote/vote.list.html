@@ -1,0 +1,92 @@
+{% extends "main" %}
+{% block title %}Tron votes{% endblock %}
+{%block description%}{%endblock%}
+
+{% block header %} 
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jspanel3/3.10.0/jquery.jspanel.min.css"/> -->
+
+{% endblock %}
+
+{% block content %}
+
+	
+<h1 class="ui dividing header"><small><i class="icon vote"></i>Votes</small></h1>
+
+<div >
+ 	
+<div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
+    <div class="ui stackable grid container">
+      <div class="row">
+			
+			<div class="column">
+			<div class="ui four small statistics">
+			  <div class="small grey statistic">
+			    <div class="value">
+			      <small>{{stats.totalBlocks}}</small>
+			    </div>
+			    <div class="label">
+			      Total blocks
+			    </div>
+			  </div>
+			  <div class="small green statistic">
+			    <div class="value">
+			      <small>{{stats.totalBlocksConfirmed}}</small>
+			    </div>
+			    <div class="label">
+			    	Blocks confirmed
+			    </div>
+			  </div>
+			  <div class="yellow statistic">
+			    <div class="value">
+			      <small>{{stats.totalBlocks6h}}</small>
+			    </div>
+			    <div class="label">
+			      Blocks Last 6h
+			    </div>
+			  </div>
+
+			  <div class="orange statistic">
+			    <div class="value">
+			      <small>{{stats.totalBlocks24h}}</small>
+			    </div>
+			    <div class="label">
+			      Blocks Last 24h
+			    </div>
+			  </div>
+			</div>
+			</div>
+			
+      </div>
+
+      </div>
+</div>
+
+	<table class="ui striped table">
+		<thead>
+			<tr>
+				<th class="center aligned">Round</th>
+				<th class="center aligned">Start</th>
+				<th class="center aligned">End</th>
+				<th class="center aligned">Vote count</th>
+			</tr>
+		</thead>
+		<tbody>
+			{%for vote in list.items%}
+			<tr class="center aligned">
+				<td><a href="/vote/{{vote.round}}">{{vote.round}}</a></td>
+				<td><span class="timestamp">{{vote.startDate}}</span></td>
+				<td><span class="timestamp">{{vote.endDate}}</span></td>
+				<td>{{vote.voteCountStr}}</td>
+			</tr>
+			{%endfor%}
+		</tbody>
+	 <tfoot>
+	    <tr><th colspan="4">
+			{% include 'partials/pagination' %}
+	  </tr></tfoot>
+	</table>
+</div>
+
+
+
+{%endblock%}

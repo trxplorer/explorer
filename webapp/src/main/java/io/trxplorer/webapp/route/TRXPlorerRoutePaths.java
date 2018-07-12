@@ -32,6 +32,11 @@ public interface TRXPlorerRoutePaths {
 		public static final String REPRESENTATIVE_LIST = "/representatives";
 		public static final String SUPER_REPRESENTATIVE_LIST = "/super-representatives";
 		
+		//VOTES
+		public static final String VOTE_LIST_LIVE = "/votes";
+		public static final String VOTE_ROUND_DETAIL = "/vote/:round";		
+		public static final String VOTE_ROUND_ADDRESS_DETAIL = "/vote/:round/:address";
+		
 		//SEARCH
 		public static final String SEARCH = "/search";
 		public static final String SEARCH_WITNESS = SEARCH+"/witness";		

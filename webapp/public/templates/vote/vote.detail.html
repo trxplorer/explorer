@@ -1,0 +1,36 @@
+{% extends "main" %}
+{% block title %}Tron vote round #{{vr.round}} informations{% endblock %}
+{%block description%}Get all informations about reprensentatives for vote round {{vr.round}}{%endblock%}
+
+
+
+{% block content %}
+
+	
+<h1 class="ui dividing header"><small><i class="icon cube"></i>Vote round #{{vr.round}}</small></h1>
+	
+<div >
+<table class="ui definition table">
+	<tbody>
+		<tr>
+			<td>Round</td>
+			<td>{{vr.round}}</td>
+		</tr>
+		<tr>
+			<td>Start date</td>
+			<td><span class="timestamp">{{vr.startDate}}</span></td>
+		</tr>
+		<tr>
+			<td>End date</td>
+			<td><span class="timestamp">{{vr.endDate}}</span></td>
+		</tr>
+		<tr>
+			<td>Total votes</td>
+			<td>{{vr.voteCountStr}}</td>
+		</tr>	
+	</tbody>
+</table>
+</div>
+
+
+{%endblock%}

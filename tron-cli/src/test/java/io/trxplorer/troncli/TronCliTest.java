@@ -11,7 +11,7 @@ public class TronCliTest {
 		
 		TronFullNodeCli cli = new TronFullNodeCli("18.196.99.16:50051",true);
 		
-		System.out.println(cli.getBlocks(500, 600).size());
+		System.out.println(cli.getAllNodes().size());
 		
 		
 	}

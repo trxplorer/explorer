@@ -16,7 +16,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Contract.AccountCreateContract;
 import org.tron.protos.Contract.AccountUpdateContract;
 import org.tron.protos.Contract.AssetIssueContract;
-import org.tron.protos.Contract.DeployContract;
 import org.tron.protos.Contract.FreezeBalanceContract;
 import org.tron.protos.Contract.ParticipateAssetIssueContract;
 import org.tron.protos.Contract.TransferAssetContract;
@@ -39,7 +38,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import io.trxplorer.model.tables.records.ContractAccountCreateRecord;
 import io.trxplorer.model.tables.records.ContractAccountUpdateRecord;
 import io.trxplorer.model.tables.records.ContractAssetIssueRecord;
-import io.trxplorer.model.tables.records.ContractDeployRecord;
 import io.trxplorer.model.tables.records.ContractFreezeBalanceRecord;
 import io.trxplorer.model.tables.records.ContractParticipateAssetIssueRecord;
 import io.trxplorer.model.tables.records.ContractTransferAssetRecord;
@@ -99,13 +97,13 @@ public class ContractService {
 					
 					break;
 
-				case ContractType.DeployContract_VALUE:
-					
-					ContractDeployRecord deployRecord = this.getDeployContractRecord(txId,DeployContract.parseFrom(contractByteString));
+				case ContractType.SmartContract_VALUE:
+					/*
+					ContractDeployRecord deployRecord = this.getDeployContractRecord(txId,SmartContract.parseFrom(contractByteString));
 					
 					
 					contractRecords.add(deployRecord);
-					
+					*/
 					break;
 				case ContractType.ParticipateAssetIssueContract_VALUE:
 					
@@ -353,8 +351,8 @@ public class ContractService {
 				
 		return record;
 	}
-
-	private ContractDeployRecord getDeployContractRecord(ULong txId, DeployContract contract) {
+/*
+	private ContractDeployRecord getSmartContractRecord(ULong txId, SmartContract contract) {
 		
 		//FIXME: determine script type : binary or string ?
 		
@@ -365,7 +363,7 @@ public class ContractService {
 		
 		return record;
 	}
-
+*/
 	private ContractAssetIssueRecord  getAssetIssueContractRecord(ULong txId, AssetIssueContract contract) {
 		
 		ContractAssetIssueRecord record = new ContractAssetIssueRecord(); 
