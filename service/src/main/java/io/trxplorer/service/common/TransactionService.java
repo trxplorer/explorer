@@ -21,10 +21,10 @@ import org.jooq.types.ULong;
 
 import com.google.inject.Inject;
 
-import io.trxplorer.service.dto.account.VoteDTO;
 import io.trxplorer.service.dto.common.ListDTO;
 import io.trxplorer.service.dto.transaction.TransactionCriteriaDTO;
 import io.trxplorer.service.dto.transaction.TransactionDTO;
+import io.trxplorer.service.dto.vote.VoteModel;
 import io.trxplorer.service.utils.TransactionHelper;
 
 public class TransactionService {
@@ -62,7 +62,7 @@ public class TransactionService {
 		 
 	}
 	
-	public List<VoteDTO> getLastestVotes(int limit) {
+	public List<VoteModel> getLastestVotes(int limit) {
 
 		return this.dslContext.select(TRANSACTION.TIMESTAMP,CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.as("from"),CONTRACT_VOTE_WITNESS.VOTE_ADDRESS,CONTRACT_VOTE_WITNESS.VOTE_COUNT)
 		.from(TRANSACTION)
@@ -70,7 +70,7 @@ public class TransactionService {
 		
 		.orderBy(TRANSACTION.TIMESTAMP.desc())
 		.limit(limit)
-		.fetchInto(VoteDTO.class);
+		.fetchInto(VoteModel.class);
 		
  
 	}	

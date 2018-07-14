@@ -15,7 +15,6 @@ import io.trxplorer.api.dto.account.AssetBalanceDTO;
 import io.trxplorer.api.dto.account.FrozenBalanceDTO;
 import io.trxplorer.api.dto.account.VoteDTO;
 import io.trxplorer.api.dto.common.ListResult;
-import io.trxplorer.api.dto.transaction.TransactionCriteria;
 import io.trxplorer.api.dto.transaction.TransactionDTO;
 import io.trxplorer.api.service.AccountService;
 import io.trxplorer.api.service.TransactionService;

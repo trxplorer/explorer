@@ -5,11 +5,11 @@ import java.util.Map;
 
 import io.trxplorer.service.dto.common.CommonCriteriaDTO;
 
-public class VotingRoundListCriteriaDTO extends CommonCriteriaDTO{
+public class VotingRoundListCriteria extends CommonCriteriaDTO{
 
 
 	
-	public VotingRoundListCriteriaDTO() {
+	public VotingRoundListCriteria() {
 	}
 	
 

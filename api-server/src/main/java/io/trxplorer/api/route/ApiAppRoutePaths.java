@@ -24,6 +24,12 @@ public interface ApiAppRoutePaths {
 		public static final String WITNESS = VERSION+"/witness";		
 		public static final String WITNESS_ALL = WITNESS+"/all";
 		
+		//VOTES
+		public static final String VOTE_ROUND = VERSION+"/vote/:round";
+		public static final String VOTE_ROUND_STATS = VERSION+"/vote/stats/:maxRound";
+		public static final String VOTE_ROUND_VOTES = VERSION+"/vote/:round/:address";
+		public static final String VOTE_LIVE = VERSION+"/vote/live";		
+		
 		//TRON
 		public static final String TRON = VERSION+"/tron";
 		public static final String TRON_BROADCAST = TRON+"/broadcast";

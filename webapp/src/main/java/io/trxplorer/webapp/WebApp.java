@@ -10,7 +10,7 @@ import org.jooby.quartz.Quartz;
 import org.jooq.DSLContext;
 import org.jooq.conf.Settings;
 
-import io.trxplorer.webapp.filter.SearchEngineFilter;
+import io.trxplorer.webapp.filter.CommonFilter;
 import io.trxplorer.webapp.job.ChartGeneratorJob;
 import io.trxplorer.webapp.job.QuickStatsJob;
 import io.trxplorer.webapp.route.AccountRoutes;
@@ -86,7 +86,7 @@ public class WebApp extends Jooby {
 
 		
 		// filters
-		use("*","/**",new SearchEngineFilter());
+		use("*","/**",new CommonFilter());
 				
 		
 		// routes

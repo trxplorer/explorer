@@ -22,12 +22,12 @@ import io.trxplorer.service.dto.account.AccountDetailCriteriaDTO;
 import io.trxplorer.service.dto.account.AccountListCriteria;
 import io.trxplorer.service.dto.account.AssetBalanceDTO;
 import io.trxplorer.service.dto.account.FrozenBalanceDTO;
-import io.trxplorer.service.dto.account.VoteDTO;
 import io.trxplorer.service.dto.asset.AssetIssueListCriteriaDTO;
 import io.trxplorer.service.dto.asset.AssetParticipationCriteriaDTO;
 import io.trxplorer.service.dto.common.ListDTO;
 import io.trxplorer.service.dto.transaction.TransactionCriteriaDTO;
 import io.trxplorer.service.dto.transaction.TransactionDTO;
+import io.trxplorer.service.dto.vote.VoteModel;
 import io.trxplorer.service.dto.witness.AllowanceWidthdrawDTO;
 import io.trxplorer.troncli.TronFullNodeCli;
 
@@ -87,64 +87,9 @@ public class AccountService {
 		
 		//TODO: handle fallback on blockchain api
 		
-		//load transactions if request
-		
-		if (accountCriteria.getTab().equals("tx")) {
-			
-			TransactionCriteriaDTO txCriteria = new TransactionCriteriaDTO();
-			txCriteria.setAddress(accountCriteria.getAddress());
-			txCriteria.setLimit(accountCriteria.getLimit());
-			txCriteria.setPage(accountCriteria.getPage());
-			
-			ListDTO<TransactionDTO, TransactionCriteriaDTO> accountTransactions = this.txService.listTransactions(txCriteria);
-			
-			
-			
-			result.setTransactions(accountTransactions.getItems());		
-			
-		}else if (accountCriteria.getTab().equals("votes")) {
-			
-			ListDTO<VoteDTO, AccountDetailCriteriaDTO> accountVotes = this.listVotes(accountCriteria);
-			
 
-			result.setVotes(accountVotes.getItems());
-			
-		}else if(accountCriteria.getTab().equals("ti")) {
-			
-			AssetIssueListCriteriaDTO assetCriteriaDTO = new AssetIssueListCriteriaDTO();
-			
-			assetCriteriaDTO.setIssuer(accountCriteria.getAddress());
-			assetCriteriaDTO.setLimit(accountCriteria.getLimit());
-			assetCriteriaDTO.setPage(accountCriteria.getPage());			
-			
-			result.setAssetIssues(this.assetService.listAssetIssues(assetCriteriaDTO).getItems());
-			
-		}else if (accountCriteria.getTab().equals("tp")) {
-			
-			AssetParticipationCriteriaDTO assetParticipationCriteriaDTO = new AssetParticipationCriteriaDTO();
-			
-			assetParticipationCriteriaDTO.setAddress(accountCriteria.getAddress());
-			assetParticipationCriteriaDTO.setLimit(accountCriteria.getLimit());
-			assetParticipationCriteriaDTO.setPage(accountCriteria.getPage());
-			
-			result.setAssetParticipations(this.assetService.listAssetParticipations(assetParticipationCriteriaDTO).getItems());
-		}else if (accountCriteria.getTab().equals("fh")) {
-			
-			ListDTO<FrozenBalanceDTO, AccountDetailCriteriaDTO> frozenBalances = this.listFrozenBalance(accountCriteria);
-			
-			result.setFrozenBalances(frozenBalances.getItems());
-		}else if (accountCriteria.getTab().equals("ab")) {
-			
-			ListDTO<AssetBalanceDTO, AccountDetailCriteriaDTO> assetBalances = this.listAssetBalances(accountCriteria);
-			
-			result.setAssetBalances(assetBalances.getItems());
-		}else if (accountCriteria.getTab().equals("aw")) {
-			
-			ListDTO<AllowanceWidthdrawDTO, AccountDetailCriteriaDTO> allowanceWithdrawals = this.listAllowanceWithdrawals(accountCriteria);
-			
-			result.setAllowanceWithdrawals(allowanceWithdrawals.getItems());
-			
-		}
+		
+
 
 		result.setCriteria(accountCriteria);
 		//load votes if requested
@@ -185,7 +130,7 @@ public class AccountService {
 
 	}
 	
-	public ListDTO<VoteDTO, AccountDetailCriteriaDTO> listVotes(AccountDetailCriteriaDTO criteria){
+	public ListDTO<VoteModel, AccountDetailCriteriaDTO> listVotes(AccountDetailCriteriaDTO criteria){
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
@@ -202,11 +147,11 @@ public class AccountService {
 		
 		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
 		
-		List<VoteDTO> items = listQuery.where(conditions).orderBy(TRANSACTION.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VoteDTO.class);
+		List<VoteModel> items = listQuery.where(conditions).orderBy(TRANSACTION.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VoteModel.class);
 		
 		
 		
-		ListDTO<VoteDTO, AccountDetailCriteriaDTO> result = new ListDTO<VoteDTO, AccountDetailCriteriaDTO>(criteria, items, totalCount);
+		ListDTO<VoteModel, AccountDetailCriteriaDTO> result = new ListDTO<VoteModel, AccountDetailCriteriaDTO>(criteria, items, totalCount);
 		
 		return result;
 		

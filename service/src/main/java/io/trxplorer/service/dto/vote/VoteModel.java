@@ -1,30 +1,17 @@
-package io.trxplorer.service.dto.account;
+package io.trxplorer.service.dto.vote;
 
 import java.sql.Timestamp;
-import java.text.NumberFormat;
-import java.util.Locale;
 
-import io.trxplorer.service.utils.TransactionHelper;
-
-public class VoteDTO {
+public class VoteModel {
 
 	private String from;
 	
 	private String to;
 	
-	private String voteAddress;
-	
 	private Long voteCount;
 	
 	private Timestamp timestamp;
 	
-	public String getVoteAddress() {
-		return voteAddress;
-	}
-
-	public void setVoteAddress(String voteAddress) {
-		this.voteAddress = voteAddress;
-	}
 
 	public Long getVoteCount() {
 		return voteCount;
@@ -50,16 +37,12 @@ public class VoteDTO {
 		this.to = to;
 	}
 
-	public Timestamp getTimestamp() {
-		return timestamp;
+	public long getTimestamp() {
+		return timestamp.getTime();
 	}
 
 	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
-	}
-	
-	public String getVoteCountStr() {
-		return NumberFormat.getNumberInstance(Locale.US).format(voteCount);
 	}
 	
 }

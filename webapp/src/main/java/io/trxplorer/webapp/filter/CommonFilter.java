@@ -5,9 +5,9 @@ import org.jooby.Response;
 import org.jooby.Route.Chain;
 import org.jooby.Route.Filter;
 
-import io.trxplorer.webapp.WebAppConfig;
+import io.trxplorer.config.WebAppConfig;
 
-public class SearchEngineFilter implements Filter{
+public class CommonFilter implements Filter{
 
 
 
@@ -17,7 +17,7 @@ public class SearchEngineFilter implements Filter{
 		WebAppConfig config = req.require(WebAppConfig.class);
 		
 		req.set("seconfig", config.getSearchEngine());
-		
+		req.set("apiConfig", config.getApiConfig());
 		
 		chain.next(req, rsp);
 		

@@ -68,6 +68,11 @@ public class ListDTO<T,C extends CommonCriteriaDTO> {
 		return (int)Math.round(Math.ceil((double)totalCount/(double)this.criteria.getLimit()));
 	}
 	
+	public int getTotalPages() {
+		return totalPages();
+	}
+	
+	
 	public String params(){
 		
 		StringBuilder sb = new StringBuilder("&limit="+criteria.getLimit());

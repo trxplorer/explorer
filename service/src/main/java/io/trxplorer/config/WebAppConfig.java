@@ -34,6 +34,10 @@ public class WebAppConfig{
 	public SearchEngineConfig getSearchEngine() {
 		return new SearchEngineConfig(this.config.getConfig("searchengine"));
 	}
+	
+	public ApiConfig getApiConfig() {
+		return new ApiConfig(this.config.getConfig("api"));
+	}
 
 	
 	public static class StatusConfig {
@@ -68,6 +72,20 @@ public class WebAppConfig{
 		public String getEndpoint() {
 			return this.config.getString("endpoint");
 		}
+	}
+	
+	public static class ApiConfig{
+		
+		private Config config;
+		
+		public ApiConfig(Config config) {
+			this.config = config;
+		}
+		
+		public String getEndpoint() {
+			return this.config.getString("endpoint");
+		}
+		
 	}
 	
 }

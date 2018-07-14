@@ -12,10 +12,13 @@ import java.util.List;
 
 import org.jooby.quartz.Scheduled;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record2;
+import org.jooq.Record3;
 import org.jooq.Record5;
 import org.jooq.SelectConditionStep;
+import org.jooq.SelectJoinStep;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.jooq.types.UInteger;
@@ -28,6 +31,7 @@ import com.google.inject.Singleton;
 import io.trxplorer.model.tables.ContractVoteWitness;
 import io.trxplorer.model.tables.VotingRound;
 import io.trxplorer.model.tables.VotingRoundVote;
+import io.trxplorer.model.tables.Witness;
 import io.trxplorer.model.tables.records.ContractVoteWitnessRecord;
 import io.trxplorer.model.tables.records.VotingRoundRecord;
 import io.trxplorer.troncli.TronFullNodeCli;
@@ -45,6 +49,22 @@ public class VotingRoundJob {
 		this.fullNodeCli = fullNodeCli;
 	}
 
+	@Scheduled("30s")
+	public void buildLiveVotes() {
+		
+		this.dslContext.truncate(VOTE_LIVE).execute();
+		
+		Witness w = WITNESS.as("w");
+		
+		Field<Long> voteCount = DSL.select(DSL.sum(ACCOUNT_VOTE.VOTE_COUNT)).from(ACCOUNT_VOTE).where(ACCOUNT_VOTE.VOTE_ADDRESS.eq(w.ADDRESS)).asField().cast(Long.class);
+		
+		SelectJoinStep<Record3<String, Long, Integer>> table = DSL.select(w.ADDRESS,voteCount,DSL.field("@rownum:=@rownum+1",Integer.class)).from(w).crossJoin("(select @rownum:=0) tmp");
+		
+		this.dslContext.insertInto(VOTE_LIVE).columns(VOTE_LIVE.ADDRESS,VOTE_LIVE.VOTE_COUNT,VOTE_LIVE.POSITION)
+		.select(table).execute();
+		
+	}
+	
 	@Scheduled("1m")
 	public void createMissingVotingRounds() {
 		
@@ -110,7 +130,7 @@ public class VotingRoundJob {
 		
 	}
 	
-	@Scheduled("5m")
+	//@Scheduled("1m")
 	public void createVoteRound() {
 		
 		
@@ -203,6 +223,19 @@ public class VotingRoundJob {
 			.and(vrv.VOTE_ADDRESS.eq(witnessAddress))
 			.and(vrv.VOTING_ROUND_ID.eq(round.getId()))
 			)
+			.execute()
+			;
+			
+			//delete lost votes from round votes
+			this.dslContext.deleteFrom(vrv).where(vrv.TIMESTAMP.lt(DSL.select(DSL.max(BLOCK.TIMESTAMP))
+					.from(CONTRACT_UNFREEZE_BALANCE)
+					.join(TRANSACTION).on(TRANSACTION.ID.eq(CONTRACT_UNFREEZE_BALANCE.TRANSACTION_ID))
+					.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
+					.where(CONTRACT_UNFREEZE_BALANCE.OWNER_ADDRESS.eq(vrv.OWNER_ADDRESS))
+					.and(BLOCK.TIMESTAMP.lt(round.getEndDate()))
+				))
+			.and(vrv.VOTE_ADDRESS.eq(witnessAddress))
+			.and(vrv.VOTING_ROUND_ID.eq(round.getId()))
 			.execute()
 			;
 			

@@ -10,6 +10,9 @@ position: relative
 
 
 }
+
+[v-cloak] {display: none}
+
 .ui.secondary.pointing.menu{
 border-bottom:0px;	
 }

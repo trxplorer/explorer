@@ -8,6 +8,7 @@ import java.util.Locale;
 import io.trxplorer.service.dto.asset.AssetIssueDTO;
 import io.trxplorer.service.dto.asset.AssetParticipationDTO;
 import io.trxplorer.service.dto.transaction.TransactionDTO;
+import io.trxplorer.service.dto.vote.VoteModel;
 import io.trxplorer.service.dto.witness.AllowanceWidthdrawDTO;
 import io.trxplorer.service.dto.witness.WitnessDTO;
 import io.trxplorer.service.utils.TransactionHelper;
@@ -24,7 +25,7 @@ public class AccountDTO {
 
 	private List<AssetBalanceDTO> assetBalances;
 	
-	private List<VoteDTO> votes;
+	private List<VoteModel> votes;
 	
 	private List<FrozenBalanceDTO> frozenBalances;
 	
@@ -194,11 +195,11 @@ public class AccountDTO {
 		this.frozenBalances = frozenBalances;
 	}
 
-	public List<VoteDTO> getVotes() {
+	public List<VoteModel> getVotes() {
 		return votes;
 	}
 
-	public void setVotes(List<VoteDTO> votes) {
+	public void setVotes(List<VoteModel> votes) {
 		this.votes = votes;
 	}
 

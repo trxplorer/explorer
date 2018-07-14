@@ -22,6 +22,7 @@ import com.google.inject.Singleton;
 
 import io.trxplorer.model.tables.pojos.Market;
 import io.trxplorer.service.utils.TransactionHelper;
+import io.trxplorer.troncli.TronFullNodeCli;
 
 @Singleton
 @DisallowConcurrentExecution
@@ -59,9 +60,20 @@ public class QuickStatsJob {
 	
 	private HashMap<String,Object> votes;
 	
+	//maintenance
+	private long nextMaintenanceTime;
+	
+	//vote round
+	private Integer currentVoteRound;
+	
+	
+	
+	private TronFullNodeCli fullNodeCli;
+	
 	@Inject
-	public QuickStatsJob(DSLContext dslContext) {
+	public QuickStatsJob(DSLContext dslContext,TronFullNodeCli fullNodeCli) {
 		this.dslContext = dslContext;
+		this.fullNodeCli = fullNodeCli;
 	}
 	
 	
@@ -263,6 +275,27 @@ public class QuickStatsJob {
 		
 		this.votes.put("last24hCount", last24hVotesCount);
 		
+		
+		//Vote round
+		Integer currentRound = this.dslContext.select(DSL.max(VOTING_ROUND.ROUND)).from(VOTING_ROUND).where(VOTING_ROUND.SYNC_END.isNotNull()).fetchOneInto(Integer.class);
+		
+		if (currentRound==null) {
+			currentRound = 1;
+		}else {
+			this.currentVoteRound = currentRound+1;
+		}
+		
+		//maintenance time
+		this.nextMaintenanceTime = this.fullNodeCli.getNextMaintenanceTime();
+		
+	}
+	
+	public Integer getCurrentVoteRound() {
+		return currentVoteRound;
+	}
+	
+	public long getNextMaintenanceTime() {
+		return nextMaintenanceTime;
 	}
 	
 	public HashMap<String, Object> getVotes() {

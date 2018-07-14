@@ -1,60 +1,61 @@
 {% extends "main" %}
-{% block title %}Tron vote round #{{vr.round}} informations{% endblock %}
-{%block description%}Get all informations about reprensentatives for vote round {{vr.round}}{%endblock%}
+{% block title %}Votes of {{vrs.address}} on round #{{vrs.round}}{% endblock %}
+{%block description%}Detailed list of votes received by {{vrs.address}} on round #{{vrs.round}}{%endblock%}
 
 
 
 {% block content %}
 
 	
-<h1 class="ui dividing header"><small><i class="icon cube"></i>Vote round #{{vr.round}}</small></h1>
+<h1 class="ui dividing header"><small><small><i class="icon "></i>Votes of {{vrs.address}} on round #{{vrs.round}}</small></small></h1>
 	
-
-<table class="ui definition table">
+<table class="ui compact definition table ">
 	<tbody>
 		<tr>
-			<td>Round</td>
-			<td>{{vr.round}}</td>
+			<td>Address</td>
+			<td><a href="/address/{{vrs.address}}">{{vrs.address}}</a></td>
 		</tr>
 		<tr>
-			<td>Start date</td>
-			<td><span class="timestamp">{{vr.startDate}}</span></td>
+			<td>Name</td>
+			<td>{{vrs.name}}</td>
 		</tr>
 		<tr>
-			<td>End date</td>
-			<td><span class="timestamp">{{vr.endDate}}</span></td>
+			<td>Round #</td>
+			<td><a href="/vote/{{vrs.round}}">{{vrs.round}}</a></td>
+		</tr>
+		<tr>
+			<td>Round cycle</td>
+			<td> <span>Start:</span><small class="timestamp">{{vrs.startDate}}</small> <span>End:</span><small class="timestamp">{{vrs.endDate}}</small></td>
+		</tr>
+		<tr>
+			<td>Position in round</td>
+			<td> {{vrs.position}}</td>
 		</tr>
 		<tr>
 			<td>Total votes</td>
-			<td>{{vr.voteCountStr}}</td>
+			<td>{{vrs.voteCount-vrs.voteLostCount}}</td>
 		</tr>	
 	</tbody>
 </table>
+	
+	
 
 
 <div id="app">
      <table class="ui fixed striped table" >
        <thead>
          <tr>
-           <th class="center aligned">Position</th>
-           <th class="center aligned">Address</th>
+           <th class="center aligned">Voter</th>
            <th class="center aligned">Votes</th>
+           <th class="center aligned">Timestamp</th>
          </tr>
        </thead>
-		<thead>
-			<tr>
-				<th class="center aligned" colspan="3">Super representatives</th>
-			</tr>
-		</thead>
        <tbody>
-		<template v-for="(vr,index) in list.items" :key="index">
-	         <tr v-if="index==27">
-				<td class="center aligned" colspan="3" ><b>Representatives</b></b></td>
-			 </tr>
+		<template v-for="(vote,index) in list.items" :key="index">
 	         <tr class="center aligned" >
-	           <td>[[vr.position]]</td>
-	           <td><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.address]]</a></td>
-	           <td><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.voteCount|toLocale]]</a></td>
+	           <td><a :href="'/address/'+[[vote.from]]">[[vote.from]]</a></td>
+	           <td>[[vote.voteCount|numberToLocale]]</td>
+	           <td>[[vote.timestamp|dateToLocale]]</td>
 	         </tr>         
 		</template>
        </tbody>
@@ -107,9 +108,8 @@ new Vue({
 	      },
 	      fetch(params){
 	    		var ziss = this;
-	    		$.get('{{apiConfig.endpoint}}/vote/{{vr.round}}',params).success(function(data){
+	    		$.get('{{apiConfig.endpoint}}/vote/{{vrs.round}}/{{vrs.address}}',params).success(function(data){
 	    			ziss.list = data;
-	    			console.log(ziss.list)
 	    		}).fail(function(xhr,status,err){
 	    			console.error(err);
 	    		});
@@ -153,8 +153,12 @@ new Vue({
       		},
 	  },
 	  filters: {
-		    toLocale(value) {
+		    numberToLocale(value) {
 		      return value.toLocaleString('en-US')
+		    },
+		    dateToLocale(value){
+		    	var utcDate = moment.utc(value).toDate();
+		    	return moment(utcDate).local().format('DD-MM-YYYY HH:mm:ss');
 		    }
 	  },
 	  delimiters : ['[[',']]']

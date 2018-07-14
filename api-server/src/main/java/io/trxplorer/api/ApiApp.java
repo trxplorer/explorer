@@ -12,6 +12,7 @@ import org.jooq.conf.Settings;
 import io.trxplorer.api.route.AccountRoutes;
 import io.trxplorer.api.route.BlockRoutes;
 import io.trxplorer.api.route.TronRoutes;
+import io.trxplorer.api.route.VotingRoundRoutes;
 import io.trxplorer.api.route.WitnessRoutes;
 
 public class ApiApp extends Jooby {
@@ -60,6 +61,7 @@ public class ApiApp extends Jooby {
 		});
 		
 		// routes
+		use(VotingRoundRoutes.class);
 		use(WitnessRoutes.class);
 		use(BlockRoutes.class);
 		use(AccountRoutes.class);
