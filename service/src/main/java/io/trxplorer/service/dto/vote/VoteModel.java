@@ -8,17 +8,17 @@ public class VoteModel {
 	
 	private String to;
 	
-	private Long voteCount;
+	private Long votes;
 	
 	private Timestamp timestamp;
 	
 
-	public Long getVoteCount() {
-		return voteCount;
+	public Long getVotes() {
+		return votes;
 	}
 
-	public void setVoteCount(Long voteCount) {
-		this.voteCount = voteCount;
+	public void setVotes(Long voteCount) {
+		this.votes = voteCount;
 	}
 
 	public String getFrom() {
@@ -38,7 +38,10 @@ public class VoteModel {
 	}
 
 	public long getTimestamp() {
-		return timestamp.getTime();
+		if (timestamp==null) {
+			return 0;
+		}
+		return timestamp.getTime()/1000;
 	}
 
 	public void setTimestamp(Timestamp timestamp) {

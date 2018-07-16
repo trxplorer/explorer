@@ -1,13 +1,13 @@
 {% extends "main" %}
-{% block title %}Votes of {{vrs.address}} on round #{{vrs.round}}{% endblock %}
+{% block title %}Votes for {%if vrs.name!=null%}{{vrs.name}}{%else%}{{vrs.address}}{%endif%} on round #{{vrs.round}}{% endblock %}
 {%block description%}Detailed list of votes received by {{vrs.address}} on round #{{vrs.round}}{%endblock%}
 
 
 
 {% block content %}
-
+<div id="app">
 	
-<h1 class="ui dividing header"><small><small><i class="icon "></i>Votes of {{vrs.address}} on round #{{vrs.round}}</small></small></h1>
+<h1 class="ui dividing header"><small><small>Votes for {%if vrs.name!=null%}{{vrs.name}}{%else%}{{vrs.address}}{%endif%} on round #{{vrs.round}}</small></small></h1>
 	
 <table class="ui compact definition table ">
 	<tbody>
@@ -21,11 +21,11 @@
 		</tr>
 		<tr>
 			<td>Round #</td>
-			<td><a href="/vote/{{vrs.round}}">{{vrs.round}}</a></td>
+			<td>{%if vrs.round>1%}<a href="/vote/{{vrs.round-1}}/{{vrs.address}}"><<</a>{%endif%} <a href="/vote/{{vrs.round}}">{{vrs.round}}</a> {%if vrs.round<currentRound.round%}<a href="/vote/{{vrs.round+1}}/{{vrs.address}}">>></a>{%endif%}</td>
 		</tr>
 		<tr>
 			<td>Round cycle</td>
-			<td> <span>Start:</span><small class="timestamp">{{vrs.startDate}}</small> <span>End:</span><small class="timestamp">{{vrs.endDate}}</small></td>
+			<td> <span>Start:</span><small >[[startDate|dateToLocale]]</small> <span>End:</span><small >[[endDate|dateToLocale]]</small></td>
 		</tr>
 		<tr>
 			<td>Position in round</td>
@@ -33,7 +33,7 @@
 		</tr>
 		<tr>
 			<td>Total votes</td>
-			<td>{{vrs.voteCount-vrs.voteLostCount}}</td>
+			<td>[[totalVotes|numberToLocale]]</td>
 		</tr>	
 	</tbody>
 </table>
@@ -41,7 +41,7 @@
 	
 
 
-<div id="app">
+<div >
      <table class="ui fixed striped table" >
        <thead>
          <tr>
@@ -54,7 +54,7 @@
 		<template v-for="(vote,index) in list.items" :key="index">
 	         <tr class="center aligned" >
 	           <td><a :href="'/address/'+[[vote.from]]">[[vote.from]]</a></td>
-	           <td>[[vote.voteCount|numberToLocale]]</td>
+	           <td>[[vote.votes|numberToLocale]]</td>
 	           <td>[[vote.timestamp|dateToLocale]]</td>
 	         </tr>         
 		</template>
@@ -82,6 +82,7 @@
      </table>
 </div>
 
+</div>
 {%endblock%}
 
 {% block footerscripts%}
@@ -92,7 +93,10 @@ new Vue({
 	  el: '#app',
 	  data: function(){
 		  return {
-			  list:[]
+			  list:[],
+			  startDate:{{vrs.startDate}},
+			  endDate:{{vrs.endDate}},
+			  totalVotes:{{vrs.votes}}
 		  }  
 	  },
 	  methods:{
@@ -108,7 +112,7 @@ new Vue({
 	      },
 	      fetch(params){
 	    		var ziss = this;
-	    		$.get('{{apiConfig.endpoint}}/vote/{{vrs.round}}/{{vrs.address}}',params).success(function(data){
+	    		$.get('{{apiConfig.endpoint}}/vote/{%if vrs.round==currentRound.round%}live{%else%}{{vrs.round}}{%endif%}/{{vrs.address}}',params).success(function(data){
 	    			ziss.list = data;
 	    		}).fail(function(xhr,status,err){
 	    			console.error(err);
@@ -117,6 +121,7 @@ new Vue({
 	  },
 	  mounted: function(){
 		  this.fetch({page:1})
+		  console.log(this.$refs)
 	  },
 	  computed: {
 	      pages(){
@@ -157,8 +162,11 @@ new Vue({
 		      return value.toLocaleString('en-US')
 		    },
 		    dateToLocale(value){
-		    	var utcDate = moment.utc(value).toDate();
-		    	return moment(utcDate).local().format('DD-MM-YYYY HH:mm:ss');
+		    	if (value==0){
+		    		return "-";
+		    	}
+            	var utcDate = moment.unix(value).format('YYYY-MM-DDTHH:mm:ss');
+		    	return moment.utc(utcDate).local().format('DD-MM-YYYY HH:mm:ss');
 		    }
 	  },
 	  delimiters : ['[[',']]']

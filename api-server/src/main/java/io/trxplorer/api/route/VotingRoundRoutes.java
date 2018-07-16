@@ -36,9 +36,16 @@ public class VotingRoundRoutes {
 		criteria.setLimit(50);
 		criteria.setPage(page.orElse(1));
 		
-		return this.voteService.listLiveVotes(criteria);		
+		return this.voteService.listLiveVotesStats(criteria);		
 	}	
 
+	@GET
+	@Path(ApiAppRoutePaths.V1.VOTE_LIVE_TOTAL)
+	public long listLiveVotesTotal(Optional<Integer> page) throws Throwable {
+		
+		
+		return this.voteService.getLiveTotalVotes();		
+	}	
 
 	@GET
 	@Path(ApiAppRoutePaths.V1.VOTE_ROUND_STATS)
@@ -66,7 +73,18 @@ public class VotingRoundRoutes {
 		return this.voteService.listRoundStats(criteria);		
 	}
 	
-
+	@GET
+	@Path(ApiAppRoutePaths.V1.VOTE_LIVE_VOTES)
+	public ListDTO<VoteModel, VoteListCriteria> listLiveVotes(String address,Optional<Integer> page) throws Throwable {
+		
+		VoteListCriteria criteria = new VoteListCriteria();
+		
+		criteria.setLimit(50);
+		criteria.setPage(page.orElse(1));
+		criteria.setToAddress(address);;
+		
+		return this.voteService.listLiveVotes(criteria);		
+	}	
 	
 	@GET
 	@Path(ApiAppRoutePaths.V1.VOTE_ROUND_VOTES)

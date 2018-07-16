@@ -28,7 +28,9 @@ public interface ApiAppRoutePaths {
 		public static final String VOTE_ROUND = VERSION+"/vote/:round";
 		public static final String VOTE_ROUND_STATS = VERSION+"/vote/stats/:maxRound";
 		public static final String VOTE_ROUND_VOTES = VERSION+"/vote/:round/:address";
+		public static final String VOTE_LIVE_VOTES = VERSION+"/vote/live/:address";
 		public static final String VOTE_LIVE = VERSION+"/vote/live";		
+		public static final String VOTE_LIVE_TOTAL = VERSION+"/vote/live/total";
 		
 		//TRON
 		public static final String TRON = VERSION+"/tron";
@@ -38,6 +40,9 @@ public interface ApiAppRoutePaths {
 		//BLOCK
 		public static final String BLOCK = VERSION+"/block";
 		public static final String BLOCK_LATEST = BLOCK+"/latest";
+
+
+
 		
 	}
 	

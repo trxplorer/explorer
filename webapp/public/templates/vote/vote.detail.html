@@ -14,7 +14,7 @@
 	<tbody>
 		<tr>
 			<td>Round</td>
-			<td>{{vr.round}}</td>
+			<td>{%if vr.round>1%}<a href="/vote/{{vr.round-1}}"><<</a>{%endif%} {{vr.round}} {%if vr.round<currentRound.round%}<a href="/vote/{{vr.round+1}}">>></a>{%endif%}</td>
 		</tr>
 		<tr>
 			<td>Start date</td>
@@ -36,31 +36,33 @@
      <table class="ui fixed striped table" >
        <thead>
          <tr>
-           <th class="center aligned">Position</th>
+           <th class="center aligned">Rank</th>
            <th class="center aligned">Address</th>
+           <th class="center aligned">URL</th>
            <th class="center aligned">Votes</th>
          </tr>
        </thead>
 		<thead>
-			<tr>
-				<th class="center aligned" colspan="3">Super representatives</th>
+			<tr v-if="currentPage==1">
+				<th class="center aligned" colspan="4">Super representatives</th>
 			</tr>
 		</thead>
        <tbody>
 		<template v-for="(vr,index) in list.items" :key="index">
-	         <tr v-if="index==27">
-				<td class="center aligned" colspan="3" ><b>Representatives</b></b></td>
+	         <tr v-if="vr.position==28">
+				<td class="center aligned" colspan="4" ><b>SR Candidates</b></b></td>
 			 </tr>
 	         <tr class="center aligned" >
 	           <td>[[vr.position]]</td>
-	           <td><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.address]]</a></td>
-	           <td><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.voteCount|toLocale]]</a></td>
+	           <td>[[vr.name]]<br><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.address]]</a></td>
+	           <td>[[vr.url]]</td>
+	           <td><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.votes|toLocale]]</a></td>
 	         </tr>         
 		</template>
        </tbody>
         <tfoot>
           <tr>
-            <th colspan="3" v-show="totalPages>1">
+            <th colspan="4" v-show="totalPages>1">
               <div class="ui left floated">
                   Page [[currentPage]] of [[totalPages]]
               </div>

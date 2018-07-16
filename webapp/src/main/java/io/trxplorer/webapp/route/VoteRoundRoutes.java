@@ -50,8 +50,7 @@ public class VoteRoundRoutes {
 		View view = Results.html("vote/vote.list");
 		
 		view.put("list",this.voteService.listRounds(criteria));
-		view.put("nextMaintenance",this.quickStats.getNextMaintenanceTime());
-		view.put("currentRound",this.quickStats.getCurrentVoteRound());
+		view.put("currentRound",this.quickStats.getCurrentVotingRound());
 		
 		
 		res.send(view);
@@ -69,6 +68,7 @@ public class VoteRoundRoutes {
 		View view = Results.html("vote/vote.detail");
 		
 		view.put("vr",this.voteService.getVotingRoundByNum(round));
+		view.put("currentRound",this.quickStats.getCurrentVotingRound());
 		
 		res.send(view);
 
@@ -86,10 +86,9 @@ public class VoteRoundRoutes {
 		
 		View view = Results.html("vote/vote.address.detail");
 		
-		AccountDetailCriteriaDTO criteria = new AccountDetailCriteriaDTO(address);
 		
 		view.put("vrs",this.voteService.getVotingRoundStats(round, address));
-		
+		view.put("currentRound",this.quickStats.getCurrentVotingRound());
 		
 		res.send(view);
 

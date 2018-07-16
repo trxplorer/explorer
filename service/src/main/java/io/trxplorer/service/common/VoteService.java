@@ -76,13 +76,32 @@ public class VoteService {
 	}
 	
 	public VotingRoundStatsModel getVotingRoundStats(Integer round,String address) {
-		return this.dslContext.select(VOTING_ROUND_STATS.ADDRESS,VOTING_ROUND_STATS.POSITION,VOTING_ROUND_STATS.VOTE_COUNT,VOTING_ROUND_STATS.VOTE_LOST_COUNT,ACCOUNT.ACCOUNT_NAME.as("name"),VOTING_ROUND.START_DATE,VOTING_ROUND.END_DATE,VOTING_ROUND.ROUND)
-				.from(VOTING_ROUND_STATS,VOTING_ROUND,ACCOUNT)
-				.where(VOTING_ROUND.ID.eq(VOTING_ROUND_STATS.VOTING_ROUND_ID))
-				.and(ACCOUNT.ADDRESS.eq(VOTING_ROUND_STATS.ADDRESS))
-				.and(VOTING_ROUND.ROUND.eq(UInteger.valueOf(round))
-				.and(VOTING_ROUND_STATS.ADDRESS.eq(address))	
-			).fetchOneInto(VotingRoundStatsModel.class);
+		
+		Integer maxVotingRound = this.dslContext.select(DSL.max(VOTING_ROUND.ROUND))
+				.from(VOTING_ROUND).fetchOneInto(Integer.class);
+		
+		if (maxVotingRound==round) {
+			
+			return this.dslContext.select(VOTE_LIVE.ADDRESS,VOTE_LIVE.POSITION,VOTE_LIVE.VOTE_COUNT.as("votes"),ACCOUNT.ACCOUNT_NAME.as("name"),VOTING_ROUND.START_DATE,VOTING_ROUND.END_DATE,VOTING_ROUND.ROUND)
+					.from(VOTE_LIVE,VOTING_ROUND,ACCOUNT)
+					.where(VOTING_ROUND.ROUND.eq(UInteger.valueOf(round))
+					.and(ACCOUNT.ADDRESS.eq(VOTE_LIVE.ADDRESS))
+					.and(VOTE_LIVE.ADDRESS.eq(address))	
+				).fetchOneInto(VotingRoundStatsModel.class);
+			
+		}else {
+
+			return this.dslContext.select(VOTING_ROUND_STATS.ADDRESS,VOTING_ROUND_STATS.POSITION,VOTING_ROUND_STATS.VOTE_COUNT.as("votes"),VOTING_ROUND_STATS.VOTE_LOST_COUNT,ACCOUNT.ACCOUNT_NAME.as("name"),VOTING_ROUND.START_DATE,VOTING_ROUND.END_DATE,VOTING_ROUND.ROUND)
+					.from(VOTING_ROUND_STATS,VOTING_ROUND,ACCOUNT)
+					.where(VOTING_ROUND.ID.eq(VOTING_ROUND_STATS.VOTING_ROUND_ID))
+					.and(ACCOUNT.ADDRESS.eq(VOTING_ROUND_STATS.ADDRESS))
+					.and(VOTING_ROUND.ROUND.eq(UInteger.valueOf(round))
+					.and(VOTING_ROUND_STATS.ADDRESS.eq(address))	
+				).fetchOneInto(VotingRoundStatsModel.class);
+			
+		}
+		
+
 	}
 	
 	public ListDTO<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRoundStats(VotingRoundStatsListCriteria criteria){
@@ -90,6 +109,8 @@ public class VoteService {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		conditions.add(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(VOTING_ROUND.ID));
+		conditions.add(ACCOUNT.ADDRESS.eq(WITNESS.ADDRESS));
+		conditions.add(ACCOUNT.ADDRESS.eq(VOTING_ROUND_STATS.ADDRESS));
 		
 		if (criteria.getRound()!=null) {
 			conditions.add(VOTING_ROUND.ROUND.eq(UInteger.valueOf(criteria.getRound())));			
@@ -105,12 +126,12 @@ public class VoteService {
 			
 		}
 		
-		SelectJoinStep<?> listQuery = this.dslContext.select(VOTING_ROUND_STATS.ADDRESS,VOTING_ROUND_STATS.VOTE_COUNT,VOTING_ROUND.ROUND)
-					.from(VOTING_ROUND_STATS,VOTING_ROUND);
+		SelectJoinStep<?> listQuery = this.dslContext.select(ACCOUNT.ACCOUNT_NAME.as("name"),WITNESS.URL,VOTING_ROUND_STATS.ADDRESS,VOTING_ROUND_STATS.VOTE_COUNT.as("votes"),VOTING_ROUND.ROUND,VOTING_ROUND.START_DATE,VOTING_ROUND.END_DATE,VOTING_ROUND_STATS.POSITION)
+					.from(ACCOUNT,WITNESS,VOTING_ROUND_STATS,VOTING_ROUND);
 		
 		
 		SelectJoinStep<?> countQuery = dslContext.select(DSL.count())
-				.from(VOTING_ROUND_STATS,VOTING_ROUND);
+				.from(ACCOUNT,WITNESS,VOTING_ROUND_STATS,VOTING_ROUND);
 		
 
 		
@@ -131,6 +152,31 @@ public class VoteService {
 	}
 	
 	
+	public ListDTO<VoteModel, VoteListCriteria> listLiveVotes(VoteListCriteria criteria){
+		
+		ArrayList<Condition> conditions = new ArrayList<>();
+		conditions.add(ACCOUNT.ID.eq(ACCOUNT_VOTE.ACCOUNT_ID));
+		conditions.add(ACCOUNT_VOTE.VOTE_ADDRESS.eq(criteria.getToAddress()));
+		
+		SelectJoinStep<?> listQuery = this.dslContext.select(ACCOUNT.ADDRESS.as("from"),ACCOUNT_VOTE.VOTE_ADDRESS.as("to"),ACCOUNT_VOTE.VOTE_COUNT.as("votes"))
+					.from(ACCOUNT_VOTE,ACCOUNT);
+		
+		
+		SelectJoinStep<?> countQuery = dslContext.select(DSL.count())
+				.from(ACCOUNT_VOTE,ACCOUNT);
+
+		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
+		
+		List<VoteModel> items = listQuery.where(conditions).orderBy(ACCOUNT_VOTE.VOTE_COUNT.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VoteModel.class);
+
+		ListDTO<VoteModel, VoteListCriteria> result = new ListDTO<VoteModel, VoteListCriteria>(criteria, items, totalCount);
+		
+		
+		return result;
+		
+
+	}
+	
 	public ListDTO<VoteModel, VoteListCriteria> listVotes(VoteListCriteria criteria){
 		
 		
@@ -144,7 +190,7 @@ public class VoteService {
 		}
 
 		
-		SelectJoinStep<?> listQuery = this.dslContext.select(VOTING_ROUND_VOTE.OWNER_ADDRESS.as("from"),VOTING_ROUND_VOTE.VOTE_ADDRESS.as("to"),VOTING_ROUND_VOTE.VOTE_COUNT,VOTING_ROUND_VOTE.TIMESTAMP)
+		SelectJoinStep<?> listQuery = this.dslContext.select(VOTING_ROUND_VOTE.OWNER_ADDRESS.as("from"),VOTING_ROUND_VOTE.VOTE_ADDRESS.as("to"),VOTING_ROUND_VOTE.VOTE_COUNT.as("votes"),VOTING_ROUND_VOTE.TIMESTAMP)
 					.from(VOTING_ROUND,VOTING_ROUND_VOTE);
 		
 		
@@ -161,7 +207,7 @@ public class VoteService {
 		return result;
 	}
 	
-	public ListDTO<VoteLiveModel, VoteLiveListCriteria> listLiveVotes(VoteLiveListCriteria criteria){
+	public ListDTO<VoteLiveModel, VoteLiveListCriteria> listLiveVotesStats(VoteLiveListCriteria criteria){
 		
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
@@ -182,6 +228,10 @@ public class VoteService {
 		ListDTO<VoteLiveModel, VoteLiveListCriteria> result = new ListDTO<VoteLiveModel, VoteLiveListCriteria>(criteria, items, totalCount);
 		
 		return result;
+	}
+	
+	public long getLiveTotalVotes() {
+		return this.dslContext.select(DSL.sum(ACCOUNT_VOTE.VOTE_COUNT)).from(ACCOUNT_VOTE).fetchOneInto(Long.class);
 	}
 
 	

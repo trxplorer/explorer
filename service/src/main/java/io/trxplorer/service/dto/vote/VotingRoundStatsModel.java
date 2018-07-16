@@ -1,10 +1,12 @@
 package io.trxplorer.service.dto.vote;
 
+import java.sql.Timestamp;
+
 public class VotingRoundStatsModel {
 
 	private String address;
 	
-	private long voteCount;
+	private long votes;
 	
 	private int position;
 	
@@ -12,8 +14,40 @@ public class VotingRoundStatsModel {
 	
 	private int round;
 	
+	private String url;
+	
+	private Timestamp startDate;
+	
+	private Timestamp endDate;
 	
 	
+	
+
+
+	public long getStartDate() {
+		return startDate.getTime()/1000;
+	}
+
+	public void setStartDate(Timestamp startDate) {
+		this.startDate = startDate;
+	}
+
+	public long getEndDate() {
+		return endDate.getTime()/1000;
+	}
+
+	public void setEndDate(Timestamp endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
 	public int getRound() {
 		return round;
 	}
@@ -39,12 +73,12 @@ public class VotingRoundStatsModel {
 		this.address = address;
 	}
 
-	public long getVoteCount() {
-		return voteCount;
+	public long getVotes() {
+		return votes;
 	}
 
-	public void setVoteCount(long voteCount) {
-		this.voteCount = voteCount;
+	public void setVotes(long voteCount) {
+		this.votes = voteCount;
 	}
 
 	public int getPosition() {
