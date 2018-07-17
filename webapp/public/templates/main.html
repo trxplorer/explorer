@@ -1,4 +1,4 @@
-<html lang="en" class="parallax">
+<html lang="en" >
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />	 	 
@@ -169,7 +169,15 @@
 				 	
 					 $(el).html(localDate);
 				 })
-			
+
+				var body = document.body,html = document.documentElement;
+ 				var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
+				$('body').css('height',height+'px');
+				$( window ).resize(function() {
+				    height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
+					console.log(height);
+				 	$('body').css('height',height+'px');
+				});
 			</script>	
 		{%endif%}
 
