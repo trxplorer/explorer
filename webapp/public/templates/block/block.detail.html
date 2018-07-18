@@ -36,7 +36,7 @@
 		</tr>
 		<tr>
 			<td>Transactions</td>
-			<td>{{block.txCount}} transactions<a href="/transactions?block={{block.num}}"> &nbsp;&nbsp;{%if block.txCount>0%}[see all]{%endif%}</a></td>
+			<td>{{block.txCount}} transactions</td>
 		</tr>
 		<tr>
 			<td>Produced by</td>
@@ -52,7 +52,137 @@
 		</tr>
 	</tbody>
 </table>
+
+
+<div id="app">
+     <table class="ui fixed striped table" v-cloak>
+       <thead>
+         <tr>
+           <th class="center aligned">Hash</th>
+           <th class="center aligned">Block</th>
+           <th class="center aligned">Timestamp</th>
+           <th class="center aligned">From</th>
+		   <th class="center aligned">Type</th>
+         </tr>
+       </thead>
+       <tbody>
+		<template v-for="(tx,index) in list.items" :key="index">
+	         <tr class="center aligned" >
+	           <td><a :href="'/tx/'+tx.hash">[[tx.hash]]</a></td>
+	           <td><a :href="'/block/{{tx.block}}'">[[tx.block]]</a></td>
+	           <td>[[tx.timestamp]]</td>
+	           <td>[[tx.from]]</td>
+	           <td>[[tx.type]]</td>
+	         </tr>         
+		</template>
+       </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="5" v-show="totalPages>1">
+              <div class="ui left floated">
+                  Page [[currentPage]] of [[totalPages]]
+              </div>
+              <div class="ui right floated pagination menu" >
+
+                <a class="icon item"  @click="previousPage" v-show="currentPage && currentPage!=1">
+                  <i class="left chevron icon"></i>
+                </a>
+                <a class="item" :class="{'active':currentPage==page}" v-for="page in pages" @click="goToPage(page)">[[page]]</a>
+                <a class="icon item" @click="nextPage" v-show="currentPage!=totalPages">
+                  <i class="right chevron icon"></i>
+                </a>
+
+              </div>
+            </th>
+          </tr>
+        </tfoot>
+     </table>
 </div>
-<!-- <h2 class="ui dividing header"><small><i class="icon comments outline"></i>Comments</small></h2> -->
+
+</div>
+
+{%endblock%}
+
+
+{% block footerscripts%}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.2/vue.min.js"></script>
+
+<script>
+new Vue({
+	  el: '#app',
+	  data: function(){
+		  return {
+			  list:[],
+			  block:{{block.num}}
+		  }  
+	  },
+	  methods:{
+	      previousPage(){
+	          this.fetch({page:this.currentPage-1,block:this.block})
+	          
+	      },
+	      nextPage(){
+	    	  this.fetch({page:this.currentPage+1,block:this.block})
+	      },
+	      goToPage(page){
+	    	  this.fetch({page:page,block:this.block});
+	      },
+	      fetch(params){
+	    		var ziss = this;
+	    		$.get('{{apiConfig.endpoint}}/transactions',params).success(function(data){
+	    			ziss.list = data;
+	    		}).fail(function(xhr,status,err){
+	    			console.error(err);
+	    		});
+	      }
+	  },
+	  mounted: function(){
+		  this.fetch({page:1,block:this.block});
+	  },
+	  computed: {
+	      pages(){
+	    	var pages = [];
+	    	if (!this.list || !this.list.criteria){
+	    		return pages;
+	    	}
+	    	var currentPage = this.list.criteria.page;
+	    	var limit = this.list.criteria.limit;
+	    	var start = currentPage>5 ? currentPage-2 : 1;
+	    	var maxPage = Math.ceil(this.list.totalCount/limit);
+	    	for (var i = start; i < start+5; i++) {
+				
+				if (i>maxPage){
+					break;
+				}
+				
+				pages.push(i);
+
+			}
+	    	return pages;
+	      },
+	      currentPage(){
+	        if (!this.list || !this.list.criteria){
+	          return 
+	        }
+	        return this.list.criteria.page
+	      },
+	      totalPages(){
+	        if (!this.list || !this.list.criteria){
+	          return 
+	        }
+	        return this.list.totalPages
+      		},
+	  },
+	  filters: {
+		    toLocale(value) {
+		      return value.toLocaleString('en-US')
+		    }
+	  },
+	  delimiters : ['[[',']]']
+});
+
+
+</script>
+
 
 {%endblock%}

@@ -10,118 +10,345 @@
 	<small>Token: <small>{{asset.name}} {%if asset.abbr!=null and asset.abbr.length>0%}({{asset.abbr}}){%endif%}</small></small>
 </h1>
 
-<div class="ui grid">
-	<div class="row">
-		<div class="column">
-			<table class="ui compact definition table ">
-				<tbody>
-					<tr>
-						<td>Issuer</td>
-						<td><a href="/address/{{asset.issuer}}">{{asset.issuer}}</a></td>
-					</tr>
-					<tr>
-						<td>Participation period</td>
-						<td>Start: <small class="timestamp">{{asset.startTime}}</small>  &nbsp;&nbsp;&nbsp; End: <small class="timestamp">{{asset.endTime}}</small></td>
-					</tr>
-					<tr>
-						<td>URL</td>
-						<td><a href="{{asset.url}}" target="blank">{{asset.url}}</a></td>
-					</tr>
-					<tr>
-						<td>Total supply</td>
-						<td>{{asset.totalSupplyStr}}</td>
-					</tr>
-					<tr>
-						<td>Exchange rate</td>
-						<td>{{asset.getNumStr()}} {{asset.name}} = {{asset.getTrxNumStr()}} TRX</td>
-					</tr>
-					<tr>
-						<td>Description</td>
-						<td>{{asset.description}}</td>
-					</tr>
-
-				</tbody>
-			</table>
-		</div>
-
-
-	</div>
-</div>
-
-<div class="ui top attached tabular menu">
-  <a href="/token/{{asset.name}}" class="{%if asset.criteria.tab=='tx'%}active{%endif%} item">Transfers</a>
-  <a href="/token/{{asset.name}}?t=tp" class="{%if asset.criteria.tab=='tp'%}active{%endif%} item">Participants</a>
-</div>
-
-
-<!-- TRANSACTIONS -->
-{%if asset.criteria.tab=='tx'%}
-<table class="ui fixed striped table">
-	<thead>
-		<tr>
-			<th class="center aligned">Hash</th>
-			<th class="center aligned">Block</th>
-			<th class="center aligned">Timestamp</th>
-			<th class="center aligned">From</th>
-			<th class="center aligned">To</th>
-			<th class="center aligned">Amount</th>
-		</tr>
-	</thead>
+<table class="ui compact definition table ">
 	<tbody>
-		{%for tx in asset.transactions%}
-		<tr class="center aligned">
-			<td><a href="/tx/{{tx.hash}}">{{tx.hash}}</a></td>
-			<td><a href="/block/{{tx.blockNum}}">{{tx.blockNum}}</a></td>
-			<td>{{tx.timestamp}}</td>
-			<td>{% if tx.from!=account.address%}<a href="/address/{{tx.from}}">{{tx.from}}</a>{%else%} {{tx.from}}{%endif%}</td>
-			<td>{% if tx.to!=account.address%}<a href="/address/{{tx.to}}">{{tx.to}}</a>{%else%}{{tx.to}}{%endif%}</td>
-			<td>{{tx.getTokenAmountStr()}} {{tx.token}}</td>
-		</tr>
-		{%endfor%}
-	</tbody>
- <tfoot>
-    <tr><th colspan="6">
-		{% include 'partials/pagination' %}
-  </tr></tfoot>
-</table>
-{%endif%}
-
-{%if asset.criteria.tab=='tp'%}
-<!-- ASSET PARTICIPATION -->
-<table class="ui striped table">
-	<thead>
 		<tr>
+			<td>Issuer</td>
+			<td><a href="/address/{{asset.issuer}}">{{asset.issuer}}</a></td>
+		</tr>
+		<tr>
+			<td>Participation period</td>
+			<td>Start: <small class="timestamp">{{asset.startTime}}</small>  &nbsp;&nbsp;&nbsp; End: <small class="timestamp">{{asset.endTime}}</small></td>
+		</tr>
+		<tr>
+			<td>URL</td>
+			<td><a href="{{asset.url}}" target="blank">{{asset.url}}</a></td>
+		</tr>
+		<tr>
+			<td>Total supply</td>
+			<td>{{asset.totalSupplyStr}}</td>
+		</tr>
+		<tr>
+			<td>Exchange rate</td>
+			<td>{{asset.getNumStr()}} {{asset.name}} = {{asset.getTrxNumStr()}} TRX</td>
+		</tr>
+		<tr>
+			<td>Description</td>
+			<td>{{asset.description}}</td>
+		</tr>
+
+	</tbody>
+</table>
+
+<div id="app">
+
+<div class="ui stackable fluid secondary menu">
+  <router-link to="/" active-class="active" class="item" exact>Transfers</router-link>
+  <router-link to="/participants" active-class="active" class="item" exact>Participants</router-link>
+  <router-link to="/holders" active-class="active" class="item" exact>Holders</router-link>
+</div>
+
+ <router-view></router-view>
+ 
+</div>
+
+<!-- TRANSFERS -->
+ <script type="text/x-template"  id="transfers">
+   <div v-cloak>
+
+<div class="ui active tiny teal progress" data-value="99" data-total="100" v-show="loading">
+  <div class="bar">
+  </div>
+<div class="label">Loading...</div>
+</div>
+
+<div class="ui icon small info message" v-show="list.totalCount==0">
+  <div class="content">
+    <div class="header">
+      <i class="circle info icon"></i> No transfers yet for this account
+    </div>
+  </div>
+</div>
+
+     <table class="ui fixed striped table"  v-show="list.totalCount>0">
+       <thead>
+         <tr>
+           <th class="center aligned">Hash</th>
+           <th class="center aligned">Timestamp</th>
+           <th class="center aligned">From</th>
+           <th class="center aligned">To</th>
+           <th class="center aligned">Amount</th>
+         </tr>
+       </thead>
+       <tbody>
+		<template v-for="(tx,index) in list.items" :key="index">
+	         <tr class="center aligned" >
+	           <td><a :href="'/tx/'+tx.hash">[[tx.hash]]</a></td>
+	           <td>[[tx.timestamp|dateToLocale]]</td>
+	           <td><a :href="'/address/'+tx.from" >[[tx.from]]</a></td>
+	           <td><a :href="'/address/'+tx.to" >[[tx.to]]</a></td>
+	           <td><span v-if="tx.token">[[tx.amount|toLocale]] [[tx.token]]</span><span v-if="!tx.token">[[tx.amount|sunTrx|toLocale]]  TRX</span></td>
+	         </tr>         
+		</template>
+       </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="5" v-show="totalPages>1">
+				{% include 'account/jspartial/pagination' %}
+            </th>
+          </tr>
+        </tfoot>
+     </table>
+  </div>
+</script>
+<!-- TOKEN PARTICIPATION -->
+ <script type="text/x-template"  id="tp">
+<div v-cloak>
+<div class="ui active tiny teal progress" data-value="99" data-total="100" v-show="loading">
+  <div class="bar">
+  </div>
+<div class="label">Loading...</div>
+</div>
+<div class="ui icon small info message" v-show="list.totalCount==0">
+  <div class="content">
+    <div class="header">
+      <i class="circle info icon"></i> No participants for this token yet
+    </div>
+  </div>
+</div>
+     <table class="ui fixed striped table" v-show="list.totalCount>0">
+       <thead>
+         <tr>
 			<th class="center aligned">Token</th>
 			<th class="center aligned">From</th>
 			<th class="center aligned">To</th>
 			<th class="center aligned">Amount</th>
 			<th class="center aligned">Timestamp</th>
+         </tr>
+       </thead>
+       <tbody>
+		<template v-for="(tp,index) in list.items" :key="index">
+	         <tr class="center aligned" >
+				<td><a :href="'/token/'+tp.token">[[tp.token]]</a></td>
+	           <td><a :href="'/address/'+tp.from"> [[tp.from]]</td>
+	           <td><a :href="'/address/'+tp.to" >[[tp.to]]</td>
+	           <td>[[tp.amount|sunTrx|toLocale]] TRX</span></td>
+				<td>[[tp.timestamp|dateToLocale]]</td>
+	         </tr>         
+		</template>
+       </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="5" v-show="totalPages>1">
+				{% include 'account/jspartial/pagination' %}
+            </th>
+          </tr>
+        </tfoot>
+     </table>
+</div>
+</script>
+<!-- Holders -->
+ <script type="text/x-template"  id="holders">
+<div v-cloak>
+<div class="ui active tiny teal progress" data-value="99" data-total="100" v-show="loading">
+  <div class="bar">
+  </div>
+<div class="label">Loading...</div>
+</div>
+<div class="ui icon small info message" v-show="list.totalCount==0">
+  <div class="content">
+    <div class="header">
+      <i class="circle info icon"></i> No holder for this token yet
+    </div>
+  </div>
+</div>
+     <table class="ui fixed striped table" v-show="list.totalCount>0">
+       <thead>
+         <tr>
+			<th class="center aligned">Address</th>
+			<th class="center aligned">Balance</th>
+			<th class="center aligned">Percentage</th>
+         </tr>
+       </thead>
+       <tbody>
+		<template v-for="(holder,index) in list.items" :key="index">
+	         <tr class="center aligned" >
+	           <td><a :href="'/address/'+holder.address" >[[holder.address]]</td>
+	           <td>[[holder.balance|toLocale]] {{asset.name}}</span></td>
+			   <td>[[holder.balance|percentage|toLocale]] %</span></td>
+	         </tr>         
+		</template>
+       </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="3" v-show="totalPages>1">
+				{% include 'account/jspartial/pagination' %}
+            </th>
+          </tr>
+        </tfoot>
+     </table>
+</div>
+</script>
+{%endblock%}
+
+{% block footerscripts%}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/components/progress.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.2/vue.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.2.0/vue-router.min.js"></script>
 
 
-		</tr>
-	</thead>
-	<tbody>
-		{%for tp in asset.participations%}
-		<tr class="center aligned">
-			<td>{{tp.assetName}}</td>
-			<td>{% if tp.from!=account.address%}<a href="/address/{{tp.from}}">{{tp.from}}</a>{%else%} {{tp.from}}{%endif%}</td>
-			<td>{% if tp.to!=account.address%}<a href="/address/{{tp.to}}">{{tp.to}}</a>{%else%}{{tp.to}}{%endif%}</td>
-			<td>{{tp.amount}}</td>
-			<td>{{tp.timestamp}}</td>
-		</tr>
-		{%endfor%}
-	</tbody>
- <tfoot>
-    <tr><th colspan="5">
-		{% include 'partials/pagination' %}
-  </tr></tfoot>
-</table>
-{%endif%}
+<script>
+var common = {
+		  data: function(){
+			  return {
+				  list:[],
+				  token:'{{asset.name}}',
+				  loading:false
+			  }  
+		  },
+		  methods:{
+		      previousPage(){
+		    	  var params = this.getParams();
+		    	  params.page = this.currentPage-1; 
+		    	  this.fetch(params);
+		      },
+		      nextPage(){
+		    	  var params = this.getParams();
+		    	  params.page = this.currentPage+1;
+		    	  this.fetch(params);
+		      },
+		      goToPage(page){
+		    	  var params = this.getParams();
+		    	  params.page = page;
+		    	  this.fetch(params);
+		      },
+		      fetch(params){
+		    		var ziss = this;
+		    		this.loading = true;
+		    		$.get(this.endpoint,params).success(function(data){
+		    			ziss.list = data;
+		    			ziss.loading=false;
+		    		}).fail(function(xhr,status,err){
+		    			ziss.loading=false;
+		    			console.error(err);
+		    		});
+		      },
+			  getParams(){
+				  return {token:this.token}
+			  }
+		  },
+		  mounted: function(){
+			  this.fetch(this.getParams());
+		  },
+		  computed: {
+		      pages(){
+		    	var pages = [];
+		    	if (!this.list || !this.list.criteria){
+		    		return pages;
+		    	}
+		    	var currentPage = this.list.criteria.page;
+		    	var limit = this.list.criteria.limit;
+		    	var start = currentPage>5 ? currentPage-2 : 1;
+		    	var maxPage = Math.ceil(this.list.totalCount/limit);
+		    	for (var i = start; i < start+5; i++) {
+					
+					if (i>maxPage){
+						break;
+					}
+					
+					pages.push(i);
+
+				}
+		    	return pages;
+		      },
+		      currentPage(){
+		        if (!this.list || !this.list.criteria){
+		          return 
+		        }
+		        return this.list.criteria.page
+		      },
+		      totalPages(){
+		        if (!this.list || !this.list.criteria){
+		          return 
+		        }
+		        return this.list.totalPages
+	      		},
+		  },
+		  filters: {
+			    toLocale(value) {
+			      return value.toLocaleString('en-US')
+			    },
+			    sunTrx(value){
+			      return value/1000000;
+			    },
+			    dateToLocale(value){
+			    	if (value==0){
+			    		return "-";
+			    	}
+	            	var utcDate = moment.unix(value).format('YYYY-MM-DDTHH:mm:ss');
+			    	return moment.utc(utcDate).local().format('DD-MM-YYYY HH:mm:ss');
+			    }
+		  },
+		  delimiters : ['[[',']]']
+}
 
 
 
-<!-- <h2 class="ui dividing header">
-	<small><i class="icon comments outline"></i>Comments</small>
-</h2> -->
+var Transfers = Vue.component('transfers',{
+	  template: '#transfers',
+	  mixins:[common],
+	  data: function(){
+		  return {
+			endpoint:'{{apiConfig.endpoint}}/token/transfers'
+		  }  
+	  }
+});
+
+var TP = Vue.component('tp',{
+	  template: '#tp',
+	  mixins:[common],
+	  data: function(){
+		  return {
+			endpoint:'{{apiConfig.endpoint}}/token/participants'
+		  }  
+	  }
+});
+
+var Holders = Vue.component('tp',{
+	  template: '#holders',
+	  mixins:[common],
+	  data: function(){
+		  return {
+			endpoint:'{{apiConfig.endpoint}}/token/holders'
+		  }  
+	  },
+	  filters: {
+		    percentage(value){
+		      return new Number((value/{{asset.totalSupply}})*100).toFixed(4);
+		    }
+	  },
+});
+
+
+const routes = [
+	  { path: '/', component: Transfers },
+	  { path: '/participants', component: TP },
+	  { path: '/holders', component: Holders },
+	]
+const router = new VueRouter({
+	  routes
+	})
+new Vue({
+	  router:router,
+	  data: function(){
+		  return {
+			  tab:''
+		  }  
+	  },
+}).$mount('#app');
+
+$('.progress').progress('set', 100);
+</script>
+
 
 {%endblock%}

@@ -2,18 +2,20 @@ package io.trxplorer.api.dto.witness;
 
 import java.sql.Timestamp;
 
-public class AllowanceWidthdrawDTO {
+public class AllowanceWidthdrawModel {
 
-	private String txId;
+	private String tx;
 	
 	private Timestamp timestamp;
 
-	public String getTxId() {
-		return txId;
+	
+
+	public String getTx() {
+		return tx;
 	}
 
-	public void setTxId(String txId) {
-		this.txId = txId;
+	public void setTx(String tx) {
+		this.tx = tx;
 	}
 
 	public Timestamp getTimestamp() {

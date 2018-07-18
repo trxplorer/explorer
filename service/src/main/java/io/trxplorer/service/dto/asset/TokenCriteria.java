@@ -5,11 +5,7 @@ import java.util.Map;
 
 import io.trxplorer.service.dto.common.CommonCriteriaDTO;
 
-public class AssetIssueDetailCriteriaDTO extends CommonCriteriaDTO{
-	
-	private String tab;
-	
-	private String id;
+public class TokenCriteria extends CommonCriteriaDTO{
 	
 	private String name;
 	
@@ -30,23 +26,7 @@ public class AssetIssueDetailCriteriaDTO extends CommonCriteriaDTO{
 		this.name = name;
 	}
 
-	public String getId() {
-		return id;
-	}
-	
-	public void setId(String id) {
-		this.id = id;
-	}
 
-
-	public String getTab() {
-		return tab;
-	}
-
-
-	public void setTab(String tab) {
-		this.tab = tab;
-	}
 
 	
 	

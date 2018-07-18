@@ -19,7 +19,7 @@ import com.google.inject.Inject;
 
 import io.trxplorer.service.dto.block.BlockCriteriaDTO;
 import io.trxplorer.service.dto.block.BlockDTO;
-import io.trxplorer.service.dto.common.ListDTO;
+import io.trxplorer.service.dto.common.ListModel;
 import io.trxplorer.troncli.TronFullNodeCli;
 
 public class BlockService {
@@ -86,7 +86,7 @@ public class BlockService {
 		return block;
 	}
 	
-	public ListDTO<BlockDTO, BlockCriteriaDTO> listBlocks(BlockCriteriaDTO criteria){
+	public ListModel<BlockDTO, BlockCriteriaDTO> listBlocks(BlockCriteriaDTO criteria){
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
@@ -107,7 +107,7 @@ public class BlockService {
 		
 		setReward(items);
 		
-		ListDTO<BlockDTO, BlockCriteriaDTO> result = new ListDTO<BlockDTO, BlockCriteriaDTO>(criteria, items, totalCount);
+		ListModel<BlockDTO, BlockCriteriaDTO> result = new ListModel<BlockDTO, BlockCriteriaDTO>(criteria, items, totalCount);
 		
 		return result;
 	}

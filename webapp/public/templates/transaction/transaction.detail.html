@@ -17,7 +17,7 @@
 		</tr>
 		<tr>
 			<td>Block</td>
-			<td><a href="/block/{{tx.blockNum}}">{{tx.blockNum}}</a></td>
+			<td><a href="/block/{{tx.block}}">{{tx.block}}</a></td>
 		</tr>
 		<tr>
 			<td>Type</td>
@@ -35,16 +35,26 @@
 			<td>From</td>
 			<td><a href="/address/{{tx.from}}">{{tx.from}}</a></td>
 		</tr>
-		{%if tx.to !=null%}
+		{%if tx.type=='VOTEWITNESSCONTRACT'%}
 		<tr>
-			<td>To</td>
-			<td><a href="/address/{{tx.to}}">{{tx.to}}</a></td>
+			<td>Votes</td>
+			<td>
+				<ul>
+				{%for vote in tx.contract%}
+					<li> <b>{{vote.votes|numberlocale}}</b> votes for <a href="/address/{{vote.to}}">{{vote.to}}</a></li>
+				{%endfor%}
+				</ul>
+			</td>
 		</tr>
 		{%endif%}
-		{%if tx.amount !=null%}
+		{%if tx.type=='TRANSFERCONTRACT' or tx.type=='TRANSFERASSETCONTRACT'%}
+		<tr>
+			<td>To</td>
+			<td><a href="/address/{{tx.contract.to}}">{{tx.contract.to}}</a></td>
+		</tr>
 		<tr>
 			<td>Amount</td>
-			<td>{{tx.amount}} {{tx.token}}</td>
+			<td>{%if tx.contract.token==null %}{{tx.contract.amount|suntrx}}{%else%}{{tx.contract.amount}}{%endif%} {%if tx.contract.token!=null %}{{tx.contract.token}}{%else%}TRX{%endif%}</td>
 		</tr>
 		{%endif%}
 	</tbody>

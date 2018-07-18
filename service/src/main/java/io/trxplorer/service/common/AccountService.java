@@ -23,10 +23,10 @@ import io.trxplorer.service.dto.account.AccountListCriteria;
 import io.trxplorer.service.dto.account.AssetBalanceDTO;
 import io.trxplorer.service.dto.account.FrozenBalanceDTO;
 import io.trxplorer.service.dto.asset.AssetIssueListCriteriaDTO;
-import io.trxplorer.service.dto.asset.AssetParticipationCriteriaDTO;
-import io.trxplorer.service.dto.common.ListDTO;
-import io.trxplorer.service.dto.transaction.TransactionCriteriaDTO;
-import io.trxplorer.service.dto.transaction.TransactionDTO;
+import io.trxplorer.service.dto.asset.AssetParticipationCriteria;
+import io.trxplorer.service.dto.common.ListModel;
+import io.trxplorer.service.dto.transaction.TransactionCriteria;
+import io.trxplorer.service.dto.transaction.TransactionModel;
 import io.trxplorer.service.dto.vote.VoteModel;
 import io.trxplorer.service.dto.witness.AllowanceWidthdrawDTO;
 import io.trxplorer.troncli.TronFullNodeCli;
@@ -105,7 +105,7 @@ public class AccountService {
 		
 	}
 
-	public ListDTO<AccountDTO, AccountListCriteria> listAccounts(AccountListCriteria criteria) {
+	public ListModel<AccountDTO, AccountListCriteria> listAccounts(AccountListCriteria criteria) {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
@@ -123,14 +123,14 @@ public class AccountService {
 		
 		
 		
-		ListDTO<AccountDTO, AccountListCriteria> result = new ListDTO<AccountDTO, AccountListCriteria>(criteria, items, totalCount);
+		ListModel<AccountDTO, AccountListCriteria> result = new ListModel<AccountDTO, AccountListCriteria>(criteria, items, totalCount);
 		
 		return result;
 		
 
 	}
 	
-	public ListDTO<VoteModel, AccountDetailCriteriaDTO> listVotes(AccountDetailCriteriaDTO criteria){
+	public ListModel<VoteModel, AccountDetailCriteriaDTO> listVotes(AccountDetailCriteriaDTO criteria){
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
@@ -151,7 +151,7 @@ public class AccountService {
 		
 		
 		
-		ListDTO<VoteModel, AccountDetailCriteriaDTO> result = new ListDTO<VoteModel, AccountDetailCriteriaDTO>(criteria, items, totalCount);
+		ListModel<VoteModel, AccountDetailCriteriaDTO> result = new ListModel<VoteModel, AccountDetailCriteriaDTO>(criteria, items, totalCount);
 		
 		return result;
 		
@@ -159,7 +159,7 @@ public class AccountService {
 		
 	}
 	
-	public ListDTO<AllowanceWidthdrawDTO, AccountDetailCriteriaDTO> listAllowanceWithdrawals(AccountDetailCriteriaDTO criteria){
+	public ListModel<AllowanceWidthdrawDTO, AccountDetailCriteriaDTO> listAllowanceWithdrawals(AccountDetailCriteriaDTO criteria){
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
@@ -180,7 +180,7 @@ public class AccountService {
 		
 		
 		
-		ListDTO<AllowanceWidthdrawDTO, AccountDetailCriteriaDTO> result = new ListDTO<AllowanceWidthdrawDTO, AccountDetailCriteriaDTO>(criteria, items, totalCount);
+		ListModel<AllowanceWidthdrawDTO, AccountDetailCriteriaDTO> result = new ListModel<AllowanceWidthdrawDTO, AccountDetailCriteriaDTO>(criteria, items, totalCount);
 		
 		return result;
 		
@@ -189,7 +189,7 @@ public class AccountService {
 	}
 	
 	
-	public ListDTO<FrozenBalanceDTO, AccountDetailCriteriaDTO> listFrozenBalance(AccountDetailCriteriaDTO criteria){
+	public ListModel<FrozenBalanceDTO, AccountDetailCriteriaDTO> listFrozenBalance(AccountDetailCriteriaDTO criteria){
 		
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
@@ -219,7 +219,7 @@ public class AccountService {
 		
 		prepareFrozenBalanceDTO(items);
 		
-		ListDTO<FrozenBalanceDTO, AccountDetailCriteriaDTO> result = new ListDTO<FrozenBalanceDTO, AccountDetailCriteriaDTO>(criteria, items, totalCount);
+		ListModel<FrozenBalanceDTO, AccountDetailCriteriaDTO> result = new ListModel<FrozenBalanceDTO, AccountDetailCriteriaDTO>(criteria, items, totalCount);
 		
 		return result;
 		
@@ -241,7 +241,7 @@ public class AccountService {
 	}
 
 	
-	public ListDTO<AssetBalanceDTO, AccountDetailCriteriaDTO> listAssetBalances(AccountDetailCriteriaDTO criteria){
+	public ListModel<AssetBalanceDTO, AccountDetailCriteriaDTO> listAssetBalances(AccountDetailCriteriaDTO criteria){
 		
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
@@ -263,7 +263,7 @@ public class AccountService {
 		
 		
 		
-		ListDTO<AssetBalanceDTO, AccountDetailCriteriaDTO> result = new ListDTO<AssetBalanceDTO, AccountDetailCriteriaDTO>(criteria, items, totalCount);
+		ListModel<AssetBalanceDTO, AccountDetailCriteriaDTO> result = new ListModel<AssetBalanceDTO, AccountDetailCriteriaDTO>(criteria, items, totalCount);
 		
 		return result;
 		

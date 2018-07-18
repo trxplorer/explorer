@@ -97,7 +97,7 @@ public class ContractService {
 					
 					break;
 
-				case ContractType.SmartContract_VALUE:
+				case ContractType.CreateSmartContract_VALUE:
 					/*
 					ContractDeployRecord deployRecord = this.getDeployContractRecord(txId,SmartContract.parseFrom(contractByteString));
 					

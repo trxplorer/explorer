@@ -12,6 +12,17 @@ public class VoteModel {
 	
 	private Timestamp timestamp;
 	
+	private int round;
+	
+	
+	
+	public int getRound() {
+		return round;
+	}
+
+	public void setRound(int round) {
+		this.round = round;
+	}
 
 	public Long getVotes() {
 		return votes;

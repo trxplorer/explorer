@@ -18,6 +18,7 @@ import com.google.inject.Singleton;
 import io.trxplorer.service.common.BlockService;
 import io.trxplorer.service.dto.block.BlockCriteriaDTO;
 import io.trxplorer.service.dto.block.BlockDTO;
+import io.trxplorer.service.dto.common.ListModel;
 import io.trxplorer.webapp.job.QuickStatsJob;
 
 @Singleton
@@ -78,13 +79,15 @@ public class BlockRoutes {
 
 		View view = Results.html("block/block.list");
 		
+		ListModel<BlockDTO, BlockCriteriaDTO> list = this.blockService.listBlocks(criteria);
+		
 		HashMap<String, Object> stats = new HashMap<>();
-		stats.put("totalBlocks", quickStats.getTotalBlocks());
+		stats.put("totalBlocks", list.getItems().get(0).getNum());
 		stats.put("totalBlocks6h", quickStats.getBlocks6h());
 		stats.put("totalBlocks24h", quickStats.getBlocks24h());
 		stats.put("totalBlocksConfirmed", quickStats.getTotalBlocksConfirmed());
 		
-		view.put("list",this.blockService.listBlocks(criteria));
+		view.put("list",list);
 		view.put("stats",stats);
 		
 		res.send(view);

@@ -15,7 +15,7 @@ import com.google.inject.Singleton;
 
 import io.trxplorer.service.common.AssetService;
 import io.trxplorer.service.dto.asset.AssetIssueDTO;
-import io.trxplorer.service.dto.asset.AssetIssueDetailCriteriaDTO;
+import io.trxplorer.service.dto.asset.TokenCriteria;
 import io.trxplorer.service.dto.asset.AssetIssueListCriteriaDTO;
 import io.trxplorer.webapp.job.QuickStatsJob;
 
@@ -38,17 +38,15 @@ public class AssetRoutes {
 		Integer limit = req.param("limit").intValue(20);
 		Integer page = req.param("page").intValue(1);
 		
-		String tab = req.param("t").value("tx");
-		
 		String assetName = req.param("assetName").value(null); 
 		
 		View view = Results.html("asset/asset.detail");
 		
-		AssetIssueDetailCriteriaDTO criteria = new AssetIssueDetailCriteriaDTO();
+		TokenCriteria criteria = new TokenCriteria();
 		criteria.setLimit(limit);
 		criteria.setPage(page);
 		criteria.setName(assetName);
-		criteria.setTab(tab);
+
 
 		AssetIssueDTO assetIssue = this.assetService.getAssetDetails(criteria);
 		

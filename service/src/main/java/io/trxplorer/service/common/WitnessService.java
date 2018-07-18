@@ -16,7 +16,7 @@ import org.jooq.impl.DSL;
 
 import com.google.inject.Inject;
 
-import io.trxplorer.service.dto.common.ListDTO;
+import io.trxplorer.service.dto.common.ListModel;
 import io.trxplorer.service.dto.witness.WitnessDTO;
 import io.trxplorer.service.dto.witness.WitnessListCriteriaDTO;
 import io.trxplorer.troncli.TronFullNodeCli;
@@ -41,7 +41,7 @@ public class WitnessService {
 	}
 	
 	
-	public ListDTO<WitnessDTO, WitnessListCriteriaDTO> listWitnesses(WitnessListCriteriaDTO criteria){
+	public ListModel<WitnessDTO, WitnessListCriteriaDTO> listWitnesses(WitnessListCriteriaDTO criteria){
 		
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
@@ -69,7 +69,7 @@ public class WitnessService {
 		
 		prepareWitnessDTO(items);
 		
-		ListDTO<WitnessDTO, WitnessListCriteriaDTO> result = new ListDTO<WitnessDTO, WitnessListCriteriaDTO>(criteria, items, totalCount);
+		ListModel<WitnessDTO, WitnessListCriteriaDTO> result = new ListModel<WitnessDTO, WitnessListCriteriaDTO>(criteria, items, totalCount);
 		
 		return result;
 		

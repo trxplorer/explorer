@@ -15,7 +15,7 @@ import org.jooq.impl.DSL;
 
 import com.google.inject.Inject;
 
-import io.trxplorer.service.dto.common.ListDTO;
+import io.trxplorer.service.dto.common.ListModel;
 import io.trxplorer.service.dto.node.NodeCriteriaDTO;
 import io.trxplorer.service.dto.node.NodeDTO;
 
@@ -28,7 +28,7 @@ public class NodeService {
 		this.dslContext = dslContext;
 	}
 	
-	public ListDTO<NodeDTO, NodeCriteriaDTO> listNodes(NodeCriteriaDTO criteria) {
+	public ListModel<NodeDTO, NodeCriteriaDTO> listNodes(NodeCriteriaDTO criteria) {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
@@ -45,7 +45,7 @@ public class NodeService {
 		List<NodeDTO> items = listQuery.where(conditions).orderBy(NODE.UP.desc(),NODE.LAST_UPDATED.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(NodeDTO.class);
 		
 		
-		ListDTO<NodeDTO, NodeCriteriaDTO> result = new ListDTO<NodeDTO, NodeCriteriaDTO>(criteria, items, totalCount);
+		ListModel<NodeDTO, NodeCriteriaDTO> result = new ListModel<NodeDTO, NodeCriteriaDTO>(criteria, items, totalCount);
 		
 		
 		

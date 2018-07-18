@@ -7,25 +7,21 @@
 	<small><i class="icon user"></i> <small>{{account.address}} {%if account.name!=null and account.name!='' %}({{account.name}}){%endif%}</small></small>
 </h1>
 
-<div class="ui fluid grid">
-	<div class="row">
-		<div class="eight wide column">
 			<table class="ui compact definition table ">
 				<tbody>
-					{%if account.witness!=null%}
 					<tr>
-						<td>URL</td>
-						<td><a href="{{account.witness.url}}" target="blank">{{account.witness.url}}</a></td>
+						<td class="center aligned" colspan="2">Account overview</td>
 					</tr>
-					{%endif%}
 					<tr>
-						<td>Created</td>
+						<td>Created date</td>
 						<td><span class="timestamp">{{account.createTime}}</span></td>
 					</tr>
+					<!-- 
 					<tr>
 						<td>Bandwidth</td>
 						<td>{{account.getBandwidthStr()}}</td>
 					</tr>
+					 -->
 					<tr >
 						<td>TRX balance</td>
 						<td>
@@ -38,7 +34,7 @@
 									</tr>
 									<tr>
 										<td>Frozen</td>
-										<td>{{account.getFrozenBalanceStr()}} &nbsp;&nbsp; <small>(Expires: {{account.frozenExpire}})</small></td>
+										<td>{{account.getFrozenBalanceStr()}} &nbsp;&nbsp; <small>(Expires: <span class="timestamp">{{account.frozenExpire}}</span>)</small></td>
 									</tr>
 									<tr>
 										<td>Total</td>
@@ -51,105 +47,53 @@
 							{%endif%}
 						</td>
 					</tr>
-				</tbody>
-			</table>
-		</div>
-		<div class="eight wide column">
-			<table class="ui compact definition table ">
-				<tbody>
 					{%if account.witness!=null%}
 					<tr>
-						<td>Votes</td>
+						<td class="center aligned" colspan="2">Representative informations</td>
+					</tr>
+					<tr>
+						<td>URL</td>
+						<td><a href="{{account.witness.url}}" target="blank">{{account.witness.url}}</a></td>
+					</tr>
+					<tr>
+						<td>Received votes</td>
 						<td>{{account.witness.getVoteCountStr()}}</td>
 					</tr>
 					<tr>
-						<td>Block</td>
-						<td><a href="/blocks?producedBy={{account.address}}">{{account.witness.totalProduced}}</a> produced - {{account.witness.totalMissed}} missed</td>
+						<td>Blocks</td>
+						<td>{{account.witness.totalProduced}} produced - {{account.witness.totalMissed}} missed</td>
 					</tr>
 					<tr>
 						<td>Allowance</td>
 						<td>{{account.getAllowanceStr()}}</td>
 					</tr>
+					<!-- 
 					<tr>
 						<td>Total reward</td>
 						<td>{{account.totalReward}}</td>
 					</tr>
+					 -->
 					{%endif%}
 				</tbody>
 			</table>
-		</div>
 
-	</div>
+
+<div id="app">
+
+<div class="ui stackable fluid secondary menu">
+  <router-link to="/" active-class="active" class="item" exact>Transfers</router-link>
+  <router-link to="/tokens" active-class="active" class="item" exact>Tokens</router-link>
+  <router-link to="/tp" active-class="active" class="item" exact>Token participations</router-link>
+  <router-link to="/votes" active-class="active" class="item" exact>Votes</router-link>
+  <!-- <router-link to="/freeze" active-class="active" class="item">Freeze history</router-link> -->
+  {%if account.witness!=null%}
+  <router-link to="/aw" active-class="active" class="item" exact>Witdhdrawal</router-link>
+  {%endif%}
 </div>
 
-<div class="ui top attached tabular menu">
-  <a href="/address/{{account.address}}" class="{%if account.criteria.tab=='tx'%}active{%endif%} item">Transfers</a>
-  <a href="/address/{{account.address}}?t=ab" class="{%if account.criteria.tab=='ab'%}active{%endif%} item">Asset balances</a>
-  <a href="/address/{{account.address}}?t=ti" class="{%if account.criteria.tab=='ti'%}active{%endif%} item">Token issued</a>
-  <a href="/address/{{account.address}}?t=tp" class="{%if account.criteria.tab=='tp'%}active{%endif%} item">Token participations</a>
-  <a href="/address/{{account.address}}?t=votes" class="{%if account.criteria.tab=='votes'%}active{%endif%} item">Votes</a>
-  <a href="/address/{{account.address}}?t=fh" class="{%if account.criteria.tab=='fh'%}active{%endif%} item">Freeze/Unfreeze history</a>
-  {%if account.witness!=null%}<a href="/address/{{account.address}}?t=aw" class="{%if account.criteria.tab=='aw'%}active{%endif%} item">Allowance widthdrawals</a>{%endif%}
+ <router-view></router-view>
+ 
 </div>
-
-
-{%if account.criteria.tab=='tx'%}
-<!-- TRANSACTIONS -->
-<table class="ui striped table">
-	<thead>
-		<tr>
-			<th class="center aligned">Tx</th>
-			<th class="center aligned">Block</th>
-			<th class="center aligned">Timestamp</th>
-			<th class="center aligned">From</th>
-			<th class="center aligned">To</th>
-			<th class="center aligned">Amount</th>
-		</tr>
-	</thead>
-	<tbody>
-		{%for tx in account.transactions%}
-		<tr class="center aligned">
-			<td><a href="/tx/{{tx.hash}}">{{tx.shortHash}}</a></td>
-			<td><a href="/block/{{tx.blockNum}}">{{tx.blockNum}}</a></td>
-			<td>{{tx.timestamp}}</td>
-			<td>{% if tx.from!=account.address%}<a href="/address/{{tx.from}}">{{tx.from}}</a>{%else%} {{tx.from}}{%endif%}</td>
-			<td>{% if tx.to!=account.address%}<a href="/address/{{tx.to}}">{{tx.to}}</a>{%else%}{{tx.to}}{%endif%}</td>
-			<td>{{tx.amount}} {{tx.token}}</td>
-		</tr>
-		{%endfor%}
-	</tbody>
- <tfoot>
-    <tr><th colspan="6">
-		{% include 'partials/pagination' %}
-  </tr></tfoot>
-</table>
-{%endif%}
-
-
-
-{%if account.criteria.tab=='ab'%}
-<!-- ASSET BALANCES -->
-<table class="ui striped table">
-	<thead>
-		<tr>
-			<th class="center aligned">Asset</th>
-			<th class="center aligned">Balance</th>
-		</tr>
-	</thead>
-	<tbody>
-		{%for ab in account.assetBalances%}
-		<tr class="center aligned">
-			<td>{{ab.assetName}}</td>
-			<td>{{ab.getBalanceStr()}}</td>
-		</tr>
-		{%endfor%}
-	</tbody>
- <tfoot>
-    <tr><th colspan="2">
-		{% include 'partials/pagination' %}
-  </tr></tfoot>
-</table>
-{%endif%}
 
 
 {%if account.criteria.tab=='votes'%}
@@ -182,126 +126,442 @@
 
 
 
-{%if account.criteria.tab=='ti'%}
-<!-- ASSET ISSUE -->
-<table class="ui striped table">
-	<thead>
-		<tr>
-			<th class="center aligned">Name</th>
-			<th class="center aligned">Supply</th>
-			<th class="center aligned">Start date</th>
-			<th class="center aligned">End date</th>
-			<th class="center aligned">Participants</th>
-		</tr>
-	</thead>
-	<tbody>
-		{%for assetIssue in account.assetIssues%}
-		<tr class="center aligned">
-			<td><a href="/token/{{assetIssue.id}}">{{assetIssue.name}}</a></td>
-			<td>{{assetIssue.getTotalSupplyStr()}}</td>
-			<td>{{assetIssue.startTime}}</td>
-			<td>{{assetIssue.endTime}}</td>
-			<td>{%if assetIssue.totalParticipants>0%}<a href="/accounts?participateAsset={{assetIssue.name}}">{{assetIssue.totalParticipants}}</a>{%else%}{{assetIssue.totalParticipants}}{%endif%}</td>
-		</tr>
-		{%endfor%}
-	</tbody>
- <tfoot>
-    <tr><th colspan="5">
-		{% include 'partials/pagination' %}
-  </tr></tfoot>
-</table>
-{%endif%}
+<!-- TRANSFERS -->
+ <script type="text/x-template"  id="transfers">
+   <div v-cloak>
 
+<div class="ui active tiny teal progress" data-value="99" data-total="100" v-show="loading">
+  <div class="bar">
+  </div>
+<div class="label">Loading...</div>
+</div>
 
-{%if account.criteria.tab=='tp'%}
-<!-- ASSET PARTICIPATION -->
-<table class="ui striped table">
-	<thead>
-		<tr>
+<div class="ui icon small info message" v-show="list.totalCount==0">
+  <div class="content">
+    <div class="header">
+      <i class="circle info icon"></i> No transfers yet for this account
+    </div>
+  </div>
+</div>
+
+     <table class="ui fixed striped table"  v-show="list.totalCount>0">
+       <thead>
+         <tr>
+           <th class="center aligned">Hash</th>
+           <th class="center aligned">Timestamp</th>
+           <th class="center aligned">From</th>
+           <th class="center aligned">To</th>
+           <th class="center aligned">Amount</th>
+         </tr>
+       </thead>
+       <tbody>
+		<template v-for="(tx,index) in list.items" :key="index">
+	         <tr class="center aligned" >
+	           <td><a :href="'/tx/'+tx.hash">[[tx.hash]]</a></td>
+	           <td>[[tx.timestamp|dateToLocale]]</td>
+	           <td><a :href="'/address/'+tx.from" v-if="tx.from!=address">[[tx.from]]</a><span v-if="tx.from==address">[[tx.from]]</span></td>
+	           <td><a :href="'/address/'+tx.to" v-if="tx.to!=address">[[tx.to]]</a><span v-if="tx.to==address">[[tx.to]]</span></td>
+	           <td><span v-if="tx.token">[[tx.amount|toLocale]] [[tx.token]]</span><span v-if="!tx.token">[[tx.amount|sunTrx|toLocale]]  TRX</span></td>
+	         </tr>         
+		</template>
+       </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="5" v-show="totalPages>1">
+				{% include 'account/jspartial/pagination' %}
+            </th>
+          </tr>
+        </tfoot>
+     </table>
+  </div>
+</script>
+<!-- TOKEN BALANCE -->
+ <script type="text/x-template"  id="tokens">
+ <div v-cloak>
+<div class="ui active tiny teal progress" data-value="99" data-total="100" v-show="loading">
+  <div class="bar">
+  </div>
+<div class="label">Loading...</div>
+</div>
+<div class="ui icon small info message" v-show="list.totalCount==0">
+  <div class="content">
+    <div class="header">
+      <i class="circle info icon"></i> No tokens yet for this account
+    </div>
+  </div>
+</div>
+     <table class="ui fixed striped table" v-show="list.totalCount>0">
+       <thead>
+         <tr>
+           <th class="center aligned">Token</th>
+           <th class="center aligned">Balance</th>
+         </tr>
+       </thead>
+       <tbody>
+		<template v-for="(token,index) in list.items" :key="index">
+	         <tr class="center aligned" >
+	           <td><a :href="'/token/'+token.assetName">[[token.assetName]]</a></td>
+	           <td>[[token.balance|toLocale]]</td>
+	         </tr>         
+		</template>
+       </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="2" v-show="totalPages>1">
+				{% include 'account/jspartial/pagination' %}
+            </th>
+          </tr>
+        </tfoot>
+     </table>
+</div>
+</script>
+<!-- TOKEN PARTICIPATION -->
+ <script type="text/x-template"  id="tp">
+<div v-cloak>
+<div class="ui active tiny teal progress" data-value="99" data-total="100" v-show="loading">
+  <div class="bar">
+  </div>
+<div class="label">Loading...</div>
+</div>
+<div class="ui icon small info message" v-show="list.totalCount==0">
+  <div class="content">
+    <div class="header">
+      <i class="circle info icon"></i> No token participations yet for this account
+    </div>
+  </div>
+</div>
+     <table class="ui fixed striped table" v-show="list.totalCount>0">
+       <thead>
+         <tr>
 			<th class="center aligned">Token</th>
 			<th class="center aligned">From</th>
 			<th class="center aligned">To</th>
 			<th class="center aligned">Amount</th>
 			<th class="center aligned">Timestamp</th>
-
-
-		</tr>
-	</thead>
-	<tbody>
-		{%for tp in account.assetParticipations%}
-		<tr class="center aligned">
-			<td>{{tp.assetName}}</td>
-			<td>{% if tp.from!=account.address%}<a href="/address/{{tp.from}}">{{tp.from}}</a>{%else%} {{tp.from}}{%endif%}</td>
-			<td>{% if tp.to!=account.address%}<a href="/address/{{tp.to}}">{{tp.to}}</a>{%else%}{{tp.to}}{%endif%}</td>
-			<td>{{tp.getAmountStr()}}</td>
-			<td>{{tp.timestamp}}</td>
-		</tr>
-		{%endfor%}
-	</tbody>
- <tfoot>
-    <tr><th colspan="5">
-		{% include 'partials/pagination' %}
-  </tr></tfoot>
-</table>
-{%endif%}
-
-
-{%if account.criteria.tab=='fh'%}
-<!-- FROZEN HISTORY -->
-<table class="ui striped table">
-	<thead>
+         </tr>
+       </thead>
+       <tbody>
+		<template v-for="(tp,index) in list.items" :key="index">
+	         <tr class="center aligned" >
+				<td><a :href="'/token/'+tp.token">[[tp.token]]</a></td>
+	           <td><a :href="'/address/'+tp.from" v-if="tp.from!=address">[[tp.from]]</a><span v-if="tp.from==address">[[tp.from]]</span></td>
+	           <td><a :href="'/address/'+tp.to" v-if="tp.to!=address">[[tp.to]]</a><span v-if="tp.to==address">[[tp.to]]</span></td>
+	           <td>[[tp.amount|sunTrx|toLocale]] TRX</span></td>
+				<td>[[tp.timestamp|dateToLocale]]</td>
+	         </tr>         
+		</template>
+       </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="5" v-show="totalPages>1">
+				{% include 'account/jspartial/pagination' %}
+            </th>
+          </tr>
+        </tfoot>
+     </table>
+</div>
+</script>
+<!-- VOTES -->
+ <script type="text/x-template"  id="votes">
+<div v-cloak>
+<div class="ui active tiny teal progress" data-value="99" data-total="100" v-show="loading">
+  <div class="bar">
+  </div>
+<div class="label">Loading...</div>
+</div>
+<div class="ui icon small info message" v-show="list.totalCount==0">
+  <div class="content">
+    <div class="header">
+      <i class="circle info icon"></i> No votes yet for this account
+    </div>
+  </div>
+</div>
+     <table class="ui fixed striped table" v-show="list.totalCount>0">
+       <thead>
+         <tr>
+			<th class="center aligned">Round</th>
+			<th class="center aligned">To</th>
+			<th class="center aligned">Votes</th>
+			<th class="center aligned">Timestamp</th>
+         </tr>
+       </thead>
+       <tbody>
+		<template v-for="(vote,index) in list.items" :key="index">
+	         <tr class="center aligned" >
+				<td><a :href="'/vote/'+vote.round">[[vote.round]]</a></td>
+				<td><a :href="'/address/'+vote.to">[[vote.to]]</a></td>
+				<td>[[vote.votes|toLocale]]</td>
+				<td>[[vote.timestamp|dateToLocale]]</td>
+	         </tr>         
+		</template>
+       </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="4" v-show="totalPages>1">
+				{% include 'account/jspartial/pagination' %}
+            </th>
+          </tr>
+        </tfoot>
+     </table>
+</div>
+</script>
+<!-- FREEZE -->
+ <script type="text/x-template"  id="freeze">
+     <table class="ui fixed striped table" v-cloak>
+       <thead>
 		<tr>
 			<th class="center aligned">Frozen Balance</th>
 			<th class="center aligned">Freeze expiration date</th>
 			<th class="center aligned">Unfreeze date</th>
 		</tr>
-	</thead>
-	<tbody>
-		{%for fb in account.frozenBalances%}
-		<tr class="center aligned">
-			<td>{{fb.getBalanceStr()}}</td>
-			<td>{{fb.expireTime}}</td>
-			<td>{{fb.unfreezeTime}}</td>
-		</tr>
-		{%endfor%}
-	</tbody>
- <tfoot>
-    <tr><th colspan="3">
-		{% include 'partials/pagination' %}
-  </tr></tfoot>
-</table>
-{%endif%}
-
-
-{%if account.criteria.tab=='aw'%}
-<!-- ALLOWANCE WITHDRAWALS -->
-<table class="ui striped table">
-	<thead>
+       </thead>
+       <tbody>
+		<template v-for="(freeze,index) in list.items" :key="index">
+	         <tr class="center aligned" >
+				<td>[[freeze.balance|sunTrx|toLocale]]</td>
+				<td>[[freeze.expireTime]]</td>
+				<td>[[freeze.unfreezeTime]]</td>
+	         </tr>         
+		</template>
+       </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="5" v-show="totalPages>1">
+				{% include 'account/jspartial/pagination' %}
+            </th>
+          </tr>
+        </tfoot>
+     </table>
+</script>
+<!-- WIDTHDRAWALS -->
+ <script type="text/x-template"  id="widthdrawals">
+<div v-cloak>
+<div class="ui active tiny teal progress" data-value="99" data-total="100" v-show="loading">
+  <div class="bar">
+  </div>
+<div class="label">Loading...</div>
+</div>
+<div class="ui icon small info message" v-show="list.totalCount==0">
+  <div class="content">
+    <div class="header">
+      <i class="circle info icon"></i> No withdrawal yet for this account
+    </div>
+  </div>
+</div>
+     <table class="ui fixed striped table" v-show="list.totalCount>0">
+       <thead>
 		<tr>
 			<th class="center aligned">Tx Id</th>
 			<th class="center aligned">Timestamp</th>
 		</tr>
-	</thead>
-	<tbody>
-		{%for aw in account.allowanceWithdrawals%}
-		<tr class="center aligned">
-			<td>{{aw.txId}}</td>
-			<td>{{aw.timestamp}}</td>
-		</tr>
-		{%endfor%}
-	</tbody>
- <tfoot>
-    <tr><th colspan="3">
-		{% include 'partials/pagination' %}
-  </tr></tfoot>
-</table>
-{%endif%}
+       </thead>
+       <tbody>
+		<template v-for="(aw,index) in list.items" :key="index">
+	         <tr class="center aligned" >
+				<td><a :href="'/tx/'+aw.tx">[[aw.tx]]</a></td>
+				<td>[[aw.timestamp]]</td>
+	         </tr>         
+		</template>
+       </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="2" v-show="totalPages>1">
+				{% include 'account/jspartial/pagination' %}
+            </th>
+          </tr>
+        </tfoot>
+     </table>
+</div>
+</script>
 
 
-<!-- <h2 class="ui dividing header">
-	<small><i class="icon comments outline"></i>Comments</small>
-</h2> -->
 
 {%endblock%}
+
+{% block footerscripts%}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/components/progress.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.2/vue.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.2.0/vue-router.min.js"></script>
+
+
+<script>
+var common = {
+		  data: function(){
+			  return {
+				  list:[],
+				  address:'{{account.address}}',
+				  loading:false
+			  }  
+		  },
+		  methods:{
+		      previousPage(){
+		    	  var params = this.getParams();
+		    	  params.page = this.currentPage-1; 
+		    	  this.fetch(params);
+		      },
+		      nextPage(){
+		    	  var params = this.getParams();
+		    	  params.page = this.currentPage+1;
+		    	  this.fetch(params);
+		      },
+		      goToPage(page){
+		    	  var params = this.getParams();
+		    	  params.page = page;
+		    	  this.fetch(params);
+		      },
+		      fetch(params){
+		    		var ziss = this;
+		    		this.loading = true;
+		    		$.get(this.endpoint,params).success(function(data){
+		    			ziss.list = data;
+		    			ziss.loading=false;
+		    		}).fail(function(xhr,status,err){
+		    			ziss.loading=false;
+		    			console.error(err);
+		    		});
+		      },
+			  getParams(){
+				  return {address:this.address}
+			  }
+		  },
+		  mounted: function(){
+			  this.fetch(this.getParams());
+		  },
+		  computed: {
+		      pages(){
+		    	var pages = [];
+		    	if (!this.list || !this.list.criteria){
+		    		return pages;
+		    	}
+		    	var currentPage = this.list.criteria.page;
+		    	var limit = this.list.criteria.limit;
+		    	var start = currentPage>5 ? currentPage-2 : 1;
+		    	var maxPage = Math.ceil(this.list.totalCount/limit);
+		    	for (var i = start; i < start+5; i++) {
+					
+					if (i>maxPage){
+						break;
+					}
+					
+					pages.push(i);
+
+				}
+		    	return pages;
+		      },
+		      currentPage(){
+		        if (!this.list || !this.list.criteria){
+		          return 
+		        }
+		        return this.list.criteria.page
+		      },
+		      totalPages(){
+		        if (!this.list || !this.list.criteria){
+		          return 
+		        }
+		        return this.list.totalPages
+	      		},
+		  },
+		  filters: {
+			    toLocale(value) {
+			      return value.toLocaleString('en-US')
+			    },
+			    sunTrx(value){
+			      return value/1000000;
+			    },
+			    dateToLocale(value){
+			    	if (value==0){
+			    		return "-";
+			    	}
+	            	var utcDate = moment.unix(value).format('YYYY-MM-DDTHH:mm:ss');
+			    	return moment.utc(utcDate).local().format('DD-MM-YYYY HH:mm:ss');
+			    }
+		  },
+		  delimiters : ['[[',']]']
+}
+
+
+
+var Transfers = Vue.component('transfers',{
+	  template: '#transfers',
+	  mixins:[common],
+	  data: function(){
+		  return {
+			endpoint:'{{apiConfig.endpoint}}/account/transfers'
+		  }  
+	  }
+});
+var Tokens = Vue.component('tokens',{
+	  template: '#tokens',
+	  mixins:[common],
+	  data: function(){
+		  return {
+			endpoint:'{{apiConfig.endpoint}}/account/tokens'
+		  }  
+	  }
+});
+var TP = Vue.component('tp',{
+	  template: '#tp',
+	  mixins:[common],
+	  data: function(){
+		  return {
+			endpoint:'{{apiConfig.endpoint}}/account/tokenParticipations'
+		  }  
+	  }
+});
+var Votes = Vue.component('votes',{
+	  template: '#votes',
+	  mixins:[common],
+	  data: function(){
+		  return {
+			endpoint:'{{apiConfig.endpoint}}/account/votes'
+		  }  
+	  }
+});
+var Withdrawal = Vue.component('widthdrawal',{
+	  template: '#widthdrawals',
+	  mixins:[common],
+	  data: function(){
+		  return {
+			endpoint:'{{apiConfig.endpoint}}/account/withdrawal'
+		  }  
+	  }
+});
+/*
+var Freeze = Vue.component('freeze',{
+	  template: '#freeze',
+	  mixins:[common],
+	  data: function(){
+		  return {
+			endpoint:'{{apiConfig.endpoint}}/account/freeze'
+		  }  
+	  }
+});
+*/
+const routes = [
+	  { path: '/', component: Transfers },
+	  { path: '/tokens', component: Tokens },
+	  { path: '/tp', component: TP },
+	  { path: '/votes', component: Votes },
+	  { path: '/aw', component: Withdrawal },
+	  /*{ path: '/freeze', component: Freeze },*/
+	]
+const router = new VueRouter({
+	  routes
+	})
+new Vue({
+	  router:router,
+	  data: function(){
+		  return {
+			  tab:''
+		  }  
+	  },
+}).$mount('#app');
+
+$('.progress').progress('set', 100);
+</script>
+
+
+{%endblock%}
+
 
 

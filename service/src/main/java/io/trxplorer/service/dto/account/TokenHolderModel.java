@@ -1,17 +1,19 @@
 package io.trxplorer.service.dto.account;
 
-public class AssetBalanceDTO {
+public class TokenHolderModel {
 
-	private String assetName;
+	private String address;
 	
 	private Long balance;
 
-	public String getAssetName() {
-		return assetName;
-	}
 	
-	public void setAssetName(String assetName) {
-		this.assetName = assetName;
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	public Long getBalance() {

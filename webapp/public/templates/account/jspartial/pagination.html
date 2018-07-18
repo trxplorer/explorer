@@ -1,0 +1,14 @@
+ <div class="ui left floated">
+    Page [[currentPage]] of [[totalPages]]
+</div>
+<div class="ui right floated pagination menu" >
+
+  <a class="icon item"  @click="previousPage" v-show="currentPage && currentPage!=1">
+    <i class="left chevron icon"></i>
+  </a>
+  <a class="item" :class="{'active':currentPage==page}" v-for="page in pages" @click="goToPage(page)">[[page]]</a>
+  <a class="icon item" @click="nextPage" v-show="currentPage!=totalPages">
+    <i class="right chevron icon"></i>
+  </a>
+
+</div>

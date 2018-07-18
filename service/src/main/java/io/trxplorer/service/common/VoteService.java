@@ -21,7 +21,7 @@ import org.jooq.types.ULong;
 
 import com.google.inject.Inject;
 
-import io.trxplorer.service.dto.common.ListDTO;
+import io.trxplorer.service.dto.common.ListModel;
 import io.trxplorer.service.dto.vote.VoteListCriteria;
 import io.trxplorer.service.dto.vote.VoteLiveListCriteria;
 import io.trxplorer.service.dto.vote.VoteLiveModel;
@@ -43,7 +43,7 @@ public class VoteService {
 	}
 	
 	
-	public ListDTO<VotingRoundDTO, VotingRoundListCriteria> listRounds(VotingRoundListCriteria criteria){
+	public ListModel<VotingRoundDTO, VotingRoundListCriteria> listRounds(VotingRoundListCriteria criteria){
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		conditions.add(VOTING_ROUND.SYNC_END.isNotNull());
@@ -63,7 +63,7 @@ public class VoteService {
 		
 		
 		
-		ListDTO<VotingRoundDTO, VotingRoundListCriteria> result = new ListDTO<VotingRoundDTO, VotingRoundListCriteria>(criteria, items, totalCount);
+		ListModel<VotingRoundDTO, VotingRoundListCriteria> result = new ListModel<VotingRoundDTO, VotingRoundListCriteria>(criteria, items, totalCount);
 		
 		return result;
 	}
@@ -104,7 +104,7 @@ public class VoteService {
 
 	}
 	
-	public ListDTO<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRoundStats(VotingRoundStatsListCriteria criteria){
+	public ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRoundStats(VotingRoundStatsListCriteria criteria){
 		
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
@@ -145,14 +145,14 @@ public class VoteService {
 		
 		List<VotingRoundStatsModel> items = ((ResultQuery<?>) query).fetchInto(VotingRoundStatsModel.class);
 
-		ListDTO<VotingRoundStatsModel, VotingRoundStatsListCriteria> result = new ListDTO<VotingRoundStatsModel, VotingRoundStatsListCriteria>(criteria, items, totalCount);
+		ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> result = new ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria>(criteria, items, totalCount);
 		
 		
 		return result;
 	}
 	
 	
-	public ListDTO<VoteModel, VoteListCriteria> listLiveVotes(VoteListCriteria criteria){
+	public ListModel<VoteModel, VoteListCriteria> listLiveVotes(VoteListCriteria criteria){
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		conditions.add(ACCOUNT.ID.eq(ACCOUNT_VOTE.ACCOUNT_ID));
@@ -169,7 +169,7 @@ public class VoteService {
 		
 		List<VoteModel> items = listQuery.where(conditions).orderBy(ACCOUNT_VOTE.VOTE_COUNT.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VoteModel.class);
 
-		ListDTO<VoteModel, VoteListCriteria> result = new ListDTO<VoteModel, VoteListCriteria>(criteria, items, totalCount);
+		ListModel<VoteModel, VoteListCriteria> result = new ListModel<VoteModel, VoteListCriteria>(criteria, items, totalCount);
 		
 		
 		return result;
@@ -177,7 +177,7 @@ public class VoteService {
 
 	}
 	
-	public ListDTO<VoteModel, VoteListCriteria> listVotes(VoteListCriteria criteria){
+	public ListModel<VoteModel, VoteListCriteria> listVotes(VoteListCriteria criteria){
 		
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
@@ -201,13 +201,13 @@ public class VoteService {
 		
 		List<VoteModel> items = listQuery.where(conditions).orderBy(VOTING_ROUND_VOTE.VOTE_COUNT.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VoteModel.class);
 
-		ListDTO<VoteModel, VoteListCriteria> result = new ListDTO<VoteModel, VoteListCriteria>(criteria, items, totalCount);
+		ListModel<VoteModel, VoteListCriteria> result = new ListModel<VoteModel, VoteListCriteria>(criteria, items, totalCount);
 		
 		
 		return result;
 	}
 	
-	public ListDTO<VoteLiveModel, VoteLiveListCriteria> listLiveVotesStats(VoteLiveListCriteria criteria){
+	public ListModel<VoteLiveModel, VoteLiveListCriteria> listLiveVotesStats(VoteLiveListCriteria criteria){
 		
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
@@ -225,7 +225,7 @@ public class VoteService {
 		
 		List<VoteLiveModel> items = listQuery.where(conditions).orderBy(VOTE_LIVE.VOTE_COUNT.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VoteLiveModel.class);
 
-		ListDTO<VoteLiveModel, VoteLiveListCriteria> result = new ListDTO<VoteLiveModel, VoteLiveListCriteria>(criteria, items, totalCount);
+		ListModel<VoteLiveModel, VoteLiveListCriteria> result = new ListModel<VoteLiveModel, VoteLiveListCriteria>(criteria, items, totalCount);
 		
 		return result;
 	}

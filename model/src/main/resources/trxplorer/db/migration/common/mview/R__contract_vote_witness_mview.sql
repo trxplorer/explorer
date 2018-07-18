@@ -1,4 +1,5 @@
-create table if not exists contract_vote_witness_mview as select * from contract_vote_witness;
+drop table if exists contract_vote_witness_mview;
+create table contract_vote_witness_mview as select * from contract_vote_witness;
 truncate contract_vote_witness_mview;
 ALTER TABLE `contract_vote_witness_mview` 
 ADD INDEX `cvrv_mview_owner_address_index` (`owner_address` ASC),

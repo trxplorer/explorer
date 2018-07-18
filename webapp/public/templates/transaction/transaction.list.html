@@ -59,7 +59,7 @@
       </div>
 </div>
 
-<table class="ui striped table">
+<table class="ui fixed striped table">
 	<thead>
 		<tr>
 			<th class="center aligned">Hash</th>
@@ -67,25 +67,23 @@
 			<th class="center aligned">Timestamp</th>
 			<th class="center aligned">Status</th>
 			<th class="center aligned">From</th>
-			<th class="center aligned">To</th>
-			<th class="center aligned">Amount</th>
+			<th class="center aligned">Type</th>
 		</tr>
 	</thead>
 	<tbody>
 		{%for tx in list.items%}
 		<tr class="center aligned">
-			<td><a href="/tx/{{tx.hash}}">{{tx.shortHash}}</a></td>
-			<td><a href="/block/{{tx.blockNum}}">{{tx.blockNum}}</a></td>
+			<td><a href="/tx/{{tx.hash}}">{{tx.hash}}</a></td>
+			<td><a href="/block/{{tx.block}}">{{tx.block}}</a></td>
 			<td><span class="timestamp">{{tx.timestamp}}</span></td>
-			<td>{%if tx.confirmed==true%}<span class="ui small green label">Confirmed</span>{%else%}<a class="ui small red label">Unconfirmed</a>{%endif%}</td>
+			<td>{%if tx.confirmed==true%}<span class="ui small green label">Confirmed</span>{%else%}<span class="ui small red label">Unconfirmed</span>{%endif%}</td>
 			<td><a href="/address/{{tx.from}}">{{tx.from}}</a></td>
-			<td><a href="/address/{{tx.to}}">{{tx.to}}</a></td>
-			<td>{{tx.amount}} {{tx.token}}</td>
+			<td><span class="ui tiny label">{{tx.type}}</span></td>
 		</tr>
 		{%endfor%}
 	</tbody>
  <tfoot>
-    <tr><th colspan="7">
+    <tr><th colspan="6">
 		{% include 'partials/pagination' %}
   </tr></tfoot>
 </table>

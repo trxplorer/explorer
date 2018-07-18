@@ -9,7 +9,7 @@ import java.util.Map;
 
 
 
-public class ListDTO<T,C extends CommonCriteriaDTO> {
+public class ListModel<T,C extends CommonCriteriaDTO> {
 
 	private int totalCount;
 	
@@ -20,10 +20,10 @@ public class ListDTO<T,C extends CommonCriteriaDTO> {
 	/**
 	 * Do not use only for serialization
 	 */
-	public ListDTO() {
+	public ListModel() {
 	}
 	
-	public ListDTO(C criteria,List<T> items,int totalCount) {
+	public ListModel(C criteria,List<T> items,int totalCount) {
 		this.criteria = criteria;
 		this.items = items;
 		this.totalCount = totalCount;

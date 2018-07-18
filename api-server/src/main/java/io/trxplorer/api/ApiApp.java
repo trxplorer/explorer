@@ -11,6 +11,8 @@ import org.jooq.conf.Settings;
 
 import io.trxplorer.api.route.AccountRoutes;
 import io.trxplorer.api.route.BlockRoutes;
+import io.trxplorer.api.route.TokenRoutes;
+import io.trxplorer.api.route.TransactionRoutes;
 import io.trxplorer.api.route.TronRoutes;
 import io.trxplorer.api.route.VotingRoundRoutes;
 import io.trxplorer.api.route.WitnessRoutes;
@@ -66,7 +68,8 @@ public class ApiApp extends Jooby {
 		use(BlockRoutes.class);
 		use(AccountRoutes.class);
 		use(TronRoutes.class);
-
+		use(TransactionRoutes.class);
+		use(TokenRoutes.class);
 		
 		use(new ApiTool()
 				 .filter(route -> {

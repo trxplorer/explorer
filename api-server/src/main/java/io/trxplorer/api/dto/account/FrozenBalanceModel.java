@@ -2,7 +2,7 @@ package io.trxplorer.api.dto.account;
 
 import java.sql.Timestamp;
 
-public class FrozenBalanceDTO {
+public class FrozenBalanceModel {
 
 	private Timestamp expireTime;
 	

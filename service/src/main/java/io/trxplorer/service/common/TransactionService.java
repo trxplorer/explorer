@@ -8,22 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectOnConditionStep;
-import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
+import org.tron.protos.Protocol.Transaction.Contract.ContractType;
 
 import com.google.inject.Inject;
 
-import io.trxplorer.service.dto.common.ListDTO;
-import io.trxplorer.service.dto.transaction.TransactionCriteriaDTO;
-import io.trxplorer.service.dto.transaction.TransactionDTO;
+import io.trxplorer.service.dto.common.ListModel;
+import io.trxplorer.service.dto.transaction.TransactionCriteria;
+import io.trxplorer.service.dto.transaction.TransactionModel;
+import io.trxplorer.service.dto.transaction.TransferModel;
 import io.trxplorer.service.dto.vote.VoteModel;
 import io.trxplorer.service.utils.TransactionHelper;
 
@@ -75,199 +75,90 @@ public class TransactionService {
  
 	}	
 	
-	public List<TransactionDTO> getLatestTransactions(int limit){
+	public List<TransactionModel> getLatestTransactions(int limit){
 		
 		return this.dslContext.select(TRANSACTION.HASH,BLOCK.NUM.as("blockNum"))
 		.from(TRANSACTION).join(BLOCK).on(TRANSACTION.BLOCK_ID.eq(BLOCK.ID)).and(DSL.year(TRANSACTION.TIMESTAMP).gt(TRON_START_YEAR-1)).and(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)))
 		.orderBy(TRANSACTION.TIMESTAMP.desc())
 		.limit(limit)
-		.fetchInto(TransactionDTO.class);
+		.fetchInto(TransactionModel.class);
 	}
 	
 
-	public TransactionDTO getTxByHash(String hash) {
+	public TransactionModel getTxByHash(String hash) {
 		
-		Field<String> fromField = DSL.when(CONTRACT_ACCOUNT_CREATE.OWNER_ADDRESS.isNotNull(), CONTRACT_ACCOUNT_CREATE.OWNER_ADDRESS)
-		.when(CONTRACT_ACCOUNT_UPDATE.OWNER_ADDRESS.isNotNull(), CONTRACT_ACCOUNT_UPDATE.OWNER_ADDRESS)
-		.when(CONTRACT_ASSET_ISSUE.OWNER_ADDRESS.isNotNull(), CONTRACT_ASSET_ISSUE.OWNER_ADDRESS)
-		.when(CONTRACT_DEPLOY.OWNER_ADDRESS.isNotNull(), CONTRACT_DEPLOY.OWNER_ADDRESS)
-		.when(CONTRACT_PARTICIPATE_ASSET_ISSUE.OWNER_ADDRESS.isNotNull(), CONTRACT_PARTICIPATE_ASSET_ISSUE.OWNER_ADDRESS)
-		.when(CONTRACT_TRANSFER.OWNER_ADDRESS.isNotNull(), CONTRACT_TRANSFER.OWNER_ADDRESS)
-		.when(CONTRACT_TRANSFER_ASSET.OWNER_ADDRESS.isNotNull(), CONTRACT_TRANSFER_ASSET.OWNER_ADDRESS)
-		.when(CONTRACT_VOTE_ASSET.OWNER_ADDRESS.isNotNull(), CONTRACT_VOTE_ASSET.OWNER_ADDRESS)
-		.when(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.isNotNull(), CONTRACT_VOTE_WITNESS.OWNER_ADDRESS)
-		.when(CONTRACT_WITNESS_CREATE.OWNER_ADDRESS.isNotNull(), CONTRACT_WITNESS_CREATE.OWNER_ADDRESS)
-		.when(CONTRACT_WITNESS_UPDATE.OWNER_ADDRESS.isNotNull(), CONTRACT_WITNESS_UPDATE.OWNER_ADDRESS)
-		.when(CONTRACT_FREEZE_BALANCE.OWNER_ADDRESS.isNotNull(), CONTRACT_FREEZE_BALANCE.OWNER_ADDRESS)
-		.when(CONTRACT_UNFREEZE_BALANCE.OWNER_ADDRESS.isNotNull(), CONTRACT_UNFREEZE_BALANCE.OWNER_ADDRESS)
-		.when(CONTRACT_WITHDRAW_BALANCE.OWNER_ADDRESS.isNotNull(), CONTRACT_WITHDRAW_BALANCE.OWNER_ADDRESS)
-		.as("from");
-		
-		Field<String> toField = DSL.when(CONTRACT_TRANSFER.TO_ADDRESS.isNotNull(), CONTRACT_TRANSFER.TO_ADDRESS)
-		.when(CONTRACT_TRANSFER_ASSET.TO_ADDRESS.isNotNull(), CONTRACT_TRANSFER_ASSET.TO_ADDRESS)
-		.as("to");		
-
-		Field<ULong> amountField = DSL.when(CONTRACT_TRANSFER.AMOUNT.isNotNull(), CONTRACT_TRANSFER.AMOUNT)
-		.when(CONTRACT_TRANSFER_ASSET.AMOUNT.isNotNull(), CONTRACT_TRANSFER_ASSET.AMOUNT)
-		.as("amount");
-		
-		Field<String> typeField = DSL.when(CONTRACT_ACCOUNT_CREATE.OWNER_ADDRESS.isNotNull(), "ACCOUNT_CREATE")
-		.when(CONTRACT_ACCOUNT_UPDATE.OWNER_ADDRESS.isNotNull(), "ACCOUNT_UPDATE")
-		.when(CONTRACT_ASSET_ISSUE.OWNER_ADDRESS.isNotNull(), "ASSET_ISSUE")
-		.when(CONTRACT_DEPLOY.OWNER_ADDRESS.isNotNull(), "DEPLOY")
-		.when(CONTRACT_PARTICIPATE_ASSET_ISSUE.OWNER_ADDRESS.isNotNull(), "PARTICIPATE_ASSET_ISSUE")
-		.when(CONTRACT_TRANSFER.OWNER_ADDRESS.isNotNull(), "TRANSFER")
-		.when(CONTRACT_TRANSFER_ASSET.OWNER_ADDRESS.isNotNull(), "TRANSFER_ASSET")
-		.when(CONTRACT_VOTE_ASSET.OWNER_ADDRESS.isNotNull(), "VOTE_ASSET")
-		.when(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.isNotNull(), "VOTE_WITNESS")
-		.when(CONTRACT_WITNESS_CREATE.OWNER_ADDRESS.isNotNull(), "WITNESS_CREATE")
-		.when(CONTRACT_WITNESS_UPDATE.OWNER_ADDRESS.isNotNull(), "WITNESS_UPDATE")
-		.when(CONTRACT_FREEZE_BALANCE.OWNER_ADDRESS.isNotNull(), "FREEZE_BALANCE")
-		.when(CONTRACT_UNFREEZE_BALANCE.OWNER_ADDRESS.isNotNull(), "UNFREEZE_BALANCE")
-		.when(CONTRACT_WITHDRAW_BALANCE.OWNER_ADDRESS.isNotNull(), "WITHDRAW_BALANCE")
-		.as("type");		
-		
-		Field<String> tokenField = DSL.when(CONTRACT_TRANSFER.OWNER_ADDRESS.isNotNull(), DSL.value("TRX"))
-				.when(CONTRACT_TRANSFER_ASSET.OWNER_ADDRESS.isNotNull(), CONTRACT_TRANSFER_ASSET.ASSET_NAME).as("token");
-		
-		TransactionDTO result = this.dslContext.select(fromField,toField,amountField,typeField,tokenField,BLOCK.NUM.as("blockNum"),TRANSACTION.TIMESTAMP,TRANSACTION.HASH,TRANSACTION.CONFIRMED)
-		.from(TRANSACTION)
-		.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
-		.leftJoin(CONTRACT_ACCOUNT_CREATE).on(CONTRACT_ACCOUNT_CREATE.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.leftJoin(CONTRACT_ACCOUNT_UPDATE).on(CONTRACT_ACCOUNT_UPDATE.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.leftJoin(CONTRACT_ASSET_ISSUE).on(CONTRACT_ASSET_ISSUE.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.leftJoin(CONTRACT_DEPLOY).on(CONTRACT_DEPLOY.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.leftJoin(CONTRACT_PARTICIPATE_ASSET_ISSUE).on(CONTRACT_PARTICIPATE_ASSET_ISSUE.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.leftJoin(CONTRACT_TRANSFER).on(CONTRACT_TRANSFER.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.leftJoin(CONTRACT_TRANSFER_ASSET).on(CONTRACT_TRANSFER_ASSET.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.leftJoin(CONTRACT_VOTE_ASSET).on(CONTRACT_VOTE_ASSET.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.leftJoin(CONTRACT_VOTE_WITNESS).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.leftJoin(CONTRACT_WITNESS_CREATE).on(CONTRACT_WITNESS_CREATE.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.leftJoin(CONTRACT_WITNESS_UPDATE).on(CONTRACT_WITNESS_UPDATE.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.leftJoin(CONTRACT_FREEZE_BALANCE).on(CONTRACT_FREEZE_BALANCE.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.leftJoin(CONTRACT_UNFREEZE_BALANCE).on(CONTRACT_UNFREEZE_BALANCE.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.leftJoin(CONTRACT_WITHDRAW_BALANCE).on(CONTRACT_WITHDRAW_BALANCE.TRANSACTION_ID.eq(TRANSACTION.ID))
+		TransactionModel result = this.dslContext.select(TRANSACTION.ID,TRANSACTION.HASH,TRANSACTION.TIMESTAMP,BLOCK.NUM.as("block"),TRANSACTION.FROM,TRANSACTION.TYPE)
+				.from(TRANSACTION)
+				.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
 		.where(TRANSACTION.HASH.eq(hash))
-		.fetchOneInto(TransactionDTO.class);
+		.fetchOneInto(TransactionModel.class);
+	
 		
-		if (result!=null) {
-			prepareTransactionDTO(result);			
+		if (result==null) {
+			return null;
 		}
-
+		
+		switch (result.getTypeInt()) {
+		case ContractType.VoteWitnessContract_VALUE:
+			
+			List<VoteModel> votes = this.dslContext.select(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.as("from"),CONTRACT_VOTE_WITNESS.VOTE_ADDRESS.as("to"),CONTRACT_VOTE_WITNESS.VOTE_COUNT.as("votes"))
+			.from(CONTRACT_VOTE_WITNESS)
+			.where(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(ULong.valueOf(result.getId())))
+			.fetchInto(VoteModel.class);
+			
+			result.setContract(votes);
+			
+			break;
+		case ContractType.TransferContract_VALUE:
+			
+			TransferModel transferTrx = this.dslContext.select(TRANSFER.FROM,TRANSFER.TO,TRANSFER.AMOUNT)
+			.from(TRANSFER)
+			.where(TRANSFER.TRANSACTION_ID.eq(ULong.valueOf(result.getId())))
+			.fetchOneInto(TransferModel.class);
+			
+			result.setContract(transferTrx);
+			
+			break;
+		case ContractType.TransferAssetContract_VALUE:
+			
+			TransferModel transferToken = this.dslContext.select(TRANSFER.FROM,TRANSFER.TO,TRANSFER.AMOUNT,TRANSFER.TOKEN)
+			.from(TRANSFER)
+			.where(TRANSFER.TRANSACTION_ID.eq(ULong.valueOf(result.getId())))
+			.fetchOneInto(TransferModel.class);
+			
+			result.setContract(transferToken);
+			
+			break;
+		default:
+			break;
+		}
+		
+		
 		
 		return result;
 	}
 
 
-	public ListDTO<TransactionDTO, TransactionCriteriaDTO> listTransactions(TransactionCriteriaDTO criteria) {
+	public ListModel<TransactionModel, TransactionCriteria> listTransactions(TransactionCriteria criteria) {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
 		//remove invalid transactions (wrong dates)
-		//FIXME: remove as fixed in tron
-		if (criteria.getBlock()==null || !criteria.getBlock().equals("0") ) {
-			conditions.add(DSL.year(TRANSACTION.TIMESTAMP).gt(TRON_START_YEAR-1));
-			conditions.add(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)));			
-		}
+		//FIXME: remove if/when fixed in tron
+		conditions.add(DSL.year(TRANSACTION.TIMESTAMP).gt(TRON_START_YEAR-1));
+		
+		
 
-		
-		Field<String> fromField = DSL.when(CONTRACT_ACCOUNT_CREATE.OWNER_ADDRESS.isNotNull(), CONTRACT_ACCOUNT_CREATE.OWNER_ADDRESS)
-		.when(CONTRACT_ACCOUNT_UPDATE.OWNER_ADDRESS.isNotNull(), CONTRACT_ACCOUNT_UPDATE.OWNER_ADDRESS)
-		.when(CONTRACT_ASSET_ISSUE.OWNER_ADDRESS.isNotNull(), CONTRACT_ASSET_ISSUE.OWNER_ADDRESS)
-		.when(CONTRACT_DEPLOY.OWNER_ADDRESS.isNotNull(), CONTRACT_DEPLOY.OWNER_ADDRESS)
-		.when(CONTRACT_PARTICIPATE_ASSET_ISSUE.OWNER_ADDRESS.isNotNull(), CONTRACT_PARTICIPATE_ASSET_ISSUE.OWNER_ADDRESS)
-		.when(CONTRACT_TRANSFER.OWNER_ADDRESS.isNotNull(), CONTRACT_TRANSFER.OWNER_ADDRESS)
-		.when(CONTRACT_TRANSFER_ASSET.OWNER_ADDRESS.isNotNull(), CONTRACT_TRANSFER_ASSET.OWNER_ADDRESS)
-		.when(CONTRACT_VOTE_ASSET.OWNER_ADDRESS.isNotNull(), CONTRACT_VOTE_ASSET.OWNER_ADDRESS)
-		.when(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.isNotNull(), CONTRACT_VOTE_WITNESS.OWNER_ADDRESS)
-		.when(CONTRACT_WITNESS_CREATE.OWNER_ADDRESS.isNotNull(), CONTRACT_WITNESS_CREATE.OWNER_ADDRESS)
-		.when(CONTRACT_WITNESS_UPDATE.OWNER_ADDRESS.isNotNull(), CONTRACT_WITNESS_UPDATE.OWNER_ADDRESS)
-		.when(CONTRACT_FREEZE_BALANCE.OWNER_ADDRESS.isNotNull(), CONTRACT_FREEZE_BALANCE.OWNER_ADDRESS)
-		.when(CONTRACT_UNFREEZE_BALANCE.OWNER_ADDRESS.isNotNull(), CONTRACT_UNFREEZE_BALANCE.OWNER_ADDRESS)
-		.when(CONTRACT_WITHDRAW_BALANCE.OWNER_ADDRESS.isNotNull(), CONTRACT_WITHDRAW_BALANCE.OWNER_ADDRESS)
-		.as("from");
-		
-		Field<String> toField = DSL.when(CONTRACT_TRANSFER.TO_ADDRESS.isNotNull(), CONTRACT_TRANSFER.TO_ADDRESS)
-		.when(CONTRACT_TRANSFER_ASSET.TO_ADDRESS.isNotNull(), CONTRACT_TRANSFER_ASSET.TO_ADDRESS)
-		.as("to");		
-
-		Field<ULong> amountField = DSL.when(CONTRACT_TRANSFER.AMOUNT.isNotNull(), CONTRACT_TRANSFER.AMOUNT)
-		.when(CONTRACT_TRANSFER_ASSET.AMOUNT.isNotNull(), CONTRACT_TRANSFER_ASSET.AMOUNT)
-		.as("amount");
-		
-		Field<String> typeField = DSL.when(CONTRACT_ACCOUNT_CREATE.OWNER_ADDRESS.isNotNull(), "ACCOUNT_CREATE")
-		.when(CONTRACT_ACCOUNT_UPDATE.OWNER_ADDRESS.isNotNull(), "ACCOUNT_UPDATE")
-		.when(CONTRACT_ASSET_ISSUE.OWNER_ADDRESS.isNotNull(), "ASSET_ISSUE")
-		.when(CONTRACT_DEPLOY.OWNER_ADDRESS.isNotNull(), "DEPLOY")
-		.when(CONTRACT_PARTICIPATE_ASSET_ISSUE.OWNER_ADDRESS.isNotNull(), "PARTICIPATE_ASSET_ISSUE")
-		.when(CONTRACT_TRANSFER.OWNER_ADDRESS.isNotNull(), "TRANSFER")
-		.when(CONTRACT_TRANSFER_ASSET.OWNER_ADDRESS.isNotNull(), "TRANSFER_ASSET")
-		.when(CONTRACT_VOTE_ASSET.OWNER_ADDRESS.isNotNull(), "VOTE_ASSET")
-		.when(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.isNotNull(), "VOTE_WITNESS")
-		.when(CONTRACT_WITNESS_CREATE.OWNER_ADDRESS.isNotNull(), "WITNESS_CREATE")
-		.when(CONTRACT_WITNESS_UPDATE.OWNER_ADDRESS.isNotNull(), "WITNESS_UPDATE")
-		.when(CONTRACT_FREEZE_BALANCE.OWNER_ADDRESS.isNotNull(), "FREEZE_BALANCE")
-		.when(CONTRACT_UNFREEZE_BALANCE.OWNER_ADDRESS.isNotNull(), "UNFREEZE_BALANCE")
-		.when(CONTRACT_WITHDRAW_BALANCE.OWNER_ADDRESS.isNotNull(), "WITHDRAW_BALANCE")
-		.as("type");		
-
-		Field<String> tokenField = DSL.when(CONTRACT_TRANSFER.OWNER_ADDRESS.isNotNull(), DSL.value("TRX"))
-				.when(CONTRACT_TRANSFER_ASSET.OWNER_ADDRESS.isNotNull(), CONTRACT_TRANSFER_ASSET.ASSET_NAME).as("token");
-		
-		
-		
-		
-		
-		if (StringUtils.isNotBlank(criteria.getBlock())) {
+		if (criteria.getBlock()!=null) {
 			conditions.add(TRANSACTION.BLOCK_ID.in(DSL.select(BLOCK.ID).from(BLOCK).where(BLOCK.NUM.eq(ULong.valueOf(criteria.getBlock())))));
+		}else {
+			conditions.add(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)));	
 		}
-		
-		if (StringUtils.isNotBlank(criteria.getAddress())) {
-			
-			conditions.add(TRANSACTION.ID.in(
-					DSL.select(CONTRACT_TRANSFER.TRANSACTION_ID)
-					.from(CONTRACT_TRANSFER)
-					.where(CONTRACT_TRANSFER.OWNER_ADDRESS.eq(criteria.getAddress())
-							.or(CONTRACT_TRANSFER.TO_ADDRESS.eq(criteria.getAddress()))))
-					.or(TRANSACTION.ID.in(DSL.select(CONTRACT_TRANSFER_ASSET.TRANSACTION_ID)
-					.from(CONTRACT_TRANSFER_ASSET)
-					.where(CONTRACT_TRANSFER_ASSET.OWNER_ADDRESS.eq(criteria.getAddress())
-							.or(CONTRACT_TRANSFER_ASSET.TO_ADDRESS.eq(criteria.getAddress()))))))
-					
-					;
 
-		}
-		
-		// We only want asset transfer
-		if (StringUtils.isNotBlank(criteria.getAssetName())) {
-			
-			conditions.add(TRANSACTION.ID.in(DSL.select(CONTRACT_TRANSFER_ASSET.TRANSACTION_ID).from(CONTRACT_TRANSFER_ASSET).where(CONTRACT_TRANSFER_ASSET.ASSET_NAME.eq(criteria.getAssetName()))));
-		}
-	
-
-		Table<?> tmpTable = DSL.select(TRANSACTION.ID,TRANSACTION.HASH,TRANSACTION.TIMESTAMP,TRANSACTION.BLOCK_ID,TRANSACTION.CONFIRMED).from(TRANSACTION).where(conditions).orderBy(TRANSACTION.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).asTable("tmp");
-		
-
-
-		SelectOnConditionStep<?> listQuery = this.dslContext.select(fromField,toField,amountField,typeField,BLOCK.NUM.as("blockNum"),tokenField,tmpTable.field(TRANSACTION.TIMESTAMP.getName()),tmpTable.field(TRANSACTION.HASH.getName()),tmpTable.field(TRANSACTION.CONFIRMED.getName()))
-		.from(tmpTable)
-		.join(BLOCK).on(BLOCK.ID.eq(tmpTable.field(TRANSACTION.BLOCK_ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_ACCOUNT_CREATE).on(CONTRACT_ACCOUNT_CREATE.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_ACCOUNT_UPDATE).on(CONTRACT_ACCOUNT_UPDATE.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_ASSET_ISSUE).on(CONTRACT_ASSET_ISSUE.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_DEPLOY).on(CONTRACT_DEPLOY.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_PARTICIPATE_ASSET_ISSUE).on(CONTRACT_PARTICIPATE_ASSET_ISSUE.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_TRANSFER).on(CONTRACT_TRANSFER.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_TRANSFER_ASSET).on(CONTRACT_TRANSFER_ASSET.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_VOTE_ASSET).on(CONTRACT_VOTE_ASSET.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_VOTE_WITNESS).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_WITNESS_CREATE).on(CONTRACT_WITNESS_CREATE.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_WITNESS_UPDATE).on(CONTRACT_WITNESS_UPDATE.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_FREEZE_BALANCE).on(CONTRACT_FREEZE_BALANCE.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_UNFREEZE_BALANCE).on(CONTRACT_UNFREEZE_BALANCE.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
-		.leftJoin(CONTRACT_WITHDRAW_BALANCE).on(CONTRACT_WITHDRAW_BALANCE.TRANSACTION_ID.eq(tmpTable.field(TRANSACTION.ID.getName(),ULong.class)))
+		SelectOnConditionStep<?> listQuery = this.dslContext.select(TRANSACTION.ID,TRANSACTION.HASH,TRANSACTION.TIMESTAMP,BLOCK.NUM.as("block"),TRANSACTION.FROM,TRANSACTION.TYPE)
+		.from(TRANSACTION)
+		.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
 		;
-
 		
 		
 		SelectConditionStep<Record1<Integer>> countQuery = dslContext.select(DSL.count())
@@ -279,33 +170,16 @@ public class TransactionService {
 		
 		Integer totalCount = countQuery.fetchOneInto(Integer.class);
 		
-		List<TransactionDTO> items = listQuery.fetchInto(TransactionDTO.class);
+		List<TransactionModel> items = listQuery.where(conditions).orderBy(TRANSACTION.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(TransactionModel.class);
 		
-		prepareTransactionDTO(items);
 		
-		ListDTO<TransactionDTO, TransactionCriteriaDTO> result = new ListDTO<TransactionDTO, TransactionCriteriaDTO>(criteria, items, totalCount);
+		ListModel<TransactionModel, TransactionCriteria> result = new ListModel<TransactionModel, TransactionCriteria>(criteria, items, totalCount);
 		
 		return result;
-	}
-	
-	private void prepareTransactionDTO(List<TransactionDTO> transactions) {
-		
-		for(TransactionDTO tx:transactions) {
-			
-			prepareTransactionDTO(tx);
-			
-		}
 		
 	}
 	
-	private void prepareTransactionDTO(TransactionDTO tx) {
-		
-		if (tx.getToken()!=null && tx.getToken().equals("TRX")) {
-			tx.setAmount(TransactionHelper.getTrxAmount(tx.getAmount()));			
-		}
-
-		tx.setShortHash(StringUtils.abbreviate(tx.getHash(), 10));
-	}
+	
 	
 
 }

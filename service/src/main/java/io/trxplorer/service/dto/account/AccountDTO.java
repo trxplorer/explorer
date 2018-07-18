@@ -7,7 +7,7 @@ import java.util.Locale;
 
 import io.trxplorer.service.dto.asset.AssetIssueDTO;
 import io.trxplorer.service.dto.asset.AssetParticipationDTO;
-import io.trxplorer.service.dto.transaction.TransactionDTO;
+import io.trxplorer.service.dto.transaction.TransactionModel;
 import io.trxplorer.service.dto.vote.VoteModel;
 import io.trxplorer.service.dto.witness.AllowanceWidthdrawDTO;
 import io.trxplorer.service.dto.witness.WitnessDTO;
@@ -21,7 +21,7 @@ public class AccountDTO {
 	
 	private String address;
 	
-	private List<TransactionDTO> transactions;
+	private List<TransactionModel> transactions;
 
 	private List<AssetBalanceDTO> assetBalances;
 	
@@ -171,11 +171,11 @@ public class AccountDTO {
 		this.address = address;
 	}
 
-	public List<TransactionDTO> getTransactions() {
+	public List<TransactionModel> getTransactions() {
 		return transactions;
 	}
 
-	public void setTransactions(List<TransactionDTO> transactions) {
+	public void setTransactions(List<TransactionModel> transactions) {
 		this.transactions = transactions;
 	}
 

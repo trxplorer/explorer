@@ -9,7 +9,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import io.trxplorer.service.common.VoteService;
-import io.trxplorer.service.dto.common.ListDTO;
+import io.trxplorer.service.dto.common.ListModel;
 import io.trxplorer.service.dto.vote.VoteListCriteria;
 import io.trxplorer.service.dto.vote.VoteLiveListCriteria;
 import io.trxplorer.service.dto.vote.VoteLiveModel;
@@ -29,7 +29,7 @@ public class VotingRoundRoutes {
 
 	@GET
 	@Path(ApiAppRoutePaths.V1.VOTE_LIVE)
-	public ListDTO<VoteLiveModel, VoteLiveListCriteria> listLiveVotes(Optional<Integer> page) throws Throwable {
+	public ListModel<VoteLiveModel, VoteLiveListCriteria> listLiveVotes(Optional<Integer> page) throws Throwable {
 		
 		VoteLiveListCriteria criteria = new VoteLiveListCriteria();
 		
@@ -49,7 +49,7 @@ public class VotingRoundRoutes {
 
 	@GET
 	@Path(ApiAppRoutePaths.V1.VOTE_ROUND_STATS)
-	public ListDTO<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRoundStats(Integer maxRound,Optional<Integer> page) throws Throwable {
+	public ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRoundStats(Integer maxRound,Optional<Integer> page) throws Throwable {
 		
 		VotingRoundStatsListCriteria criteria = new VotingRoundStatsListCriteria();
 		
@@ -62,7 +62,7 @@ public class VotingRoundRoutes {
 	
 	@GET
 	@Path(ApiAppRoutePaths.V1.VOTE_ROUND)
-	public ListDTO<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRounds(Integer round,Optional<Integer> page) throws Throwable {
+	public ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRounds(Integer round,Optional<Integer> page) throws Throwable {
 		
 		VotingRoundStatsListCriteria criteria = new VotingRoundStatsListCriteria();
 		
@@ -75,7 +75,7 @@ public class VotingRoundRoutes {
 	
 	@GET
 	@Path(ApiAppRoutePaths.V1.VOTE_LIVE_VOTES)
-	public ListDTO<VoteModel, VoteListCriteria> listLiveVotes(String address,Optional<Integer> page) throws Throwable {
+	public ListModel<VoteModel, VoteListCriteria> listLiveVotes(String address,Optional<Integer> page) throws Throwable {
 		
 		VoteListCriteria criteria = new VoteListCriteria();
 		
@@ -88,7 +88,7 @@ public class VotingRoundRoutes {
 	
 	@GET
 	@Path(ApiAppRoutePaths.V1.VOTE_ROUND_VOTES)
-	public ListDTO<VoteModel, VoteListCriteria> listVotes(Integer round,String address,Optional<Integer> page) throws Throwable {
+	public ListModel<VoteModel, VoteListCriteria> listVotes(Integer round,String address,Optional<Integer> page) throws Throwable {
 		
 		VoteListCriteria criteria = new VoteListCriteria();
 		

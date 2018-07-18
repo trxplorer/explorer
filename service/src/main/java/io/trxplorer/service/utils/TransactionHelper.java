@@ -1,7 +1,6 @@
 package io.trxplorer.service.utils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -29,5 +28,8 @@ public class TransactionHelper {
 
 	}
 
+	public static long getTrxFromSun(long sun) {
+		return new BigDecimal(sun).divide(new BigDecimal(TRX)).longValue();
+	}
 	
 }

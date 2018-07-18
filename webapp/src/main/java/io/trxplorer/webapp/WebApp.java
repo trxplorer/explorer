@@ -26,6 +26,7 @@ import io.trxplorer.webapp.route.TransactionRoutes;
 import io.trxplorer.webapp.route.TronRoutes;
 import io.trxplorer.webapp.route.VoteRoundRoutes;
 import io.trxplorer.webapp.route.WitnessRoutes;
+import io.trxplorer.webapp.template.pebble.WebAppExtension;
 
 public class WebApp extends Jooby {
 
@@ -37,7 +38,7 @@ public class WebApp extends Jooby {
 		assets("favicon.ico","/static/assets/favicon.ico");
 		assets("/robots.txt","/static/robots.txt");
 		
-		use(new Pebble("templates", ".html"));
+		use(new Pebble("templates", ".html").doWith(b->{b.extension(new WebAppExtension());}));
 		
 		use(new WebAppModule());
 

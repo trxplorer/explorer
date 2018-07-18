@@ -14,8 +14,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import io.trxplorer.service.common.TransactionService;
-import io.trxplorer.service.dto.transaction.TransactionCriteriaDTO;
-import io.trxplorer.service.dto.transaction.TransactionDTO;
+import io.trxplorer.service.dto.transaction.TransactionCriteria;
+import io.trxplorer.service.dto.transaction.TransactionModel;
 import io.trxplorer.webapp.job.QuickStatsJob;
 
 @Singleton
@@ -38,7 +38,7 @@ public class TransactionRoutes {
 		
 		View view = Results.html("transaction/transaction.detail");
 		
-		TransactionDTO tx = this.txService.getTxByHash(txId);
+		TransactionModel tx = this.txService.getTxByHash(txId);
 		
 		if (tx==null) {
 			chain.next(req, res);
@@ -56,13 +56,13 @@ public class TransactionRoutes {
 		Integer limit = req.param("limit").intValue(20);
 		Integer page = req.param("page").intValue(1);
 		
-		String block = req.param("block").value(null);
+		int block = req.param("block").intValue(-1);
 		
-		TransactionCriteriaDTO criteria = new TransactionCriteriaDTO();
+		TransactionCriteria criteria = new TransactionCriteria();
 		
 		criteria.setLimit(limit);
 		criteria.setPage(page);
-		criteria.setBlock(block);
+		criteria.setBlock(block==-1?null:block);
 		
 		
 		

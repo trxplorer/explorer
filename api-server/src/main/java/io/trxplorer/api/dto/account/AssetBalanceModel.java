@@ -2,7 +2,7 @@ package io.trxplorer.api.dto.account;
 
 import io.trxplorer.api.utils.TransactionHelper;
 
-public class AssetBalanceDTO {
+public class AssetBalanceModel {
 
 	private String assetName;
 	

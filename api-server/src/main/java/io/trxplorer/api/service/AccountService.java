@@ -2,7 +2,9 @@ package io.trxplorer.api.service;
 
 import static io.trxplorer.model.Tables.*;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,14 +14,12 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Record1;
 import org.jooq.Record5;
-import org.jooq.SelectConditionStep;
 import org.jooq.SelectJoinStep;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.SelectSeekStep1;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
-import org.jooq.types.ULong;
-import org.jooq.util.mysql.MySQLDSL;
+import org.jooq.types.UInteger;
 import org.jooq.util.mysql.MySQLDataType;
 import org.tron.protos.Protocol.Account;
 
@@ -28,13 +28,12 @@ import com.google.inject.Inject;
 import io.trxplorer.api.dto.account.AccountCriteria;
 import io.trxplorer.api.dto.account.AccountExistsCriteria;
 import io.trxplorer.api.dto.account.AccountInfo;
-import io.trxplorer.api.dto.account.AssetBalanceDTO;
-import io.trxplorer.api.dto.account.FrozenBalanceDTO;
-import io.trxplorer.api.dto.account.VoteDTO;
+import io.trxplorer.api.dto.account.AssetBalanceModel;
+import io.trxplorer.api.dto.account.FrozenBalanceModel;
 import io.trxplorer.api.dto.common.ListResult;
-import io.trxplorer.api.dto.transaction.TransactionCriteria;
-import io.trxplorer.api.dto.transaction.TransactionDTO;
-import io.trxplorer.api.dto.witness.AllowanceWidthdrawDTO;
+import io.trxplorer.api.dto.witness.AllowanceWidthdrawModel;
+import io.trxplorer.service.dto.transaction.TransferModel;
+import io.trxplorer.service.dto.vote.VoteModel;
 import io.trxplorer.troncli.TronFullNodeCli;
 
 public class AccountService {
@@ -128,7 +127,7 @@ public class AccountService {
 
 
 
-	public ListResult<AssetBalanceDTO, AccountCriteria> listAssetBalances(AccountCriteria criteria){
+	public ListResult<AssetBalanceModel, AccountCriteria> listAssetBalances(AccountCriteria criteria){
 		
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
@@ -148,47 +147,48 @@ public class AccountService {
 		
 		SelectSeekStep1<?, String> q2 = listQuery.where(conditions).orderBy(ACCOUNT_ASSET.ASSET_NAME.asc());
 		
-		List<AssetBalanceDTO> items = new ArrayList<>();
+		List<AssetBalanceModel> items = new ArrayList<>();
 		
 		if (criteria.getLimit()>0) {
-			items = q2.limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(AssetBalanceDTO.class);	
+			items = q2.limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(AssetBalanceModel.class);	
 		}else {
-			items = q2.fetchInto(AssetBalanceDTO.class);
+			items = q2.fetchInto(AssetBalanceModel.class);
 		}
 		
 		
 		
 		
 		
-		ListResult<AssetBalanceDTO, AccountCriteria> result = new ListResult<AssetBalanceDTO, AccountCriteria>(criteria, items, totalCount);
+		ListResult<AssetBalanceModel, AccountCriteria> result = new ListResult<AssetBalanceModel, AccountCriteria>(criteria, items, totalCount);
 		
 		return result;
 		
 	}
 
 	
-	public ListResult<VoteDTO, AccountCriteria> listVotes(AccountCriteria criteria){
+	public ListResult<VoteModel, AccountCriteria> listVotes(AccountCriteria criteria){
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
-		conditions.add(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.eq(criteria.getAddress()).or(CONTRACT_VOTE_WITNESS.VOTE_ADDRESS.eq(criteria.getAddress())));
+		conditions.add(VOTING_ROUND_VOTE.OWNER_ADDRESS.eq(criteria.getAddress()));
+		conditions.add(VOTING_ROUND.ID.eq(VOTING_ROUND_VOTE.VOTING_ROUND_ID));
 		
-		SelectOnConditionStep<?> listQuery = this.dslContext.select(TRANSACTION.TIMESTAMP,CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.as("from"),CONTRACT_VOTE_WITNESS.VOTE_ADDRESS.as("to"),CONTRACT_VOTE_WITNESS.VOTE_COUNT).from(CONTRACT_VOTE_WITNESS)
-				.join(TRANSACTION).on(TRANSACTION.ID.eq(CONTRACT_VOTE_WITNESS.TRANSACTION_ID));
+		SelectJoinStep<?> listQuery = this.dslContext.select(VOTING_ROUND_VOTE.OWNER_ADDRESS.as("from"),VOTING_ROUND_VOTE.VOTE_ADDRESS.as("to"),VOTING_ROUND.ROUND,VOTING_ROUND_VOTE.VOTE_COUNT.as("votes"),VOTING_ROUND_VOTE.TIMESTAMP)
+				.from(VOTING_ROUND,VOTING_ROUND_VOTE);
 				
 		
 		
 		SelectJoinStep<Record1<Integer>> countQuery = dslContext.select(DSL.count())
-		.from(CONTRACT_VOTE_WITNESS);
+		.from(VOTING_ROUND,VOTING_ROUND_VOTE);
 		
 		
 		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
 		
-		List<VoteDTO> items = listQuery.where(conditions).orderBy(TRANSACTION.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VoteDTO.class);
+		List<VoteModel> items = listQuery.where(conditions).orderBy(VOTING_ROUND.ROUND.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VoteModel.class);
 		
 		
 		
-		ListResult<VoteDTO, AccountCriteria> result = new ListResult<VoteDTO, AccountCriteria>(criteria, items, totalCount);
+		ListResult<VoteModel, AccountCriteria> result = new ListResult<VoteModel, AccountCriteria>(criteria, items, totalCount);
 		
 		return result;
 		
@@ -196,13 +196,13 @@ public class AccountService {
 		
 	}
 	
-	public ListResult<AllowanceWidthdrawDTO, AccountCriteria> listAllowanceWithdrawals(AccountCriteria criteria){
+	public ListResult<AllowanceWidthdrawModel, AccountCriteria> listAllowanceWithdrawals(AccountCriteria criteria){
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
 		conditions.add(CONTRACT_WITHDRAW_BALANCE.OWNER_ADDRESS.eq(criteria.getAddress()));
 		
-		SelectOnConditionStep<?> listQuery = this.dslContext.select(TRANSACTION.ID.as("txId"),TRANSACTION.TIMESTAMP).from(CONTRACT_WITHDRAW_BALANCE)
+		SelectOnConditionStep<?> listQuery = this.dslContext.select(TRANSACTION.HASH.as("tx"),TRANSACTION.TIMESTAMP).from(CONTRACT_WITHDRAW_BALANCE)
 				.join(TRANSACTION).on(TRANSACTION.ID.eq(CONTRACT_WITHDRAW_BALANCE.TRANSACTION_ID));
 				
 		
@@ -213,11 +213,11 @@ public class AccountService {
 		
 		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
 		
-		List<AllowanceWidthdrawDTO> items = listQuery.where(conditions).orderBy(TRANSACTION.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(AllowanceWidthdrawDTO.class);
+		List<AllowanceWidthdrawModel> items = listQuery.where(conditions).orderBy(TRANSACTION.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(AllowanceWidthdrawModel.class);
 		
 		
 		
-		ListResult<AllowanceWidthdrawDTO, AccountCriteria> result = new ListResult<AllowanceWidthdrawDTO, AccountCriteria>(criteria, items, totalCount);
+		ListResult<AllowanceWidthdrawModel, AccountCriteria> result = new ListResult<AllowanceWidthdrawModel, AccountCriteria>(criteria, items, totalCount);
 		
 		return result;
 		
@@ -226,7 +226,7 @@ public class AccountService {
 	}
 	
 	
-	public ListResult<FrozenBalanceDTO, AccountCriteria> listFrozenBalance(AccountCriteria criteria){
+	public ListResult<FrozenBalanceModel, AccountCriteria> listFrozenBalance(AccountCriteria criteria){
 		
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
@@ -252,11 +252,11 @@ public class AccountService {
 		
 		Integer totalCount = countQuery.fetchOneInto(Integer.class);
 		
-		List<FrozenBalanceDTO> items = listQuery.orderBy(tmpTable.field(ACCOUNT_FROZEN.EXPIRE_TIME.getName()).desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(FrozenBalanceDTO.class);
+		List<FrozenBalanceModel> items = listQuery.orderBy(tmpTable.field(ACCOUNT_FROZEN.EXPIRE_TIME.getName()).desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(FrozenBalanceModel.class);
 		
 
 		
-		ListResult<FrozenBalanceDTO, AccountCriteria> result = new ListResult<FrozenBalanceDTO, AccountCriteria>(criteria, items, totalCount);
+		ListResult<FrozenBalanceModel, AccountCriteria> result = new ListResult<FrozenBalanceModel, AccountCriteria>(criteria, items, totalCount);
 		
 		return result;
 		
@@ -264,26 +264,64 @@ public class AccountService {
 
 	
 
-	public ListResult<TransactionDTO, AccountCriteria> listTransactions(AccountCriteria criteria) {
+	public ListResult<TransferModel, AccountCriteria> listTransfers(AccountCriteria criteria) {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
-
-		SelectConditionStep<Record5<String, String, ULong, String, String>> CONTRACT_TRANSFER_SELECT = DSL.select(CONTRACT_TRANSFER.OWNER_ADDRESS.as("from"),CONTRACT_TRANSFER.TO_ADDRESS.as("to"),CONTRACT_TRANSFER.AMOUNT.as("amount"),DSL.val("TRX").as("token"),TRANSACTION.HASH).from(CONTRACT_TRANSFER).join(TRANSACTION).on(TRANSACTION.ID.eq(CONTRACT_TRANSFER.TRANSACTION_ID)).where(CONTRACT_TRANSFER.OWNER_ADDRESS.eq(criteria.getAddress()).or(CONTRACT_TRANSFER.TO_ADDRESS.eq(criteria.getAddress())));
-		SelectConditionStep<Record5<String, String, ULong, String, String>> CONTRACT_TRANSFER_ASSET_SELECT = DSL.select(CONTRACT_TRANSFER_ASSET.OWNER_ADDRESS.as("from"),CONTRACT_TRANSFER_ASSET.TO_ADDRESS.as("to"),CONTRACT_TRANSFER_ASSET.AMOUNT.as("amount"),CONTRACT_TRANSFER_ASSET.ASSET_NAME.as("token"),TRANSACTION.HASH).from(CONTRACT_TRANSFER_ASSET).join(TRANSACTION).on(TRANSACTION.ID.eq(CONTRACT_TRANSFER_ASSET.TRANSACTION_ID)).where(CONTRACT_TRANSFER_ASSET.OWNER_ADDRESS.eq(criteria.getAddress()).or(CONTRACT_TRANSFER_ASSET.TO_ADDRESS.eq(criteria.getAddress())));
-
-		Table<Record5<String, String, ULong, String, String>> tmpTable = CONTRACT_TRANSFER_SELECT
-		.union(CONTRACT_TRANSFER_ASSET_SELECT)
-		.asTable();
+		
+		conditions.add(TRANSFER.FROM.eq(criteria.getAddress()).or(TRANSFER.TO.eq(criteria.getAddress())));
+		conditions.add(TRANSFER.TRANSACTION_ID.eq(TRANSACTION.ID));
+		
+		List<Field<?>> fields = new ArrayList<>(Arrays.asList(TRANSFER.fields()));
+		fields.add(TRANSACTION.HASH);
+				
+		SelectJoinStep<?> listQuery = this.dslContext.select(fields)
+					.from(TRANSFER,TRANSACTION);
 
 
 		
-		Integer totalCount = this.dslContext.select(DSL.count()).from(tmpTable).fetchOneInto(Integer.class);
+		Integer totalCount = this.dslContext.select(DSL.count())
+				.from(TRANSFER,TRANSACTION)
+				.where(conditions)
+				.fetchOneInto(Integer.class);
 		
-		List<TransactionDTO> items = this.dslContext.select().from(tmpTable).fetchInto(TransactionDTO.class);
+		List<TransferModel> items = listQuery.where(conditions).orderBy(TRANSFER.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(TransferModel.class);
 		
 		
-		ListResult<TransactionDTO, AccountCriteria> result = new ListResult<TransactionDTO, AccountCriteria>(criteria, items, totalCount);
+		ListResult<TransferModel, AccountCriteria> result = new ListResult<TransferModel, AccountCriteria>(criteria, items, totalCount);
+		
+		return result;
+	}
+	
+	public ListResult<TransferModel, AccountCriteria> listTokenParticipations(AccountCriteria criteria) {
+		
+		ArrayList<Condition> conditions = new ArrayList<>();
+		
+		
+		conditions.add(CONTRACT_PARTICIPATE_ASSET_ISSUE.OWNER_ADDRESS.eq(criteria.getAddress()));
+		conditions.add(CONTRACT_PARTICIPATE_ASSET_ISSUE.TRANSACTION_ID.eq(TRANSACTION.ID));
+
+				
+		SelectJoinStep<?> listQuery = this.dslContext.select(
+				CONTRACT_PARTICIPATE_ASSET_ISSUE.OWNER_ADDRESS.as("from"),
+				CONTRACT_PARTICIPATE_ASSET_ISSUE.TO_ADDRESS.as("to"),
+				CONTRACT_PARTICIPATE_ASSET_ISSUE.AMOUNT,
+				CONTRACT_PARTICIPATE_ASSET_ISSUE.ASSET_NAME.as("token"),
+				TRANSACTION.TIMESTAMP
+				)
+					.from(CONTRACT_PARTICIPATE_ASSET_ISSUE,TRANSACTION);
+
+
+		
+		Integer totalCount = this.dslContext.select(DSL.count())
+				.from(CONTRACT_PARTICIPATE_ASSET_ISSUE,TRANSACTION)
+				.where(conditions)
+				.fetchOneInto(Integer.class);
+		
+		List<TransferModel> items = listQuery.where(conditions).orderBy(TRANSACTION.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(TransferModel.class);
+		
+		
+		ListResult<TransferModel, AccountCriteria> result = new ListResult<TransferModel, AccountCriteria>(criteria, items, totalCount);
 		
 		return result;
 	}

@@ -5,7 +5,7 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
-import io.trxplorer.service.dto.transaction.TransactionDTO;
+import io.trxplorer.service.dto.transaction.TransactionModel;
 import io.trxplorer.service.utils.TransactionHelper;
 
 public class AssetIssueDTO {
@@ -42,11 +42,11 @@ public class AssetIssueDTO {
 	
 	private int totalParticipants;
 	
-	private List<TransactionDTO> transactions;
+	private List<TransactionModel> transactions;
 	
 	private List<AssetParticipationDTO> participations;
 	
-	private AssetIssueDetailCriteriaDTO criteria;
+	private TokenCriteria criteria;
 	
 	
 	public String getAbbr() {
@@ -57,11 +57,11 @@ public class AssetIssueDTO {
 		this.abbr = abbr;
 	}
 	
-	public AssetIssueDetailCriteriaDTO getCriteria() {
+	public TokenCriteria getCriteria() {
 		return criteria;
 	}
 
-	public void setCriteria(AssetIssueDetailCriteriaDTO criteria) {
+	public void setCriteria(TokenCriteria criteria) {
 		this.criteria = criteria;
 	}
 
@@ -73,11 +73,11 @@ public class AssetIssueDTO {
 		this.participations = participations;
 	}
 
-	public List<TransactionDTO> getTransactions() {
+	public List<TransactionModel> getTransactions() {
 		return transactions;
 	}
 
-	public void setTransactions(List<TransactionDTO> transactions) {
+	public void setTransactions(List<TransactionModel> transactions) {
 		this.transactions = transactions;
 	}
 
