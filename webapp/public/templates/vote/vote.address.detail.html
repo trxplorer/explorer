@@ -42,7 +42,19 @@
 
 
 <div >
-     <table class="ui fixed striped table" >
+     <div class="ui active tiny teal progress" data-value="99" data-total="100" v-show="loading">
+	  <div class="bar">
+	  </div>
+	<div class="label">Loading...</div>
+	</div>
+	<div class="ui icon small info message" v-show="list.totalCount==0">
+	  <div class="content">
+	    <div class="header">
+	      <i class="circle info icon"></i> No votes ...
+	    </div>
+	  </div>
+	</div>
+     <table class="ui fixed striped table" v-show="list.totalCount>0">
        <thead>
          <tr>
             <th class="center aligned">Voter</th>
@@ -98,7 +110,8 @@ new Vue({
 			  list:[],
 			  startDate:{{vrs.startDate}},
 			  endDate:{{vrs.endDate}},
-			  totalVotes:{{vrs.votes}}
+			  totalVotes:{{vrs.votes}},
+			  loading:false
 		  }  
 	  },
 	  methods:{
@@ -114,9 +127,12 @@ new Vue({
 	      },
 	      fetch(params){
 	    		var ziss = this;
+	    		this.loading = true;
 	    		$.get('{{apiConfig.endpoint}}/vote/{%if vrs.round==currentRound.round%}live{%else%}{{vrs.round}}{%endif%}/{{vrs.address}}',params).success(function(data){
 	    			ziss.list = data;
+	    			ziss.loading = false;
 	    		}).fail(function(xhr,status,err){
+	    			ziss.loading = false;
 	    			console.error(err);
 	    		});
 	      }

@@ -33,7 +33,19 @@
 
 
 <div id="app">
-     <table class="ui fixed striped table" >
+	<div class="ui active tiny teal progress" data-value="99" data-total="100" v-show="loading">
+	  <div class="bar">
+	  </div>
+	<div class="label">Loading...</div>
+	</div>
+<div class="ui icon small info message" v-show="list.totalCount==0">
+  <div class="content">
+    <div class="header">
+      <i class="circle info icon"></i> No votes ...
+    </div>
+  </div>
+</div>
+     <table class="ui fixed striped table" v-show="list.totalCount>0">
        <thead>
          <tr>
            <th class="center aligned">Rank</th>
@@ -95,7 +107,8 @@ new Vue({
 	  el: '#app',
 	  data: function(){
 		  return {
-			  list:[]
+			  list:[],
+			  loading:false
 		  }  
 	  },
 	  methods:{
@@ -111,11 +124,14 @@ new Vue({
 	      },
 	      fetch(params){
 	    		var ziss = this;
+	    		this.loading = true;
 	    		$.get('{{apiConfig.endpoint}}/vote/{{vr.round}}',params).success(function(data){
 	    			ziss.list = data;
 	    			console.log(ziss.list)
+	    			ziss.loading=false;
 	    		}).fail(function(xhr,status,err){
 	    			console.error(err);
+	    			ziss.loading=false;
 	    		});
 	      }
 	  },
