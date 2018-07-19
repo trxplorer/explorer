@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
 <link rel="stylesheet" href="/css/main.css" />
 <link rel="stylesheet" href="/css/site.css" />
+<link rel="stylesheet" href="/css/mobile.css" />
 {%block canonical%}<link rel="canonical" href="{{baseUrl}}{{path}}">{%endblock%}
 {% block header %} 
 
@@ -176,6 +177,10 @@
 				$( window ).resize(function() {
 				    height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
 				 	$('body').css('height',height+'px');
+				});
+				
+				$('#mobile-menu').click(function(){
+					$('.menu .nomobile,.ui.breadcrumb').toggle();
 				});
 			</script>	
 		{%endif%}

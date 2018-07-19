@@ -6,18 +6,18 @@
         <img class="ui image" src="/img/trxplorer_logo_small.png" width="103" />
       </a>
       
-      <div class="item"><a href="/blocks" >Blocks</a></div>
-      <div class="item"><a href="/transactions" >Transactions</a></div>
-	  <div class="item"><a href="/nodes" >Nodes</a></div>
-	  <div class="item"><a href="/representatives" >Representatives</a></div>
-      <div class="item"><a href="/votes" >Votes</a></div>
-      <div class="item"><a href="/accounts" >Accounts</a></div>
-      <div class="item"><a href="/tokens" >Tokens</a></div>
-	  <div class="item"><a href="/markets" >Markets</a></div>
-      <div class="item"><a href="/charts" >Charts</a></div>
+      <div class="item nomobile"><a href="/blocks" >Blocks</a></div>
+      <div class="item nomobile"><a href="/transactions" >Transactions</a></div>
+	  <div class="item nomobile"><a href="/nodes" >Nodes</a></div>
+	  <div class="item nomobile"><a href="/representatives" >Representatives</a></div>
+      <div class="item nomobile"><a href="/votes" >Votes</a></div>
+      <div class="item nomobile"><a href="/accounts" >Accounts</a></div>
+      <div class="item nomobile"><a href="/tokens" >Tokens</a></div>
+	  <div class="item nomobile"><a href="/markets" >Markets</a></div>
+      <div class="item nomobile"><a href="/charts" >Charts</a></div>
       
 
-  	 <form class="header item" action="/search" method="post">
+  	 <form class="header item nomobile" action="/search" method="post">
 			<div class="ui category search">
 			  <div class="ui large icon input">
 			    <input class="prompt" name="q" type="text" placeholder="Address, Hash, Token ...">
@@ -27,7 +27,9 @@
 			  <div class="results"></div>
 			</div>
   	 </form> 
-
+	  <span class="mobile-only">
+	  <a id="mobile-menu" class="item right floated " href="#" ><i class="sidebar icon"></i> Menu</a>
+	  </span>
   	  
 
 	  
