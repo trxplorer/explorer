@@ -111,7 +111,7 @@
 						{%for tx in lastTxs%}
 						<tr class="center aligned">
 							<td><a href="/tx/{{tx.hash}}">{{tx.hash}}</a></td>
-							<td><a href="/block/{{tx.blockNum}}">{{tx.blockNum}}</a></td>
+							<td><a href="/block/{{tx.block}}">{{tx.block}}</a></td>
 						</tr>
 						{%endfor%}
 					</tbody>
@@ -150,8 +150,8 @@
 						{%for vote in latestVotes%}
 						<tr class="center aligned">
 							<td><a href="/address/{{vote.from}}">{{vote.from}}</a></td>
-							<td><a href="/address/{{vote.voteAddress}}">{{vote.voteAddress}}</a></td>
-							<td>{{vote.voteCountStr}}</td>
+							<td><a href="/address/{{vote.voteAddress}}">{{vote.to}}</a></td>
+							<td>{{vote.votes|numberlocale}}</td>
 						</tr>
 						{%endfor%}
 					</tbody>

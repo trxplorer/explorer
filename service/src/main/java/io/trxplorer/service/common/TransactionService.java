@@ -64,7 +64,7 @@ public class TransactionService {
 	
 	public List<VoteModel> getLastestVotes(int limit) {
 
-		return this.dslContext.select(TRANSACTION.TIMESTAMP,CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.as("from"),CONTRACT_VOTE_WITNESS.VOTE_ADDRESS,CONTRACT_VOTE_WITNESS.VOTE_COUNT)
+		return this.dslContext.select(TRANSACTION.TIMESTAMP,CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.as("from"),CONTRACT_VOTE_WITNESS.VOTE_ADDRESS.as("to"),CONTRACT_VOTE_WITNESS.VOTE_COUNT.as("votes"))
 		.from(TRANSACTION)
 		.join(CONTRACT_VOTE_WITNESS).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID))
 		
@@ -77,7 +77,7 @@ public class TransactionService {
 	
 	public List<TransactionModel> getLatestTransactions(int limit){
 		
-		return this.dslContext.select(TRANSACTION.HASH,BLOCK.NUM.as("blockNum"))
+		return this.dslContext.select(TRANSACTION.HASH,BLOCK.NUM.as("block"))
 		.from(TRANSACTION).join(BLOCK).on(TRANSACTION.BLOCK_ID.eq(BLOCK.ID)).and(DSL.year(TRANSACTION.TIMESTAMP).gt(TRON_START_YEAR-1)).and(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)))
 		.orderBy(TRANSACTION.TIMESTAMP.desc())
 		.limit(limit)
