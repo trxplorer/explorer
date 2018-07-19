@@ -14,7 +14,7 @@
 {%if list.criteria.page==1%}
 <div v-cloak>
  	
-<div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
+<div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;" v-cloak>
     <div class="ui stackable grid container">
       <div class="row">
 			
@@ -30,7 +30,7 @@
 			  </div>
 			  <div class="small orange statistic">
 			    <div class="value">
-			      <small>[[remainingTime]]</small>
+			      <small v-cloak>[[remainingTime]]</small>
 			    </div>
 			    <div class="label">
 			      Remaining time
@@ -38,7 +38,7 @@
 			  </div>
 			  <div class="yellow statistic">
 			    <div class="value">
-			      <small>[[totalLiveVotes|numberToLocale]]</small>
+			      <small v-cloak>[[totalLiveVotes|numberToLocale]]</small>
 			    </div>
 			    <div class="label">
 			      Round Total votes
