@@ -44,7 +44,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.github.nfleury</groupId>
+		<groupId>com.github.tronprotocol</groupId>
 			<artifactId>java-tron</artifactId>
 			<version>${java-tron.version}</version>
 			<exclusions><!-- RESOLVE CONFLICTS ISSUE -->
