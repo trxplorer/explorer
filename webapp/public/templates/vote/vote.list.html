@@ -11,7 +11,7 @@
 <div id="app">
 	
 <h1 class="ui dividing header"><small>Votes</small></h1>
-
+{%if list.criteria.page==1%}
 <div v-cloak>
  	
 <div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
@@ -117,7 +117,7 @@
 
 
 </div>
-
+{%endif%}
 <h2 class="ui dividing header"><small>Previous vote rounds</small></h2>
 
 	<table class="ui striped table">
