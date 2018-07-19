@@ -28,6 +28,19 @@
 		<url>https://bitbucket.org/nfleury/trxplorer.io</url>
 	  <tag>HEAD</tag>
   </scm>
+	<distributionManagement>
+		<repository>
+			<id>nexus</id>
+			<name>Releases</name>
+			<url>http://91.121.81.166:7081/repository/maven-releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus</id>
+			<name>Snapshot</name>
+			<url>http://91.121.81.166:7081/repository/maven-snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 
 	<modules>
 		<module>tron-cli</module>
