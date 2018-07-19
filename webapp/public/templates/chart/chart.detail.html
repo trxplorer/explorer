@@ -16,8 +16,10 @@
 	<div class="row">
 	
 		<div class="sixteen wide column">
-			<div id="chart" style="min-height:500px;"></div>		
-
+			<div class="ui segment">
+				<div class="ui active dimmer"> <div class="ui text loader">Loading ...</div></div>
+				<div id="chart" style="min-height:500px;"></div>		
+			</div>
 		
 		</div>
 
@@ -63,6 +65,7 @@ $(function(){
 	        x_accessor: 'date',
 	        y_accessor: 'data'
 	    })
+	    $('.ui.dimmer').toggleClass('active');  
 	})
 	
 

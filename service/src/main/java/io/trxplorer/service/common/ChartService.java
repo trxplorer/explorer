@@ -57,7 +57,7 @@ public class ChartService {
 		.and(DSL.year(TRANSACTION.TIMESTAMP).eq(year))
 		.fetchOne();
 
-		 Record blocksInfo = this.dslContext.select(DSL.count().as("totalBlocks"),DSL.avg(BLOCK.SIZE).as("blockSizeAvg"),DSL.avg(BLOCK.BLOCK_TIME).as("blockTimeAvg"),DSL.avg(BLOCK.TX_COUNT).as("txCountAvg"),DSL.avg(BLOCK.TX_COUNT).divide(DSL.avg(BLOCK.BLOCK_TIME)).cast(String.class).as("tps_avg")).from(BLOCK)
+		 Record blocksInfo = this.dslContext.select(DSL.count().as("totalBlocks"),DSL.avg(BLOCK.SIZE).as("blockSizeAvg"),DSL.avg(BLOCK.BLOCK_TIME).as("blockTimeAvg"),DSL.avg(BLOCK.TX_COUNT).cast(String.class).as("txCountAvg"),DSL.avg(BLOCK.TX_COUNT).divide(DSL.avg(BLOCK.BLOCK_TIME)).cast(String.class).as("tps_avg")).from(BLOCK)
 		.where(DSL.month(BLOCK.TIMESTAMP).eq(month))
 		.and(DSL.day(BLOCK.TIMESTAMP).eq(day))
 		.and(DSL.year(BLOCK.TIMESTAMP).eq(year))
@@ -72,7 +72,7 @@ public class ChartService {
 		UInteger totalBlocks =blocksInfo.get("totalBlocks",Integer.class) == null ? UInteger.valueOf(0) : UInteger.valueOf(blocksInfo.get("totalBlocks",Integer.class));
 		UInteger avgBlockSize =blocksInfo.get("blockSizeAvg",Integer.class) == null ? UInteger.valueOf(0) : UInteger.valueOf(blocksInfo.get("blockSizeAvg",Integer.class));
 		UInteger avgBlockTime =blocksInfo.get("blockTimeAvg",Integer.class) == null ? UInteger.valueOf(0) : UInteger.valueOf(blocksInfo.get("blockTimeAvg",Integer.class));
-		UInteger avgBlockTxCount =blocksInfo.get("txCountAvg",Integer.class) == null ? UInteger.valueOf(0) : UInteger.valueOf(blocksInfo.get("txCountAvg",Integer.class));
+		Double avgBlockTxCount =blocksInfo.get("txCountAvg",Double.class) == null ? Double.valueOf(0) : Double.valueOf(blocksInfo.get("txCountAvg",Double.class));
 		Double tpsAvg = blocksInfo.get("tps_avg",Double.class) == null ? 0 : Double.valueOf(blocksInfo.get("tps_avg",Double.class));
 		
 		
