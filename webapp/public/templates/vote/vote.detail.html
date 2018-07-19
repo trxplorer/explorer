@@ -7,7 +7,7 @@
 {% block content %}
 
 	
-<h1 class="ui dividing header"><small><i class="icon cube"></i>Vote round #{{vr.round}}</small></h1>
+<h1 class="ui dividing header"><small>Vote round #{{vr.round}}</small></h1>
 	
 
 <table class="ui definition table">
@@ -40,29 +40,31 @@
            <th class="center aligned">Address</th>
            <th class="center aligned">URL</th>
            <th class="center aligned">Votes</th>
+           <th class="center aligned">Percentage</th>
          </tr>
        </thead>
 		<thead>
 			<tr v-if="currentPage==1">
-				<th class="center aligned" colspan="4">Super representatives</th>
+				<th class="center aligned" colspan="5">Super representatives</th>
 			</tr>
 		</thead>
        <tbody>
 		<template v-for="(vr,index) in list.items" :key="index">
 	         <tr v-if="vr.position==28">
-				<td class="center aligned" colspan="4" ><b>SR Candidates</b></b></td>
+				<td class="center aligned" colspan="5" ><b>SR Candidates</b></b></td>
 			 </tr>
 	         <tr class="center aligned" >
 	           <td>[[vr.position]]</td>
 	           <td>[[vr.name]]<br><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.address]]</a></td>
 	           <td>[[vr.url]]</td>
 	           <td><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.votes|toLocale]]</a></td>
+	           <td>[[vr.votes|percentage|toLocale]] %</td>
 	         </tr>         
 		</template>
        </tbody>
         <tfoot>
           <tr>
-            <th colspan="4" v-show="totalPages>1">
+            <th colspan="5" v-show="totalPages>1">
               <div class="ui left floated">
                   Page [[currentPage]] of [[totalPages]]
               </div>
@@ -157,6 +159,9 @@ new Vue({
 	  filters: {
 		    toLocale(value) {
 		      return value.toLocaleString('en-US')
+		    },
+		    percentage(value){
+		    	return new Number((value/{{vr.voteCount}})*100).toFixed(6);
 		    }
 	  },
 	  delimiters : ['[[',']]']
