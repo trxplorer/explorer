@@ -17,6 +17,7 @@ import org.jooq.types.ULong;
 
 import com.google.inject.Inject;
 
+import io.trxplorer.job.QuickStatsJob;
 import io.trxplorer.service.dto.block.BlockCriteriaDTO;
 import io.trxplorer.service.dto.block.BlockDTO;
 import io.trxplorer.service.dto.common.ListModel;
@@ -27,11 +28,13 @@ public class BlockService {
 	private DSLContext dslContext;
 	private TransactionService txService;
 	private TronFullNodeCli tronService;
+	private QuickStatsJob quickStats;
 	
 	@Inject
-	public BlockService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli,TransactionService txService) {
+	public BlockService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli,TransactionService txService,QuickStatsJob quickStats) {
 		this.dslContext = dslContext;
 		this.txService = txService;
+		this.quickStats = quickStats;
 	}
 	
 	public List<BlockDTO> getLastBlocks(){
@@ -101,7 +104,7 @@ public class BlockService {
 			conditions.add(BLOCK.WITNESS_ADDRESS.eq(criteria.getProducedBy()));
 		}
 		
-		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
+		long totalCount = this.quickStats.getTotalBlocks();
 		
 		List<BlockDTO> items = listQuery.where(conditions).orderBy(BLOCK.NUM.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(BlockDTO.class);
 		

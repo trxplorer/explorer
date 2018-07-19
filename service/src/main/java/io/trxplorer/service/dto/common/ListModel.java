@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ListModel<T,C extends CommonCriteriaDTO> {
 
-	private int totalCount;
+	private long totalCount;
 	
 	private List<T> items;
 	
@@ -23,7 +23,7 @@ public class ListModel<T,C extends CommonCriteriaDTO> {
 	public ListModel() {
 	}
 	
-	public ListModel(C criteria,List<T> items,int totalCount) {
+	public ListModel(C criteria,List<T> items,long totalCount) {
 		this.criteria = criteria;
 		this.items = items;
 		this.totalCount = totalCount;
@@ -109,7 +109,7 @@ public class ListModel<T,C extends CommonCriteriaDTO> {
 		return result;
 	}
 
-	public int getTotalCount() {
+	public long getTotalCount() {
 		return totalCount;
 	}
 

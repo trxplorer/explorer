@@ -12,9 +12,9 @@ import org.jooby.mvc.Path;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import io.trxplorer.job.QuickStatsJob;
 import io.trxplorer.service.common.NodeService;
 import io.trxplorer.service.dto.node.NodeCriteriaDTO;
-import io.trxplorer.webapp.job.QuickStatsJob;
 
 @Singleton
 public class NodeRoute {

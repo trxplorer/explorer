@@ -1,7 +1,5 @@
 package io.trxplorer.webapp.route;
 
-import java.util.HashMap;
-
 import org.jooby.Request;
 import org.jooby.Response;
 import org.jooby.Results;
@@ -13,13 +11,10 @@ import org.jooby.mvc.Path;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import io.trxplorer.job.QuickStatsJob;
 import io.trxplorer.service.common.AccountService;
-import io.trxplorer.service.common.BlockService;
 import io.trxplorer.service.common.VoteService;
-import io.trxplorer.service.dto.account.AccountDetailCriteriaDTO;
-import io.trxplorer.service.dto.block.BlockCriteriaDTO;
 import io.trxplorer.service.dto.vote.VotingRoundListCriteria;
-import io.trxplorer.webapp.job.QuickStatsJob;
 
 @Singleton
 public class VoteRoundRoutes {

@@ -7,10 +7,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectOnConditionStep;
@@ -20,22 +18,25 @@ import org.tron.protos.Protocol.Transaction.Contract.ContractType;
 
 import com.google.inject.Inject;
 
+import io.trxplorer.job.QuickStatsJob;
 import io.trxplorer.service.dto.common.ListModel;
 import io.trxplorer.service.dto.transaction.TransactionCriteria;
 import io.trxplorer.service.dto.transaction.TransactionModel;
 import io.trxplorer.service.dto.transaction.TransferModel;
 import io.trxplorer.service.dto.vote.VoteModel;
-import io.trxplorer.service.utils.TransactionHelper;
 
 public class TransactionService {
 
 	private DSLContext dslContext;
 	
 	private final int TRON_START_YEAR = 2018;
+
+	private QuickStatsJob quickStats;
 	
 	@Inject
-	public TransactionService(DSLContext dslContext) {
+	public TransactionService(DSLContext dslContext,QuickStatsJob quickStats) {
 		this.dslContext  = dslContext;
+		this.quickStats = quickStats;
 	}
 	
 	public int getTotalTxLast24h(){
@@ -161,14 +162,7 @@ public class TransactionService {
 		;
 		
 		
-		SelectConditionStep<Record1<Integer>> countQuery = dslContext.select(DSL.count())
-				.from(TRANSACTION)
-				.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
-				.where(conditions)
-				;
-		
-		
-		Integer totalCount = countQuery.fetchOneInto(Integer.class);
+		long totalCount = this.quickStats.getTotalTx();
 		
 		List<TransactionModel> items = listQuery.where(conditions).orderBy(TRANSACTION.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(TransactionModel.class);
 		

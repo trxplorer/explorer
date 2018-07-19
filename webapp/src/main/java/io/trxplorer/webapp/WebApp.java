@@ -10,9 +10,9 @@ import org.jooby.quartz.Quartz;
 import org.jooq.DSLContext;
 import org.jooq.conf.Settings;
 
+import io.trxplorer.job.QuickStatsJob;
 import io.trxplorer.webapp.filter.CommonFilter;
 import io.trxplorer.webapp.job.ChartGeneratorJob;
-import io.trxplorer.webapp.job.QuickStatsJob;
 import io.trxplorer.webapp.route.AccountRoutes;
 import io.trxplorer.webapp.route.AssetRoutes;
 import io.trxplorer.webapp.route.BlockRoutes;

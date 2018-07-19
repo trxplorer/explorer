@@ -15,11 +15,11 @@ import org.jooby.mvc.Path;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import io.trxplorer.job.QuickStatsJob;
 import io.trxplorer.service.common.BlockService;
 import io.trxplorer.service.dto.block.BlockCriteriaDTO;
 import io.trxplorer.service.dto.block.BlockDTO;
 import io.trxplorer.service.dto.common.ListModel;
-import io.trxplorer.webapp.job.QuickStatsJob;
 
 @Singleton
 public class BlockRoutes {

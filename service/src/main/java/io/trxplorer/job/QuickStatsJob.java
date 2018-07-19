@@ -1,4 +1,4 @@
-package io.trxplorer.webapp.job;
+package io.trxplorer.job;
 
 import static io.trxplorer.model.Tables.*;
 

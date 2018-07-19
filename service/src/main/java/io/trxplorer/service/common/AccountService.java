@@ -17,16 +17,13 @@ import org.jooq.impl.DSL;
 
 import com.google.inject.Inject;
 
+import io.trxplorer.job.QuickStatsJob;
 import io.trxplorer.service.dto.account.AccountDTO;
 import io.trxplorer.service.dto.account.AccountDetailCriteriaDTO;
 import io.trxplorer.service.dto.account.AccountListCriteria;
 import io.trxplorer.service.dto.account.AssetBalanceDTO;
 import io.trxplorer.service.dto.account.FrozenBalanceDTO;
-import io.trxplorer.service.dto.asset.AssetIssueListCriteriaDTO;
-import io.trxplorer.service.dto.asset.AssetParticipationCriteria;
 import io.trxplorer.service.dto.common.ListModel;
-import io.trxplorer.service.dto.transaction.TransactionCriteria;
-import io.trxplorer.service.dto.transaction.TransactionModel;
 import io.trxplorer.service.dto.vote.VoteModel;
 import io.trxplorer.service.dto.witness.AllowanceWidthdrawDTO;
 import io.trxplorer.troncli.TronFullNodeCli;
@@ -44,13 +41,16 @@ public class AccountService {
 
 	private AssetService assetService;
 	
+	private QuickStatsJob quickStats;
+	
 	@Inject
-	public AccountService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli,TransactionService txService,WitnessService witnessService,AssetService assetService) {
+	public AccountService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli,TransactionService txService,WitnessService witnessService,AssetService assetService,QuickStatsJob quickStats) {
 		this.dslContext = dslContext;
 		this.tronFullNodeCli = tronFullNodeCli;
 		this.txService = txService;
 		this.witnessService = witnessService;
 		this.assetService = assetService;
+		this.quickStats = quickStats;
 	}
 
 
@@ -117,7 +117,7 @@ public class AccountService {
 		.from(ACCOUNT);
 		
 		
-		Integer totalCount = countQuery.where(ACCOUNT.BALANCE.gt(0l)).fetchOneInto(Integer.class);
+		Long totalCount = this.quickStats.getTotalAccounts();
 		
 		List<AccountDTO> items = listQuery.where(conditions).orderBy(ACCOUNT.CREATE_TIME.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(AccountDTO.class);
 		

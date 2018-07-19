@@ -10,9 +10,9 @@ import org.jooby.mvc.Path;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import io.trxplorer.job.QuickStatsJob;
 import io.trxplorer.service.common.AccountService;
 import io.trxplorer.service.common.TransactionService;
-import io.trxplorer.webapp.job.QuickStatsJob;
 
 @Singleton
 public class IndexRoute {
