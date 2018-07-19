@@ -91,10 +91,10 @@
 				<td>{{loop.index+1}}</td>
 				<td>{%if witness.name!=null and witness.name.length>0%}{{witness.name}}<br>{%endif%}<a href="/address/{{witness.address}}">{{witness.address}}</a></td>
 				<td><a href="{{witness.shortUrl}}" target="blank">{{witness.shortUrl}}</a></td>
-				<td>{%if witness.lastBlock!=0%}<a href="/block/{{witness.lastBlock}}">{{witness.lastBlock}}</a>{%else%}{{witness.lastBlock}}{%endif%}</td>
-				<td>{%if witness.totalProduced > 0 %}<a href="/blocks?producedBy={{witness.address}}">{{witness.getTotalProducedStr()}}</a>{%else%}{{witness.getTotalProducedStr()}}{%endif%}</td>
+				<td>{{witness.lastBlock}}</td>
+				<td>{{witness.getTotalProducedStr()}}</td>
 				<td>{{witness.totalMissed}}</td>
-				<td>{%if witness.voteCount > 0 %}<a href="/address/{{witness.address}}?t=votes">{{witness.getVoteCountStr()}}</a>{%else%}{{witness.getVoteCountStr()}}{%endif%}</td>
+				<td>{%if witness.voteCount > 0 %}<a href="/vote/{{stats.currentRound.round-1}}/{{witness.address}}">{{witness.getVoteCountStr()}}</a>{%else%}{{witness.getVoteCountStr()}}{%endif%}</td>
 			</tr>
 
 			{%endfor%}

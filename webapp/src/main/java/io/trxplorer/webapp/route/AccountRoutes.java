@@ -51,7 +51,8 @@ public class AccountRoutes {
 		AccountDTO account = this.accountService.getAccountByAddress(criteria);
 		
 		if (account!=null) {
-			view.put("account",account);			
+			view.put("account",account);		
+			view.put("currentRound",this.quickStats.getCurrentVotingRound());
 		}else {
 			chain.next(req, res);
 		}

@@ -31,17 +31,14 @@ public class WitnessRoutes {
 	
 	@GET
 	@Path(TRXPlorerRoutePaths.Front.REPRESENTATIVE_LIST)
-	public void superRepresentativeList(Request req,Response res) throws Throwable {
+	public void listReprensentatives(Request req,Response res) throws Throwable {
 		
-
 		Integer page = req.param("page").intValue(1);
-		
 		
 		WitnessListCriteriaDTO srCriteria = new WitnessListCriteriaDTO();
 		
 		srCriteria.setLimit(200);
 		srCriteria.setPage(page);
-		
 		
 		View view = Results.html("witness/witness.list");
 		
@@ -52,8 +49,11 @@ public class WitnessRoutes {
 		stats.put("totalRepresentatives24h", quickStats.getTotalRepresentative24h());
 		stats.put("bestRep6h", quickStats.getBestRep6h());
 		stats.put("bestRepAll", quickStats.getBestRepAll());
+		stats.put("currentRound", quickStats.getCurrentVotingRound());
+	
 		
 		view.put("stats",stats);
+
 		
 		res.send(view);
 	}
