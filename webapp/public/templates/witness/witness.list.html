@@ -89,7 +89,7 @@
 			
 			<tr class="center aligned">
 				<td>{{loop.index+1}}</td>
-				<td><a href="/address/{{witness.address}}">{{witness.address}}</a>{%if witness.name!=null and witness.name.length>0%}<br>{{witness.name}}{%endif%}</td>
+				<td>{%if witness.name!=null and witness.name.length>0%}{{witness.name}}<br>{%endif%}<a href="/address/{{witness.address}}">{{witness.address}}</a></td>
 				<td><a href="{{witness.shortUrl}}" target="blank">{{witness.shortUrl}}</a></td>
 				<td>{%if witness.lastBlock!=0%}<a href="/block/{{witness.lastBlock}}">{{witness.lastBlock}}</a>{%else%}{{witness.lastBlock}}{%endif%}</td>
 				<td>{%if witness.totalProduced > 0 %}<a href="/blocks?producedBy={{witness.address}}">{{witness.getTotalProducedStr()}}</a>{%else%}{{witness.getTotalProducedStr()}}{%endif%}</td>

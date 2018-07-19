@@ -141,7 +141,7 @@ public class QuickStatsJob {
 		//Representative best 6h
 		Record2<String, Integer> repBest6h = this.dslContext.select(BLOCK.WITNESS_ADDRESS,DSL.count().divide(blocks6h).multiply(100).as("count"))
 		.from(BLOCK)
-		.where(BLOCK.TIMESTAMP.gt(Timestamp.valueOf(last24hDate)))
+		.where(BLOCK.TIMESTAMP.gt(Timestamp.valueOf(last6hDate)))
 		.groupBy(BLOCK.WITNESS_ADDRESS)
 		.orderBy(DSL.field("count").desc())
 		.limit(1)
