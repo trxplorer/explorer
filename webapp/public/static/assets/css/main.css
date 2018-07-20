@@ -43,7 +43,8 @@ background-position: center;
  
 
 }
-.ui.header{
+
+.ui.menu,.ui.header{
 font-family: 'Exo 2';	
 }
 
@@ -106,7 +107,7 @@ width: 100%;
 
 
 .ui.borderless.main.menu a.item{
-color:#524A4A;
+color:#5f5655;
 font-weight:bold;
 }
 
