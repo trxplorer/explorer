@@ -93,7 +93,7 @@
 			<script type="text/javascript">
 				function getUrl(typeId,text,id){
 					if (typeId==='1'){
-						return '/address/'+text;
+						return '/address/'+text.split('-')[1].trim();
 					}else if (typeId==='2'){
 						return '/search/witness?id='+id;
 					}else if (typeId==='3'){
@@ -101,7 +101,7 @@
 					}else if (typeId==='4'){
 						return '/block/'+text;
 					}else if (typeId==='5'){
-						return '/search/token?id='+id;
+						return '/token/'+text.split('-')[0].trim();
 					}
 				}
 				function getType(typeId){

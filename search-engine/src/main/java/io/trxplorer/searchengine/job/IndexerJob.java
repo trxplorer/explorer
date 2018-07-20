@@ -4,11 +4,11 @@ import static io.trxplorer.model.Tables.*;
 
 import java.math.BigInteger;
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jooby.quartz.Scheduled;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Record2;
 import org.jooq.Result;
@@ -20,8 +20,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import io.redisearch.client.Client;
-import io.trxplorer.model.tables.pojos.Account;
-import io.trxplorer.model.tables.pojos.Witness;
 import io.trxplorer.searchengine.SearchEngineConfig;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisDataException;
@@ -78,20 +76,20 @@ public class IndexerJob {
 		//indexWitnessUrl();
 		
 		//Account
-		indexData(LAST_ACCOUNT_ID_KEY, ACCOUNT_TYPE, ACCOUNT.ADDRESS.getName(),  ACCOUNT.ID.getName(), ACCOUNT.getName());
+		indexData(LAST_ACCOUNT_ID_KEY, ACCOUNT_TYPE, ACCOUNT.ACCOUNT_NAME.concat(" - ").concat(ACCOUNT.ADDRESS).as("account"),  ACCOUNT.ID, ACCOUNT.getName());
 		//Witness
-		indexData(LAST_WITNESS_ID_KEY, WITNESS_TYPE, WITNESS.URL.getName(), WITNESS.ID.getName(), WITNESS.getName());
+		indexData(LAST_WITNESS_ID_KEY, WITNESS_TYPE, WITNESS.URL, WITNESS.ID, WITNESS.getName());
 		//Tx
-		indexData(LAST_TRANSACTION_ID_KEY, TRANSACTION_TYPE, TRANSACTION.HASH.getName(), TRANSACTION.ID.getName(), TRANSACTION.getName());
+		//indexData(LAST_TRANSACTION_ID_KEY, TRANSACTION_TYPE, TRANSACTION.HASH.getName(), TRANSACTION.ID.getName(), TRANSACTION.getName());
 		//Block
-		indexData(LAST_BLOCK_ID_KEY, BLOCK_TYPE, BLOCK.HASH.getName(), BLOCK.ID.getName(), BLOCK.getName());
+		indexData(LAST_BLOCK_ID_KEY, BLOCK_TYPE, BLOCK.NUM, BLOCK.ID, BLOCK.getName());
 		//Token
-		indexData(LAST_TOKEN_ID_KEY, TOKEN_TYPE, CONTRACT_ASSET_ISSUE.NAME.getName(), CONTRACT_ASSET_ISSUE.ID.getName(), CONTRACT_ASSET_ISSUE.getName());
+		indexData(LAST_TOKEN_ID_KEY, TOKEN_TYPE, CONTRACT_ASSET_ISSUE.NAME.concat(" - ").concat(CONTRACT_ASSET_ISSUE.ABBR).as("token"), CONTRACT_ASSET_ISSUE.ID, CONTRACT_ASSET_ISSUE.getName());
 	}
 	
 	
 	
-	public void indexData(String keyName,int type,String textFieldName,String idFieldName,String tableName) {
+	public void indexData(String keyName,int type,Field<?> textField,Field<ULong> idField,String tableName) {
 		
 		String lastId = this.jedis.get(keyName);
 		
@@ -99,21 +97,21 @@ public class IndexerJob {
 		
 		ULong id = lastId == null ? ULong.valueOf(0) : ULong.valueOf(lastId);
 		
-		Result<Record2<Object, Object>> records = this.dslContext.select(DSL.field(idFieldName),DSL.field(textFieldName)).from(tableName).where(DSL.field(idFieldName).gt(id)).limit(BATCH_SIZE)
+		Result<?> records = this.dslContext.select(idField,textField).from(tableName).where(idField.gt(id)).limit(BATCH_SIZE)
 		.fetch();
 		
 		
 		for(Record record:records) {
 			
-			if (record.get(textFieldName) == null || StringUtils.isBlank(record.get(textFieldName).toString()) || record.get(idFieldName)==null) {
+			if (record.get(textField.getName()) == null || StringUtils.isBlank(record.get(textField.getName()).toString()) || record.get(idField.getName())==null) {
 				continue;
 			}
 			
-			System.out.println("Save "+tableName+":"+record.get(textFieldName).toString().trim());
+			System.out.println("Save "+tableName+":"+record.get(textField.getName()).toString().trim());
 			
-			saveDocument(record.get(textFieldName).toString().trim(), type, ((BigInteger)record.get(idFieldName)).longValue());
+			saveDocument(record.get(textField.getName()).toString().trim(), type, (record.get(idField.getName(),ULong.class)).longValue());
 			
-			this.jedis.set(keyName, ""+record.get(idFieldName));
+			this.jedis.set(keyName, ""+record.get(idField.getName()));
 			
 		}
 		
