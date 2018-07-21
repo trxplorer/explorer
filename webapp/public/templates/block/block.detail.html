@@ -55,6 +55,8 @@
 
 
 <div id="app">
+	<div v-show="txCount>0" v-cloak>
+	<h2 class="ui dividing header">Transactions</h2>
      <table class="ui fixed striped table" v-cloak>
        <thead>
          <tr>
@@ -71,7 +73,7 @@
 	           <td><a :href="'/tx/'+tx.hash">[[tx.hash]]</a></td>
 	           <td><a :href="'/block/{{tx.block}}'">[[tx.block]]</a></td>
 	           <td>[[tx.timestamp]]</td>
-	           <td>[[tx.from]]</td>
+	           <td><a :href="'/address/'+tx.from">[[tx.from]]</a></td>
 	           <td>[[tx.type]]</td>
 	         </tr>         
 		</template>
@@ -98,7 +100,7 @@
         </tfoot>
      </table>
 </div>
-
+</div>
 </div>
 
 {%endblock%}
@@ -113,7 +115,8 @@ new Vue({
 	  data: function(){
 		  return {
 			  list:[],
-			  block:{{block.num}}
+			  block:{{block.num}},
+			  txCount:{{block.txCount}}
 		  }  
 	  },
 	  methods:{
@@ -137,7 +140,10 @@ new Vue({
 	      }
 	  },
 	  mounted: function(){
-		  this.fetch({page:1,block:this.block});
+		  if (this.txCount>0){
+			  this.fetch({page:1,block:this.block});  
+		  }
+		  
 	  },
 	  computed: {
 	      pages(){

@@ -9,14 +9,13 @@ import java.util.List;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.Record1;
-import org.jooq.SelectConditionStep;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
 import org.tron.protos.Protocol.Transaction.Contract.ContractType;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import io.trxplorer.job.QuickStatsJob;
 import io.trxplorer.service.dto.common.ListModel;
@@ -25,6 +24,7 @@ import io.trxplorer.service.dto.transaction.TransactionModel;
 import io.trxplorer.service.dto.transaction.TransferModel;
 import io.trxplorer.service.dto.vote.VoteModel;
 
+@Singleton
 public class TransactionService {
 
 	private DSLContext dslContext;
@@ -161,8 +161,13 @@ public class TransactionService {
 		.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
 		;
 		
+		long totalCount = 0;
+		if (criteria.getBlock()==null) {
+			totalCount = this.quickStats.getTotalTx();	
+		}else {
+			totalCount = this.dslContext.select(DSL.count()).from(TRANSACTION).where(conditions).execute();
+		}
 		
-		long totalCount = this.quickStats.getTotalTx();
 		
 		List<TransactionModel> items = listQuery.where(conditions).orderBy(TRANSACTION.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(TransactionModel.class);
 		
