@@ -11,11 +11,25 @@ public class VotingRoundStatsListCriteria extends CommonCriteriaDTO{
 
 	private Integer maxRound;
 	
+	private String address;
+	
 	public VotingRoundStatsListCriteria() {
 	}
 	
 	
 	
+	public String getAddress() {
+		return address;
+	}
+
+
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+
+
 	public Integer getMaxRound() {
 		return maxRound;
 	}

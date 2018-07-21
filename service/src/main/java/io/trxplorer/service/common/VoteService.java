@@ -112,6 +112,10 @@ public class VoteService {
 		conditions.add(ACCOUNT.ADDRESS.eq(WITNESS.ADDRESS));
 		conditions.add(ACCOUNT.ADDRESS.eq(VOTING_ROUND_STATS.ADDRESS));
 		
+		if (StringUtils.isNotBlank(criteria.getAddress())) {
+			conditions.add(ACCOUNT.ADDRESS.eq(criteria.getAddress()));	
+		}
+		
 		if (criteria.getRound()!=null) {
 			conditions.add(VOTING_ROUND.ROUND.eq(UInteger.valueOf(criteria.getRound())));			
 		}

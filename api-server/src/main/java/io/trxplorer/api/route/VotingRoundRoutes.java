@@ -49,13 +49,14 @@ public class VotingRoundRoutes {
 
 	@GET
 	@Path(ApiAppRoutePaths.V1.VOTE_ROUND_STATS)
-	public ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRoundStats(Integer maxRound,Optional<Integer> page) throws Throwable {
+	public ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRoundStats(Integer maxRound,Optional<String> address,Optional<Integer> page) throws Throwable {
 		
 		VotingRoundStatsListCriteria criteria = new VotingRoundStatsListCriteria();
 		
 		criteria.setLimit(1);//FIXME not considered just to prevent NPE
 		criteria.setPage(page.orElse(1));
 		criteria.setMaxRound(maxRound);
+		criteria.setAddress(address.orElse(null));
 		
 		return this.voteService.listRoundStats(criteria);		
 	}

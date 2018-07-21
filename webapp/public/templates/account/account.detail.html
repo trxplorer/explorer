@@ -1,63 +1,89 @@
 {% extends "main" %} 
 {% block title %}Tron address {%if account.name!=null and account.name.length>0%}({{account.name}}){%endif%} {{account.address}} informations {% endblock %} 
 {%block description%}Get all informations about address #{{account.address}} on Tron blockchain{%endblock%}
-  
+ 
+{% block header %} 
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/taucharts@1/build/production/tauCharts.min.css">
+
+{% endblock %}
+ 
 {% block content %}
 <h1 class="ui dividing header">
-	<small><i class="icon user"></i> <small>{{account.address}} {%if account.name!=null and account.name!='' %}({{account.name}}){%endif%}</small></small>
+	<small><i class="icon user"></i> Address</small>
 </h1>
-
-			<table class="ui compact definition table ">
+{%if account.witness!=null%}
+<div class="ui orange inverted segment align center" style="opacity: 0.7;"><b>REPRESENTATIVE ACCOUNT</b></div>
+{%endif%}
+<div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
+    <div class="ui grid ">
+   			<div class="column">
+   			<table>
+   				<tr>
+   					<td>
+   					<canvas    width="40" height="40" data-jdenticon-value="{{account.address}}"></canvas>
+   					</td>
+   					<td>
+   					<h2>{{account.address}} {%if account.name!=null and account.name!='' %}<small><small>({{account.name}})</small></small>{%endif%}</h2>
+   					</td>
+   				</tr>
+   			</table>
+					 
+					
+					
+					<div class="ui fluid grid">
+					
+								<div class="one wide column"></div>
+			
+								<div class="eleven wide column">
+									
+									<div class="ui mini statistics">
+										<div style="margin-bottom: 0;"  class="ui mini red statistic">
+										  <div class="value">
+										    {{account.getBalanceStr()}} TRX
+										  </div>
+										  <div class="label">
+										    Balance
+										  </div>
+										</div>	
+										<div style="margin-bottom: 0;"  class="ui mini orange statistic">
+										  <div class="value">
+										    {{account.getFrozenBalanceStr()}}
+										  </div>
+										  <div class="label">
+										    Tron power
+										  </div>
+										</div>	
+									</div>		
+					
+								</div>
+							<!-- 
+								<div class="four wide column">
+									<div class="ui mini green button">Send</div>
+									{%if account.witness!=null%}
+									<div class="ui mini blue button">Vote</div>
+									{%endif%}
+									<div class="ui mini yellow button">Receive</div>
+								</div>
+ 							-->								
+					</div>
+			</div>
+    </div>
+</div>
+{%if account.witness!=null%}
+<div class="ui segment">
+	<div class="ui stackable grid">
+		<div class="eight wide column">
+			<table class="ui compact very basic table ">
 				<tbody>
-					<tr>
-						<td class="center aligned" colspan="2">Account overview</td>
-					</tr>
-					<tr>
-						<td>Created date</td>
-						<td><span class="timestamp">{{account.createTime}}</span></td>
-					</tr>
-					<!-- 
-					<tr>
-						<td>Bandwidth</td>
-						<td>{{account.getBandwidthStr()}}</td>
-					</tr>
-					 -->
-					<tr >
-						<td>TRX balance</td>
-						<td>
-							{%if account.frozenBalance >0%}
-							<table class="ui very basic table ">
-								<tbody>
-									<tr>
-										<td>Available</td>
-										<td>{{account.getBalanceStr()}}</td>
-									</tr>
-									<tr>
-										<td>Frozen</td>
-										<td>{{account.getFrozenBalanceStr()}} &nbsp;&nbsp; <small>(Expires: <span class="timestamp">{{account.frozenExpire}}</span>)</small></td>
-									</tr>
-									<tr>
-										<td>Total</td>
-										<td>{{account.getTotalBalanceStr()}}</td>
-									</tr>
-								</tbody>
-							</table>
-							{%else%}
-								{{account.getBalanceStr()}}
-							{%endif%}
-						</td>
-					</tr>
-					{%if account.witness!=null%}
-					<tr>
-						<td class="center aligned" colspan="2">Representative informations</td>
-					</tr>
+				
+			
 					<tr>
 						<td>URL</td>
 						<td><a href="{{account.witness.url}}" target="blank">{{account.witness.url}}</a></td>
 					</tr>
 					<tr>
-						<td>Received votes</td>
-						<td>{{account.witness.getVoteCountStr()}} {%if account.witness.voteCount > 0 %}<a href="/vote/{{currentRound.round}}/{{account.address}}">[Votes details]</a>{%endif%}</td>
+						<td>Votes received</td>
+						<td>{{account.witness.getVoteCountStr()}} {%if account.witness.voteCount > 0 %}<a href="/vote/{{currentRound.round}}/{{account.address}}">[Details]</a>{%endif%}</td>
 					</tr>
 					<tr>
 						<td>Blocks</td>
@@ -65,26 +91,39 @@
 					</tr>
 					<tr>
 						<td>Allowance</td>
-						<td>{{account.getAllowanceStr()}}</td>
+						<td>{{account.getAllowanceStr()}} TRX</td>
 					</tr>
 					<!-- 
-					<tr>
-						<td>Total reward</td>
-						<td>{{account.totalReward}}</td>
-					</tr>
-					 -->
-					{%endif%}
+				<tr>
+					<td>Total reward</td>
+					<td>{{account.totalReward}}</td>
+				</tr>
+				 !-->
+				
 				</tbody>
 			</table>
+		</div>
+		<div class="eight wide column">
 
+			<div class="ui active dimmer"> <div class="ui text loader">Loading ...</div></div>
+			<div id="chart" style="height:300px;"></div>
 
+		</div>
+	</div>
+
+</div>
+{%endif%}
+ 
+
+ 
+ 
 <div id="app">
 
 <div class="ui stackable fluid secondary menu">
   <router-link to="/" active-class="active" class="item" exact>Transfers</router-link>
   <router-link to="/tokens" active-class="active" class="item" exact>Tokens</router-link>
   <router-link to="/tp" active-class="active" class="item" exact>Token participations</router-link>
-  <router-link to="/votes" active-class="active" class="item" exact>Votes</router-link>
+  <router-link to="/votes" active-class="active" class="item" exact>Votes sent</router-link>
   <!-- <router-link to="/freeze" active-class="active" class="item">Freeze history</router-link> -->
   {%if account.witness!=null%}
   <router-link to="/aw" active-class="active" class="item" exact>Witdhdrawal</router-link>
@@ -104,7 +143,7 @@
 			<th class="center aligned">From</th>
 			<th class="center aligned">To</th>
 			<th class="center aligned">Timestamp</th>
-			<th class="center aligned">Vote count</th>
+			<th class="center aligned">Votes</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -147,7 +186,7 @@
      <table class="ui fixed striped table"  v-show="list.totalCount>0">
        <thead>
          <tr>
-           <th class="center aligned">Hash</th>
+           <th class="center aligned">Tx id</th>
            <th class="center aligned">Timestamp</th>
            <th class="center aligned">From</th>
            <th class="center aligned">To</th>
@@ -272,7 +311,7 @@
 <div class="ui icon small info message" v-show="list.totalCount==0">
   <div class="content">
     <div class="header">
-      <i class="circle info icon"></i> No votes yet for this account
+      <i class="circle info icon"></i> No votes sent yet from this account
     </div>
   </div>
 </div>
@@ -382,7 +421,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/components/progress.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.2/vue.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.2.0/vue-router.min.js"></script>
-
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jdenticon@2.1.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
+<script src="//cdn.jsdelivr.net/d3js/3.5.17/d3.min.js" charset="utf-8"></script>
+<script src="//cdn.jsdelivr.net/npm/taucharts@1/build/production/tauCharts.min.js" type="text/javascript"></script>
 
 <script>
 var common = {
@@ -558,6 +600,66 @@ new Vue({
 }).$mount('#app');
 
 $('.progress').progress('set', 100);
+{%if account.witness!=null%}
+$.get('{{apiConfig.endpoint}}/vote/stats/{{currentRound.round}}',{address:"{{account.address}}"}).success(function(data){
+
+	  var chart = new tauCharts.Chart({
+		  settings: {
+			  	
+			},
+		    data: data.items,
+		    type: 'line',
+		    guide:{
+		    	
+		    	    x:{
+	    		    	label:'Round',
+	    		    	autoScale:false
+	    		    },
+	    		    y:{
+	    		    	label:'Votes',
+	    		    	autoScale:false
+	    		    }
+		    },
+		    x:'round',
+		    y: 'votes',
+		    color: 'name',
+		    size:null,
+		    plugins:
+		    	[
+		    		tauCharts.api.plugins.get('tooltip')({
+		    			fields: ['position','round','votes','startDate','endDate'],
+		    			formatters: {
+		                    startDate: function (value) {
+		                    	var utcDate = moment.unix(value).format('YYYY-MM-DDTHH:mm:ss');
+		        		    	return moment.utc(utcDate).local().format('DD-MM-YYYY HH:mm:ss');
+		                    },
+		                    endDate: function (value) {
+		                    	var utcDate = moment.unix(value).format('YYYY-MM-DDTHH:mm:ss');
+		        		    	return moment.utc(utcDate).local().format('DD-MM-YYYY HH:mm:ss');
+		                    }
+		                }
+		    			
+		    		}),
+		    	]
+		});
+	
+	  chart.renderTo('#chart');
+	  $('.ui.dimmer').toggleClass('active'); 
+
+	
+}).fail(function(xhr,status,err){
+	console.error(err);
+	  $('.ui.dimmer').toggleClass('active');
+});
+{%endif%}
+/*
+new QRCode(document.getElementById("qrcode"), {
+	text:"{{account.address}}",
+	width: 128,
+	height: 128
+	});
+*/
+
 </script>
 
 
