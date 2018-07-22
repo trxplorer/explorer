@@ -5,7 +5,7 @@
 
 	<groupId>io.trxplorer</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.0.14-SNAPSHOT</version>
+	<version>1.0.14</version>
 	<packaging>pom</packaging>
 
 	<name>Parent</name>
@@ -26,7 +26,7 @@
 		<connection>scm:git:ssh://git@bitbucket.org/nfleury/trxplorer.io.git</connection>
 		<developerConnection>scm:git:ssh://git@bitbucket.org/nfleury/trxplorer.io.git</developerConnection>
 		<url>https://bitbucket.org/nfleury/trxplorer.io</url>
-	  <tag>HEAD</tag>
+	  <tag>parent-1.0.14</tag>
   </scm>
 
 	<modules>
