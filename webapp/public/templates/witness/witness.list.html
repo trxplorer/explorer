@@ -70,8 +70,7 @@
 		<thead>
 			<tr>
 				<th class="center aligned">Rank</th>
-				<th class="center aligned">Address</th>
-				<th class="center aligned">URL</th>
+				<th class="center aligned">Candidate</th>
 				<th class="center aligned">Last block</th>
 				<th class="center aligned">Blocks produced</th>
 				<th class="center aligned">Blocks missed</th>
@@ -83,14 +82,26 @@
 
 			{%if list.criteria.page==1 and loop.index==27%}
 			<tr>
-				<td class="center aligned" colspan="7"><b>Representatives candidates</b></td>
+				<td class="center aligned" colspan="7"><b>SR Candidates</b></td>
 			</tr>						
 			{%endif%}
 			
 			<tr class="center aligned">
-				<td>{{loop.index+1}}</td>
-				<td>{%if witness.name!=null and witness.name.length>0%}{{witness.name}}<br>{%endif%}<a href="/address/{{witness.address}}">{{witness.address}}</a></td>
-				<td><a href="{{witness.shortUrl}}" target="blank">{{witness.shortUrl}}</a></td>
+				<td><span class="ui olivecircular label">{{loop.index+1}}</span></td>
+				<td>
+					
+					<table class="ui very basic table">
+						<tr >
+							<td>
+								<canvas width="40" height="40" data-jdenticon-value="{{witness.address}}"></canvas></a>
+							</td>
+							<td >
+								<a href="/address/{{witness.address}}" style="color:rgb(101, 94, 94);font-size: 16px;font-weight: bold;">{%if witness.name!=null and witness.name.length>0%}{{witness.name}}{%else%}{{witness.url}}{%endif%}</a>
+							</td>
+						</tr>						
+					</table>
+				</td>
+				<!-- <td><a href="{{witness.address}}" target="blank">{{witness.shortUrl}}</a></td> -->
 				<td>{{witness.lastBlock}}</td>
 				<td>{{witness.getTotalProducedStr()}}</td>
 				<td>{{witness.totalMissed}}</td>
@@ -105,8 +116,9 @@
 		  </tr></tfoot>
 	</table>
 
+{%endblock%}
 
 
-
-
+{% block footerscripts%}
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jdenticon@2.1.0"></script>
 {%endblock%}

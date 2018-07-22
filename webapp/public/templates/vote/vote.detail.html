@@ -49,26 +49,36 @@
        <thead>
          <tr>
            <th class="center aligned">Rank</th>
-           <th class="center aligned">Address</th>
-           <th class="center aligned">URL</th>
+           <th class="center aligned">Candidate</th>
            <th class="center aligned">Votes</th>
            <th class="center aligned">Percentage</th>
          </tr>
        </thead>
 		<thead>
 			<tr v-if="currentPage==1">
-				<th class="center aligned" colspan="5">Super representatives</th>
+				<th class="center aligned" colspan="4">Super representatives</th>
 			</tr>
 		</thead>
        <tbody>
 		<template v-for="(vr,index) in list.items" :key="index">
 	         <tr v-if="vr.position==28">
-				<td class="center aligned" colspan="5" ><b>SR Candidates</b></b></td>
+				<td class="center aligned" colspan="4" ><b>SR Candidates</b></b></td>
 			 </tr>
 	         <tr class="center aligned" >
-	           <td>[[vr.position]]</td>
-	           <td>[[vr.name]]<br><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.address]]</a></td>
-	           <td>[[vr.url]]</td>
+	           <td><span class="ui olivecircular label">[[vr.position]]</span></td>
+	           <td>
+					<table class="ui very basic table">
+						<tr >
+							<td>
+								<canvas class="jdenticon" width="40" height="40" :data-jdenticon-value="[[vr.address]]"></canvas></a>
+							</td>
+							<td >
+								<a :href="'/address/'+[[vr.address]]" style="color:rgb(101, 94, 94);font-size: 16px;font-weight: bold;"><span v-if="vr.name">[[vr.name]]</span><span v-if="!vr.name">[[vr.url]]</span></a>
+							</td>
+						</tr>						
+					</table>
+	           	
+	           </td>
 	           <td><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.votes|toLocale]]</a></td>
 	           <td>[[vr.votes|percentage|toLocale]] %</td>
 	         </tr>         
@@ -76,7 +86,7 @@
        </tbody>
         <tfoot>
           <tr>
-            <th colspan="5" v-show="totalPages>1">
+            <th colspan="4" v-show="totalPages>1">
               <div class="ui left floated">
                   Page [[currentPage]] of [[totalPages]]
               </div>
@@ -101,6 +111,7 @@
 
 {% block footerscripts%}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.2/vue.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jdenticon@2.1.0"></script>
 
 <script>
 new Vue({
@@ -129,6 +140,8 @@ new Vue({
 	    			ziss.list = data;
 	    			console.log(ziss.list)
 	    			ziss.loading=false;
+	    			//fixme
+	    			$.getScript( "https://cdn.jsdelivr.net/npm/jdenticon@2.1.0" )
 	    		}).fail(function(xhr,status,err){
 	    			console.error(err);
 	    			ziss.loading=false;

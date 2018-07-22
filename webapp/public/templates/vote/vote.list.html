@@ -67,30 +67,40 @@
 		  </div>
 		  <div class="label">Updating data in 60s</div>
 		</div>
-	     <table class="ui small compact fixed striped table" >
+	     <table class="ui compact fixed striped table" >
 	       <thead>
 	         <tr>
 	           <th class="center aligned">Rank</th>
-	           <th class="center aligned">Address</th>
-	           <th class="center aligned">Url</th>
+	           <th class="center aligned">Candidate</th>
 	           <th class="center aligned">Votes</th>
 	           <th class="center aligned">Percentage</th>
 	         </tr>
 	       </thead>
 		 <thead>
 			<tr v-if="currentPage==1">
-				<th class="center aligned" colspan="5">Super representatives</th>
+				<th class="center aligned" colspan="4">Super representatives</th>
 			</tr>
 		</thead>
 	       <tbody>
 			<template v-for="(vote,index) in list.items" :key="index">
 	  			<tr v-if="vote.position==28">
-					<td class="center aligned" colspan="5" ><b>SR Candidates</b></b></td>
+					<td class="center aligned" colspan="4" ><b>SR Candidates</b></b></td>
 				 </tr>
 		         <tr class="center aligned" >
-		           <td>[[vote.position]]</td>
-		          	<td>[[vote.name]] <br><a :href="'/address/'+[[vote.address]]">[[vote.address]]</a></td>
-		          	<td>[[vote.url]]<a :href="'/address/'+[[vote.address]]"></a></td>
+		           <td><span class="ui olivecircular label">[[vote.position]]</span></td>
+		          	<td>
+		          		<table class="ui very basic table">
+						<tr >
+							<td>
+								<canvas class="jdenticon" width="40" height="40" :data-jdenticon-value="[[vote.address]]"></canvas></a>
+							</td>
+							<td >
+								<a :href="'/address/'+[[vote.address]]" style="color:rgb(101, 94, 94);font-size: 16px;font-weight: bold;"><span v-if="vote.name">[[vote.name]]</span><span v-if="!vote.name">[[vote.url]]</span></a>
+							</td>
+						</tr>						
+					</table>
+		          		 
+		          	</td>
 		           <td><a :href="'/vote/{{currentRound.round}}/'+[[vote.address]]">[[vote.votes|numberToLocale]]</a></td>
 		           <td>[[percentage(vote.votes)|numberToLocale]] %</td>
 		         </tr>         
@@ -98,7 +108,7 @@
 	       </tbody>
 	        <tfoot>
 	          <tr>
-	            <th colspan="5" v-show="totalPages>1">
+	            <th colspan="4" v-show="totalPages>1">
 	              <div class="ui left floated">
 	                  Page [[currentPage]] of [[totalPages]]
 	              </div>
@@ -161,6 +171,7 @@
 <script src="//cdn.jsdelivr.net/d3js/3.5.17/d3.min.js" charset="utf-8"></script>
 <script src="//cdn.jsdelivr.net/npm/taucharts@1/build/production/tauCharts.min.js" type="text/javascript"></script>
 <script src="//cdn.jsdelivr.net/npm/mobile-detect@1.4.2/mobile-detect.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jdenticon@2.1.0"></script>
 
 <script>
 new Vue({
@@ -211,6 +222,8 @@ new Vue({
 		    					e.name=e.url
 		    				}
 		    			});	 
+		    			//fixme
+		    			$.getScript( "https://cdn.jsdelivr.net/npm/jdenticon@2.1.0" )
 	    			}
 	    		}).fail(function(xhr,status,err){
 	    			console.error(err);
