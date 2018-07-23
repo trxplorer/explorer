@@ -111,13 +111,15 @@ public class QuickStatsJob {
 		//Tx 24h
 		this.tx24h = this.dslContext.select(DSL.count())
 		.from(TRANSACTION)
-		.where(TRANSACTION.TIMESTAMP.gt(Timestamp.valueOf(last24hDate)))
+		.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
+		.where(BLOCK.TIMESTAMP.gt(Timestamp.valueOf(last24hDate)))
 		.fetchOneInto(Long.class);		
 
 		//Tx 6h
 		this.tx6h = this.dslContext.select(DSL.count())
 		.from(TRANSACTION)
-		.where(TRANSACTION.TIMESTAMP.gt(Timestamp.valueOf(last6hDate)))
+		.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
+		.where(BLOCK.TIMESTAMP.gt(Timestamp.valueOf(last6hDate)))
 		.fetchOneInto(Long.class);		
 		
 		//TX confirmed
@@ -265,7 +267,8 @@ public class QuickStatsJob {
 		Integer last24hVotesCount = this.dslContext.select(DSL.count())
 		.from(TRANSACTION)
 		.join(CONTRACT_VOTE_WITNESS).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.where(TRANSACTION.TIMESTAMP.gt(Timestamp.valueOf(last24hDate)))
+		.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
+		.where(BLOCK.TIMESTAMP.gt(Timestamp.valueOf(last24hDate)))
 		.fetchOneInto(Integer.class);
 		
 		this.votes = new HashMap<>();
