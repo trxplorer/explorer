@@ -141,6 +141,9 @@ new Vue({
 		  this.fetch({page:1})
 		  console.log(this.$refs)
 	  },
+	  updated: function(){
+		resizeBackground();  
+	  },
 	  computed: {
 	      pages(){
 	    	var pages = [];

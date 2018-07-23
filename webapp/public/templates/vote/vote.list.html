@@ -221,8 +221,10 @@ new Vue({
 		    				if (!e.name||e.name===""){
 		    					e.name=e.url
 		    				}
-		    			});	 
+		    			});	
+		    			
 		    			//fixme
+		    			resizeBackground();
 		    			$.getScript( "https://cdn.jsdelivr.net/npm/jdenticon@2.1.0" )
 	    			}
 	    		}).fail(function(xhr,status,err){
@@ -240,6 +242,7 @@ new Vue({
 		    				}
 		    			});	
 		    			ziss.roundStats.items = ziss.roundStats.items.concat(ziss.list.items);
+		    			resizeBackground();
 	    			}
 	    		}).fail(function(xhr,status,err){
 	    			console.error(err);

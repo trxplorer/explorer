@@ -141,6 +141,7 @@ new Vue({
 	    			console.log(ziss.list)
 	    			ziss.loading=false;
 	    			//fixme
+	    			resizeBackground();
 	    			$.getScript( "https://cdn.jsdelivr.net/npm/jdenticon@2.1.0" )
 	    		}).fail(function(xhr,status,err){
 	    			console.error(err);
@@ -150,6 +151,9 @@ new Vue({
 	  },
 	  mounted: function(){
 		  this.fetch({page:1})
+	  },
+	  updated: function(){
+		  resizeBackground();  
 	  },
 	  computed: {
 	      pages(){

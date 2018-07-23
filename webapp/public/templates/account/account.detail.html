@@ -466,6 +466,9 @@ var common = {
 				  return {address:this.address}
 			  }
 		  },
+		  updated: function(){
+  			resizeBackground();  
+		  },
 		  mounted: function(){
 			  this.fetch(this.getParams());
 		  },
@@ -645,7 +648,7 @@ $.get('{{apiConfig.endpoint}}/vote/stats/{{currentRound.round}}',{address:"{{acc
 	
 	  chart.renderTo('#chart');
 	  $('.ui.dimmer').toggleClass('active'); 
-
+		resizeBackground();
 	
 }).fail(function(xhr,status,err){
 	console.error(err);

@@ -170,15 +170,17 @@
 				 	
 					 $(el).html(localDate);
 				 })
-
-				var body = document.body,html = document.documentElement;
- 				var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
-				$('body').css('height',height+'px');
-				$( window ).resize(function() {
-				    height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
-				 	$('body').css('height',height+'px');
-				});
 				
+				 
+				var resizeBackground = function (){
+						var body = document.body,html = document.documentElement;
+		 				var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
+						$('body').css('height',height+'px');		 
+				 }
+				$( window ).resize(function() {
+				    resizeBackground();
+				});
+				resizeBackground();
 				$('#mobile-menu').click(function(){
 					$('.menu .nomobile,.ui.breadcrumb').toggle();
 				});
