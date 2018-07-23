@@ -32,6 +32,7 @@ public class TransactionService {
 	private final int TRON_START_YEAR = 2018;
 
 	private QuickStatsJob quickStats;
+
 	
 	@Inject
 	public TransactionService(DSLContext dslContext,QuickStatsJob quickStats) {
@@ -66,10 +67,9 @@ public class TransactionService {
 	public List<VoteModel> getLastestVotes(int limit) {
 
 		return this.dslContext.select(TRANSACTION.TIMESTAMP,CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.as("from"),CONTRACT_VOTE_WITNESS.VOTE_ADDRESS.as("to"),CONTRACT_VOTE_WITNESS.VOTE_COUNT.as("votes"))
-		.from(TRANSACTION)
-		.join(CONTRACT_VOTE_WITNESS).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID))
-		.join(BLOCK).on(TRANSACTION.BLOCK_ID.eq(BLOCK.ID))
-		.orderBy(BLOCK.TIMESTAMP.desc())
+		.from(CONTRACT_VOTE_WITNESS)
+		.join(TRANSACTION).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID)).and(DSL.year(TRANSACTION.TIMESTAMP).gt(TRON_START_YEAR-1)).and(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)))
+		.orderBy(TRANSACTION.TIMESTAMP.desc())
 		.limit(limit)
 		.fetchInto(VoteModel.class);
 		
@@ -80,8 +80,8 @@ public class TransactionService {
 		
 		return this.dslContext.select(TRANSACTION.HASH,BLOCK.NUM.as("block"))
 		.from(TRANSACTION)
-		.join(BLOCK).on(TRANSACTION.BLOCK_ID.eq(BLOCK.ID)).and(DSL.year(BLOCK.TIMESTAMP).gt(TRON_START_YEAR-1)).and(DSL.year(BLOCK.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)))
-		.orderBy(BLOCK.TIMESTAMP.desc())
+		.join(BLOCK).on(TRANSACTION.BLOCK_ID.eq(BLOCK.ID)).and(DSL.year(TRANSACTION.TIMESTAMP).gt(TRON_START_YEAR-1)).and(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)))
+		.orderBy(TRANSACTION.TIMESTAMP.desc())
 		.limit(limit)
 		.fetchInto(TransactionModel.class);
 	}
