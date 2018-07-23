@@ -83,7 +83,7 @@
 					</tr>
 					<tr>
 						<td>Votes received</td>
-						<td>{{account.witness.getVoteCountStr()}} {%if account.witness.voteCount > 0 %}<a href="/vote/{{currentRound.round}}/{{account.address}}">[Details]</a>{%endif%}</td>
+						<td>{{account.witness.getVoteCountStr()}} {%if account.witness.voteCount > 0 %}<a href="/vote/{{currentRound.round-1}}/{{account.address}}">[Details]</a>{%endif%}</td>
 					</tr>
 					<tr>
 						<td>Blocks</td>
