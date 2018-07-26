@@ -319,8 +319,10 @@
        <thead>
          <tr>
 			<th class="center aligned">Round</th>
-			<th class="center aligned">To</th>
+			<th class="center aligned">Candidate</th>
 			<th class="center aligned">Votes</th>
+			<th class="center aligned">Round percentage</th>
+			<th class="center aligned">Total Round Votes</th>
 			<th class="center aligned">Timestamp</th>
          </tr>
        </thead>
@@ -330,6 +332,8 @@
 				<td><a :href="'/vote/'+vote.round">[[vote.round]]</a></td>
 				<td><a :href="'/address/'+vote.to">[[vote.to]]</a></td>
 				<td>[[vote.votes|toLocale]]</td>
+				<td>[[getVotesPercentage(vote)]] %</td>
+				<td>[[vote.totalRoundVotes|toLocale]]</td>
 				<td>[[vote.timestamp|dateToLocale]]</td>
 	         </tr>         
 		</template>
@@ -560,6 +564,11 @@ var Votes = Vue.component('votes',{
 		  return {
 			endpoint:'{{apiConfig.endpoint}}/account/votes'
 		  }  
+	  },
+	  methods:{
+		  getVotesPercentage: function(vote){
+			  return new Number((vote.votes/vote.totalRoundVotes)*100).toFixed(6)
+		  }
 	  }
 });
 var Withdrawal = Vue.component('widthdrawal',{

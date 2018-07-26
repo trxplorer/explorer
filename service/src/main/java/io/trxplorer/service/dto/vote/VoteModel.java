@@ -14,8 +14,18 @@ public class VoteModel {
 	
 	private int round;
 	
+	private Long totalRoundVotes;
 	
 	
+	
+	public Long getTotalRoundVotes() {
+		return totalRoundVotes;
+	}
+
+	public void setTotalRoundVotes(Long totalRoundVotes) {
+		this.totalRoundVotes = totalRoundVotes;
+	}
+
 	public int getRound() {
 		return round;
 	}

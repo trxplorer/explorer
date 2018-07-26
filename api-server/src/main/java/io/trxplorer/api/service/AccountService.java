@@ -172,14 +172,16 @@ public class AccountService {
 		
 		conditions.add(VOTING_ROUND_VOTE.OWNER_ADDRESS.eq(criteria.getAddress()));
 		conditions.add(VOTING_ROUND.ID.eq(VOTING_ROUND_VOTE.VOTING_ROUND_ID));
+		conditions.add(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(VOTING_ROUND.ID));
+		conditions.add(VOTING_ROUND_STATS.ADDRESS.eq(VOTING_ROUND_VOTE.VOTE_ADDRESS));
 		
-		SelectJoinStep<?> listQuery = this.dslContext.select(VOTING_ROUND_VOTE.OWNER_ADDRESS.as("from"),VOTING_ROUND_VOTE.VOTE_ADDRESS.as("to"),VOTING_ROUND.ROUND,VOTING_ROUND_VOTE.VOTE_COUNT.as("votes"),VOTING_ROUND_VOTE.TIMESTAMP)
-				.from(VOTING_ROUND,VOTING_ROUND_VOTE);
+		SelectJoinStep<?> listQuery = this.dslContext.select(VOTING_ROUND_VOTE.OWNER_ADDRESS.as("from"),VOTING_ROUND_VOTE.VOTE_ADDRESS.as("to"),VOTING_ROUND.ROUND,VOTING_ROUND_VOTE.VOTE_COUNT.as("votes"),VOTING_ROUND_STATS.VOTE_COUNT.as("totalRoundVotes"),VOTING_ROUND_VOTE.TIMESTAMP)
+				.from(VOTING_ROUND,VOTING_ROUND_VOTE,VOTING_ROUND_STATS);
 				
 		
 		
 		SelectJoinStep<Record1<Integer>> countQuery = dslContext.select(DSL.count())
-		.from(VOTING_ROUND,VOTING_ROUND_VOTE);
+		.from(VOTING_ROUND,VOTING_ROUND_VOTE,VOTING_ROUND_STATS);
 		
 		
 		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
