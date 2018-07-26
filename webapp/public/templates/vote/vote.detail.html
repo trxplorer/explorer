@@ -79,7 +79,7 @@
 					</table>
 	           	
 	           </td>
-	           <td><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.votes|toLocale]]</a> <br><small v-if="vr.votesChange>0" style="color:green;">+[[vr.votesChange]]</small><small v-if="vr.votesChange<0" style="color:red;">[[vr.votesChange]]</small><small v-if="vr.votesChange==0" >-</small></td>
+	           <td><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.votes|toLocale]]</a> <br><small v-if="vr.votesChange>0" style="color:green;">+[[vr.votesChange|toLocale]]</small><small v-if="vr.votesChange<0" style="color:red;">[[vr.votesChange|toLocale]]</small><small v-if="vr.votesChange==0" >-</small></td>
 	           <td><span v-if="isGr(vr)">[[vr.votes|percentage|toLocale]] %</span><span v-if="!isGr(vr)">-</span></td>
 	         </tr>         
 		</template>

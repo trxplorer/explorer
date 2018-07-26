@@ -193,9 +193,34 @@ public class AccountService {
 		ListResult<VoteModel, AccountCriteria> result = new ListResult<VoteModel, AccountCriteria>(criteria, items, totalCount);
 		
 		return result;
+	}
+	
+	public ListResult<VoteModel, AccountCriteria> listLiveVotes(AccountCriteria criteria){
+		
+		ArrayList<Condition> conditions = new ArrayList<>();
+		
+		conditions.add(ACCOUNT.ADDRESS.eq(criteria.getAddress()));
+		conditions.add(ACCOUNT_VOTE.ACCOUNT_ID.eq(ACCOUNT.ID));
+	
+		
+		SelectJoinStep<?> listQuery = this.dslContext.select(ACCOUNT.ADDRESS.as("from"),ACCOUNT_VOTE.VOTE_ADDRESS.as("to"),ACCOUNT_VOTE.VOTE_COUNT.as("votes"))
+				.from(ACCOUNT_VOTE,ACCOUNT);
+				
+		
+		
+		SelectJoinStep<Record1<Integer>> countQuery = dslContext.select(DSL.count())
+		.from(ACCOUNT_VOTE,ACCOUNT);
+		
+		
+		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
+		
+		List<VoteModel> items = listQuery.where(conditions).orderBy(ACCOUNT_VOTE.VOTE_COUNT.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VoteModel.class);
 		
 		
 		
+		ListResult<VoteModel, AccountCriteria> result = new ListResult<VoteModel, AccountCriteria>(criteria, items, totalCount);
+		
+		return result;
 	}
 	
 	public ListResult<AllowanceWidthdrawModel, AccountCriteria> listAllowanceWithdrawals(AccountCriteria criteria){

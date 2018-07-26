@@ -17,6 +17,7 @@ public interface ApiAppRoutePaths {
 		public static final String ACCOUNT_TRANSFERS = ACCOUNT+"/transfers";
 		public static final String ACCOUNT_TOKENPARTICIPATIONS = ACCOUNT+"/tokenParticipations";
 		public static final String ACCOUNT_VOTES_ALL = ACCOUNT+"/votes";
+		public static final String ACCOUNT_LIVE_VOTES = ACCOUNT+"/liveVotes";
 		public static final String ACCOUNT_FREEZE_ALL = ACCOUNT+"/freeze";
 		public static final String ACCOUNT_WITHDRAWAL = ACCOUNT+"/withdrawal";
 

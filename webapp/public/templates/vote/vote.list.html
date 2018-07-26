@@ -101,7 +101,7 @@
 					</table>
 		          		 
 		          	</td>
-		           <td><a :href="'/vote/{{currentRound.round}}/'+[[vote.address]]">[[vote.votes|numberToLocale]]</a><br><small v-if="vote.voteChange>0" style="color:green;">+[[vote.voteChange|numberToLocale]]</small><small v-if="vote.voteChange<0" style="color:red;">[[vote.voteChange|numberToLocale]]</small><small v-if="vote.voteChange==0" >-</small></td>
+		           <td><a :href="'/vote/{{currentRound.round}}/'+[[vote.address]]">[[vote.votes|numberToLocale]]</a><br><small v-if="vote.votesChange>0" style="color:green;">+[[vote.votesChange|numberToLocale]]</small><small v-if="vote.votesChange<0" style="color:red;">[[vote.votesChange|numberToLocale]]</small><small v-if="vote.votesChange==0" >-</small></td>
 		           <td><span v-if="isGr(vote)">[[percentage(vote.votes)|numberToLocale]] %</span><span v-if="!isGr(vote)">-</span></td>
 		         </tr>         
 			</template>

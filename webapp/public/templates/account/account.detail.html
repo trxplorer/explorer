@@ -69,21 +69,55 @@
 			</div>
     </div>
 </div>
-{%if account.witness!=null%}
+
 <div class="ui segment">
 	<div class="ui stackable grid">
-		<div class="eight wide column">
+		<div class="ten wide column">
 			<table class="ui compact very basic table ">
 				<tbody>
-				
-			
+				<tr>
+						<td>Creation date</td>
+						<td><span class="timestamp">{{account.createTime}}</span></td>
+					</tr>
+					<!-- 
+					<tr>
+						<td>Bandwidth</td>
+						<td>{{account.getBandwidthStr()}}</td>
+					</tr>
+					 -->
+					<tr >
+						<td>TRX balance</td>
+						<td>
+							{%if account.frozenBalance >0%}
+							<table class="ui very basic table ">
+								<tbody>
+									<tr>
+										<td>Available</td>
+										<td>{{account.getBalanceStr()}}</td>
+									</tr>
+									<tr>
+										<td>Frozen</td>
+										<td>{{account.getFrozenBalanceStr()}} &nbsp;&nbsp; <small>(Expires: <span class="timestamp">{{account.frozenExpire}}</span>)</small></td>
+									</tr>
+									<tr>
+										<td>Total</td>
+										<td>{{account.getTotalBalanceStr()}}</td>
+									</tr>
+								</tbody>
+							</table>
+							{%else%}
+								{{account.getBalanceStr()}}
+							{%endif%}
+						</td>
+					</tr>
+{%if account.witness!=null%}			
 					<tr>
 						<td>URL</td>
 						<td><a href="{{account.witness.url}}" target="blank">{{account.witness.url}}</a></td>
 					</tr>
 					<tr>
 						<td>Votes received</td>
-						<td>{{account.witness.getVoteCountStr()}} {%if account.witness.voteCount > 0 %}<a href="/vote/{{currentRound.round-1}}/{{account.address}}">[Details]</a>{%endif%}</td>
+						<td>{{account.witness.getVoteCountStr()}} {%if account.witness.voteCount > 0 %}<a href="/vote/{{currentRound.round-1}}/{{account.address}}">[See voters details]</a>{%endif%}</td>
 					</tr>
 					<tr>
 						<td>Blocks</td>
@@ -99,20 +133,28 @@
 					<td>{{account.totalReward}}</td>
 				</tr>
 				 !-->
-				
+{%endif%}	
+			
 				</tbody>
 			</table>
-		</div>
-		<div class="eight wide column">
-
+			{%if account.witness!=null%}	
+			<b>Previous round performance</b>
 			<div class="ui active dimmer"> <div class="ui text loader">Loading ...</div></div>
 			<div id="chart" style="height:300px;"></div>
-
+			{%endif%}
+		</div>
+		<div class="six wide column">
+			<div id="currentVotesContainer" style="display:none;">
+			<b>Latest votes repartition</b>
+			
+			<div id="currentVotes" style="height:300px;"></div>
+			</div>
 		</div>
 	</div>
 
 </div>
-{%endif%}
+
+
  
 
  
@@ -123,7 +165,7 @@
   <router-link to="/" active-class="active" class="item" exact>Transfers</router-link>
   <router-link to="/tokens" active-class="active" class="item" exact>Tokens</router-link>
   <router-link to="/tp" active-class="active" class="item" exact>Token participations</router-link>
-  <router-link to="/votes" active-class="active" class="item" exact>Votes repartition</router-link>
+  <router-link to="/votes" active-class="active" class="item" exact>Votes repartition history</router-link>
   <!-- <router-link to="/freeze" active-class="active" class="item">Freeze history</router-link> -->
   {%if account.witness!=null%}
   <router-link to="/aw" active-class="active" class="item" exact>Witdhdrawal</router-link>
@@ -134,34 +176,6 @@
  
 </div>
 
-
-{%if account.criteria.tab=='votes'%}
-<!-- VOTES -->
-<table class="ui striped table">
-	<thead>
-		<tr>
-			<th class="center aligned">From</th>
-			<th class="center aligned">To</th>
-			<th class="center aligned">Timestamp</th>
-			<th class="center aligned">Votes</th>
-		</tr>
-	</thead>
-	<tbody>
-		{%for vote in account.votes%}
-		<tr class="center aligned">
-			<td>{% if vote.from!=account.address%}<a href="/address/{{vote.from}}">{{vote.from}}</a>{%else%} {{vote.from}}{%endif%}</td>
-			<td>{% if vote.to!=account.address%}<a href="/address/{{vote.to}}">{{vote.to}}</a>{%else%}{{vote.to}}{%endif%}</td>
-			<td>{{vote.timestamp}}</td>
-			<td>{{vote.getVoteCountStr()}}</td>
-		</tr>
-		{%endfor%}
-	</tbody>
- <tfoot>
-    <tr><th colspan="4">
-		{% include 'partials/pagination' %}
-  </tr></tfoot>
-</table>
-{%endif%}
 
 
 
@@ -340,7 +354,7 @@
        </tbody>
         <tfoot>
           <tr>
-            <th colspan="4" v-show="totalPages>1">
+            <th colspan="6" v-show="totalPages>1">
 				{% include 'account/jspartial/pagination' %}
             </th>
           </tr>
@@ -429,6 +443,7 @@
 <script src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
 <script src="//cdn.jsdelivr.net/d3js/3.5.17/d3.min.js" charset="utf-8"></script>
 <script src="//cdn.jsdelivr.net/npm/taucharts@1/build/production/tauCharts.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
 
 <script>
 var common = {
@@ -603,12 +618,7 @@ const router = new VueRouter({
 	  routes
 	})
 new Vue({
-	  router:router,
-	  data: function(){
-		  return {
-			  tab:''
-		  }  
-	  },
+	  router:router
 }).$mount('#app');
 
 $('.progress').progress('set', 100);
@@ -663,7 +673,44 @@ $.get('{{apiConfig.endpoint}}/vote/stats/{{currentRound.round}}',{address:"{{acc
 	console.error(err);
 	  $('.ui.dimmer').toggleClass('active');
 });
+
+
 {%endif%}
+
+$.get('{{apiConfig.endpoint}}/account/votes',{address:"{{account.address}}"}).success(function(data){
+	
+	if (data.items.length==0){
+		return;
+	}
+	
+	$('#currentVotesContainer').show();
+	var chart = new tauCharts.Chart({
+	    type: 'stacked-area',
+	    guide:{
+	    	
+    	    x:{
+		    	label:'Round',
+		    	autoScale:false
+		    },
+		    y:{
+		    	label:'Votes',
+		    	autoScale:false
+		    }
+    	},
+	    x: 'round',
+	    y: 'votes',
+	    color: 'to',
+	    data: data.items,
+	    plugins:
+	    	[
+	    		tauCharts.api.plugins.get('tooltip')({
+	    			fields:['to','votes']
+	    		}),
+	    		
+	    	]
+	});
+	chart.renderTo('#currentVotes');
+})
 /*
 new QRCode(document.getElementById("qrcode"), {
 	text:"{{account.address}}",

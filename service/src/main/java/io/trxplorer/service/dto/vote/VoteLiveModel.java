@@ -14,7 +14,7 @@ public class VoteLiveModel {
 	
 	private int positionChange;
 	
-	private Long voteChange;
+	private Long votesChange;
 	
 	
 	
@@ -27,12 +27,12 @@ public class VoteLiveModel {
 		this.positionChange = positionChange;
 	}
 
-	public Long getVoteChange() {
-		return voteChange;
+	public Long getVotesChange() {
+		return votesChange;
 	}
 
-	public void setVoteChange(Long votesChange) {
-		this.voteChange = votesChange;
+	public void setVotesChange(Long votesChange) {
+		this.votesChange = votesChange;
 	}
 
 	public String getUrl() {

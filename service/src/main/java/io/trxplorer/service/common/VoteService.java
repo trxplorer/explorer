@@ -218,7 +218,7 @@ public class VoteService {
 		conditions.add(VOTE_LIVE.ADDRESS.eq(ACCOUNT.ADDRESS));
 		conditions.add(VOTE_LIVE.ADDRESS.eq(WITNESS.ADDRESS));
 		
-		SelectJoinStep<?> listQuery = this.dslContext.select(ACCOUNT.ACCOUNT_NAME.as("name"),WITNESS.URL,VOTE_LIVE.ADDRESS,VOTE_LIVE.POSITION,VOTE_LIVE.VOTE_COUNT.as("votes"),VOTE_LIVE.POSITION_CHANGE,VOTE_LIVE.VOTE_CHANGE)
+		SelectJoinStep<?> listQuery = this.dslContext.select(ACCOUNT.ACCOUNT_NAME.as("name"),WITNESS.URL,VOTE_LIVE.ADDRESS,VOTE_LIVE.POSITION,VOTE_LIVE.VOTE_COUNT.as("votes"),VOTE_LIVE.POSITION_CHANGE,VOTE_LIVE.VOTE_CHANGE.as("votesChange"))
 					.from(VOTE_LIVE,ACCOUNT,WITNESS);
 		
 		

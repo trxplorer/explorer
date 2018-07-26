@@ -10,6 +10,7 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record1;
+import org.jooq.SelectConditionStep;
 import org.jooq.SelectJoinStep;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.Table;
@@ -66,9 +67,16 @@ public class AccountService {
 	
 	public AccountDTO getAccountByAddress(AccountDetailCriteriaDTO accountCriteria) {
 				
-		
-		Field<?> frozenBalanceField = DSL.select(ACCOUNT_FROZEN.BALANCE).from(ACCOUNT_FROZEN).where(ACCOUNT_FROZEN.ACCOUNT_ID.eq(ACCOUNT.ID).and(ACCOUNT_FROZEN.EXPIRE_TIME.gt(DSL.currentTimestamp()))).orderBy(ACCOUNT_FROZEN.EXPIRE_TIME.desc()).limit(1).asField("frozenBalance");
-		Field<?> frozenExpireField = DSL.select(ACCOUNT_FROZEN.EXPIRE_TIME).from(ACCOUNT_FROZEN).where(ACCOUNT_FROZEN.ACCOUNT_ID.eq(ACCOUNT.ID).and(ACCOUNT_FROZEN.EXPIRE_TIME.gt(DSL.currentTimestamp()))).orderBy(ACCOUNT_FROZEN.EXPIRE_TIME.desc()).limit(1).asField("frozenExpire");
+		 SelectConditionStep<Record1<Timestamp>> maxUnfreezeField = DSL.select(DSL.ifnull(DSL.max(BLOCK.TIMESTAMP), DSL.val(Timestamp.valueOf("1980-01-01 00:00:00"))))
+					.from(CONTRACT_UNFREEZE_BALANCE)
+					.join(TRANSACTION).on(TRANSACTION.ID.eq(CONTRACT_UNFREEZE_BALANCE.TRANSACTION_ID))
+					.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
+					.where(CONTRACT_UNFREEZE_BALANCE.OWNER_ADDRESS.eq(accountCriteria.getAddress()));
+					
+					Field<?> frozenBalanceField = DSL.select(ACCOUNT_FROZEN.BALANCE).from(ACCOUNT_FROZEN).where(ACCOUNT_FROZEN.ACCOUNT_ID.eq(ACCOUNT.ID).and(ACCOUNT_FROZEN.EXPIRE_TIME.gt(maxUnfreezeField))).orderBy(ACCOUNT_FROZEN.EXPIRE_TIME.desc()).limit(1).asField("frozenBalance");
+					Field<?> frozenExpireField = DSL.select(ACCOUNT_FROZEN.EXPIRE_TIME).from(ACCOUNT_FROZEN).where(ACCOUNT_FROZEN.ACCOUNT_ID.eq(ACCOUNT.ID).and(ACCOUNT_FROZEN.EXPIRE_TIME.gt(maxUnfreezeField))).orderBy(ACCOUNT_FROZEN.EXPIRE_TIME.desc()).limit(1).asField("frozenExpire");
+					
+					
 		
 		
 		
