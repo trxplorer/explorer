@@ -65,7 +65,7 @@
 				<td class="center aligned" colspan="4" ><b>SR Candidates</b></b></td>
 			 </tr>
 	         <tr class="center aligned" >
-	           <td><span class="ui olivecircular label">[[vr.position]]</span></td>
+	           <td><span class="ui olivecircular label">[[vr.position]]</span> &nbsp;&nbsp;&nbsp;<small v-if="vr.positionChange>0" style="color:green;">+[[vr.positionChange]]</small><small v-if="vr.positionChange<0" style="color:red;">[[vr.positionChange]]</small><small v-if="vr.positionChange==0" >-</small></td>
 	           <td>
 					<table class="ui very basic table">
 						<tr >
@@ -79,8 +79,8 @@
 					</table>
 	           	
 	           </td>
-	           <td><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.votes|toLocale]]</a></td>
-	           <td>[[vr.votes|percentage|toLocale]] %</td>
+	           <td><a :href="'/vote/{{vr.round}}/'+[[vr.address]]">[[vr.votes|toLocale]]</a> <br><small v-if="vr.votesChange>0" style="color:green;">+[[vr.votesChange]]</small><small v-if="vr.votesChange<0" style="color:red;">[[vr.votesChange]]</small><small v-if="vr.votesChange==0" >-</small></td>
+	           <td><span v-if="isGr(vr)">[[vr.votes|percentage|toLocale]] %</span><span v-if="!isGr(vr)">-</span></td>
 	         </tr>         
 		</template>
        </tbody>
@@ -123,6 +123,12 @@ new Vue({
 		  }  
 	  },
 	  methods:{
+		  isGr(vr){
+			  return vr.url.lastIndexOf('http://TronGr',0)!=0;
+		  },
+		  getVoteChange(value){
+			  return ((value.votes + value.votesChange)/value.votes);
+		  },
 	      previousPage(){
 	          this.fetch({page:this.currentPage-1})
 	          
@@ -138,7 +144,6 @@ new Vue({
 	    		this.loading = true;
 	    		$.get('{{apiConfig.endpoint}}/vote/{{vr.round}}',params).success(function(data){
 	    			ziss.list = data;
-	    			console.log(ziss.list)
 	    			ziss.loading=false;
 	    			//fixme
 	    			resizeBackground();

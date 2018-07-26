@@ -1,6 +1,7 @@
 package io.trxplorer.syncnode.job;
 import static io.trxplorer.model.Tables.*;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -28,7 +29,6 @@ import org.quartz.DisallowConcurrentExecution;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import io.trxplorer.model.tables.ContractVoteWitness;
 import io.trxplorer.model.tables.VoteLive;
 import io.trxplorer.model.tables.VotingRound;
 import io.trxplorer.model.tables.VotingRoundStats;
@@ -71,7 +71,7 @@ public class VotingRoundJob {
 		genesisVotes.put("TBYsHxDmFaRmfCF3jZNmgeJE8sDnTNKHbz", 100000005l);
 		genesisVotes.put("TEVAq8dmSQyTYK7uP1ZnZpa6MBVR83GsV6", 100000004l);
 		genesisVotes.put("TRKJzrZxN34YyB8aBqqPDt7g4fv6sieemz", 100000003l);
-		genesisVotes.put("TDbNE1VajxjpgM5p7FyGNDASt3UVoFbiD3", 100000002l);
+		genesisVotes.put("TRMP6SKeFUt5NtMLzJv8kdpYuHRnEGjGfe", 100000002l);
 		genesisVotes.put("TDbNE1VajxjpgM5p7FyGNDASt3UVoFbiD3", 100000001l);
 		genesisVotes.put("TLTDZBcPoJ8tZ6TTEeEqEvwYFk2wgotSfD", 100000000l);
 		
@@ -119,6 +119,34 @@ public class VotingRoundJob {
 		this.dslContext.update(vl)
 		.set(vl.POSITION,t3)
 		.execute();
+		
+		
+		//update stats from previous round
+		io.trxplorer.model.tables.pojos.VotingRound round = this.dslContext.select(VOTING_ROUND.fields()).from(VOTING_ROUND).orderBy(VOTING_ROUND.ROUND.desc()).limit(1).fetchOneInto(io.trxplorer.model.tables.pojos.VotingRound.class);
+		
+		int previousRound = round.getRound().intValue()-1;
+		
+		
+		if (previousRound>0) {
+			
+			Table<Record3<Integer, Long, String>> vlPositionTable = DSL.select(VOTING_ROUND_STATS.POSITION.cast(Integer.class).minus(VOTE_LIVE.POSITION).as("position"),
+					VOTE_LIVE.VOTE_COUNT.minus(VOTING_ROUND_STATS.VOTE_COUNT.cast(Long.class)).as("votes"),
+					VOTE_LIVE.ADDRESS)
+			.from(VOTING_ROUND_STATS,VOTE_LIVE)
+			.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(DSL.select(VOTING_ROUND.ID)
+					.from(VOTING_ROUND)
+					.where(VOTING_ROUND.ROUND.eq(UInteger.valueOf(previousRound))
+					.and(VOTING_ROUND_STATS.ADDRESS.eq(VOTE_LIVE.ADDRESS))))).asTable("tmp");
+			
+			this.dslContext.update(vl)
+			.set(vl.POSITION_CHANGE,DSL.select(vlPositionTable.field("position",Integer.class)).from(vlPositionTable).where(vlPositionTable.field("address", String.class).eq(vl.ADDRESS)))
+			.set(vl.VOTE_CHANGE,DSL.select(vlPositionTable.field("votes",Long.class)).from(vlPositionTable).where(vlPositionTable.field("address", String.class).eq(vl.ADDRESS)))
+			.execute();
+			;	
+			
+		}
+	
+		
 		
 	}
 	
@@ -196,7 +224,7 @@ public class VotingRoundJob {
 		.from(VOTING_ROUND)
 		.where(VOTING_ROUND.SYNC_END.isNull())
 		.and(VOTING_ROUND.END_DATE.lt(DSL.select(DSL.max(BLOCK.TIMESTAMP)).from(BLOCK)))
-		.orderBy(VOTING_ROUND.START_DATE.desc())
+		.orderBy(VOTING_ROUND.START_DATE.asc())
 		.fetchInto(VotingRoundRecord.class);
 		
 		if (rounds.size()>0) {
@@ -228,24 +256,25 @@ public class VotingRoundJob {
 		.execute();
 
 
-		List<String> addresses = this.dslContext.select(WITNESS.ADDRESS).from(WITNESS).fetchInto(String.class); 
-		 
+		List<String> addresses = this.dslContext.select(WITNESS.ADDRESS).from(WITNESS,ACCOUNT)
+				.where(WITNESS.ACCOUNT_ID.eq(ACCOUNT.ID).and(ACCOUNT.CREATE_TIME.lt(round.getEndDate()))).fetchInto(String.class); 
+		
+		
+		this.dslContext.deleteFrom(VOTING_ROUND_VOTE)
+		.where(VOTING_ROUND_VOTE.VOTING_ROUND_ID.eq(round.getId()))
+		.execute();
+		
+		this.dslContext.deleteFrom(VOTING_ROUND_VOTE_LOST)
+		.where(VOTING_ROUND_VOTE_LOST.VOTING_ROUND_ID.eq(round.getId()))
+		.execute();
+		
+		this.dslContext.deleteFrom(VOTING_ROUND_STATS)
+		.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
+		.execute();
+		
 		for(String witnessAddress : addresses) {
 			
-			this.dslContext.deleteFrom(VOTING_ROUND_VOTE)
-			.where(VOTING_ROUND_VOTE.VOTING_ROUND_ID.eq(round.getId()))
-			.and(VOTING_ROUND_VOTE.VOTE_ADDRESS.eq(witnessAddress))
-			.execute();
-			
-			this.dslContext.deleteFrom(VOTING_ROUND_VOTE_LOST)
-			.where(VOTING_ROUND_VOTE_LOST.VOTING_ROUND_ID.eq(round.getId()))
-			.and(VOTING_ROUND_VOTE_LOST.VOTE_ADDRESS.eq(witnessAddress))
-			.execute();
-			
-			this.dslContext.deleteFrom(VOTING_ROUND_STATS)
-			.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
-			.and(VOTING_ROUND_STATS.ADDRESS.eq(witnessAddress))
-			.execute();
+		
 			
 			//set votes for current round
 			
@@ -329,9 +358,28 @@ public class VotingRoundJob {
 		.where(VOTING_ROUND.ID.eq(round.getId()))
 		.execute();
 		
+	
+		
+		
 		//update genesis witnesses for current round
 		//Done after previous update on total round votes on purpose: we don't want to count those "fake" genesis votes
 		for(String address:genesisVotes.keySet()) {
+			//create witness in round if no votes associated
+			 ULong addressVoteCount = this.dslContext.select(VOTING_ROUND_STATS.VOTE_COUNT)
+			.from(VOTING_ROUND_STATS)
+			.where(VOTING_ROUND_STATS.ADDRESS.eq(address))
+			.and(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
+			.fetchOneInto(ULong.class);
+			
+			if (addressVoteCount==null) {
+				this.dslContext.update(VOTING_ROUND_STATS)
+				.set(VOTING_ROUND_STATS.VOTE_COUNT,ULong.valueOf(0))
+				.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
+				.and(VOTING_ROUND_STATS.ADDRESS.eq(address))
+				.execute();
+			}
+			
+			
 			this.dslContext.update(VOTING_ROUND_STATS)
 			.set(VOTING_ROUND_STATS.VOTE_COUNT,VOTING_ROUND_STATS.VOTE_COUNT.plus(genesisVotes.get(address)))
 			.where(VOTING_ROUND_STATS.ADDRESS.eq(address))
@@ -352,6 +400,52 @@ public class VotingRoundJob {
 		.execute();			
 		
 		
+		//update stats from previous round
+		int previousRound = round.getRound().intValue()-1;
+		if (previousRound>0) {
+			for(String address:addresses) {
+				Record2<UInteger, ULong> res = this.dslContext.select(VOTING_ROUND_STATS.POSITION,VOTING_ROUND_STATS.VOTE_COUNT)
+				.from(VOTING_ROUND_STATS)
+				.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(DSL.select(VOTING_ROUND.ID)
+						.from(VOTING_ROUND)
+						.where(VOTING_ROUND.ROUND.eq(UInteger.valueOf(previousRound))
+						.and(VOTING_ROUND_STATS.ADDRESS.eq(address))		
+								)))
+				.fetchOne();		
+				;
+				
+				
+				if (res!=null ) {
+					
+					if (res.get(0)!=null) {
+						
+						this.dslContext.update(VOTING_ROUND_STATS)
+						.set(VOTING_ROUND_STATS.POSITION_CHANGE,VOTING_ROUND_STATS.POSITION.cast(Integer.class).minus(res.get(0, Integer.class)).cast(Integer.class).multiply(-1))
+						.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
+						.and(VOTING_ROUND_STATS.ADDRESS.eq(address))
+						.execute();
+						;		
+						
+					}
+					
+					if (res.get(1)!=null) {
+						
+						this.dslContext.update(VOTING_ROUND_STATS)
+						.set(VOTING_ROUND_STATS.VOTES_CHANGE,VOTING_ROUND_STATS.VOTE_COUNT.cast(Long.class).minus(res.get(1, Long.class)).cast(Long.class))
+						.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
+						.and(VOTING_ROUND_STATS.ADDRESS.eq(address))
+						.execute();
+						;		
+						
+					}
+									
+				}
+				
+				
+				
+				
+			}	
+		}
 		
 		//mark round sync as completed			
 		this.dslContext.update(VOTING_ROUND)

@@ -87,7 +87,7 @@
 					<td class="center aligned" colspan="4" ><b>SR Candidates</b></b></td>
 				 </tr>
 		         <tr class="center aligned" >
-		           <td><span class="ui olivecircular label">[[vote.position]]</span></td>
+		           <td><span class="ui olivecircular label">[[vote.position]]</span>&nbsp;&nbsp;&nbsp;<small v-if="vote.positionChange>0" style="color:green;">+[[vote.positionChange]]</small><small v-if="vote.positionChange<0" style="color:red;">[[vote.positionChange]]</small><small v-if="vote.positionChange==0" >-</small></td>
 		          	<td>
 		          		<table class="ui very basic table">
 						<tr >
@@ -101,8 +101,8 @@
 					</table>
 		          		 
 		          	</td>
-		           <td><a :href="'/vote/{{currentRound.round}}/'+[[vote.address]]">[[vote.votes|numberToLocale]]</a></td>
-		           <td>[[percentage(vote.votes)|numberToLocale]] %</td>
+		           <td><a :href="'/vote/{{currentRound.round}}/'+[[vote.address]]">[[vote.votes|numberToLocale]]</a><br><small v-if="vote.voteChange>0" style="color:green;">+[[vote.voteChange|numberToLocale]]</small><small v-if="vote.voteChange<0" style="color:red;">[[vote.voteChange|numberToLocale]]</small><small v-if="vote.voteChange==0" >-</small></td>
+		           <td><span v-if="isGr(vote)">[[percentage(vote.votes)|numberToLocale]] %</span><span v-if="!isGr(vote)">-</span></td>
 		         </tr>         
 			</template>
 	       </tbody>
@@ -187,6 +187,9 @@ new Vue({
 		  }  
 	  },
 	  methods:{
+		  isGr(vr){
+			  return vr.url.lastIndexOf('http://TronGr',0)!=0;
+		  },
 		  formatTime(t){
 			  return (t).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
 		  },

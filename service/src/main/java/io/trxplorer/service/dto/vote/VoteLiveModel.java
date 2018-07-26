@@ -12,8 +12,29 @@ public class VoteLiveModel {
 	
 	private String name;
 	
+	private int positionChange;
+	
+	private Long voteChange;
 	
 	
+	
+	
+	public int getPositionChange() {
+		return positionChange;
+	}
+
+	public void setPositionChange(int positionChange) {
+		this.positionChange = positionChange;
+	}
+
+	public Long getVoteChange() {
+		return voteChange;
+	}
+
+	public void setVoteChange(Long votesChange) {
+		this.voteChange = votesChange;
+	}
+
 	public String getUrl() {
 		return url;
 	}

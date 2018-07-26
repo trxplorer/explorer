@@ -130,7 +130,7 @@ public class VoteService {
 			
 		}
 		
-		SelectJoinStep<?> listQuery = this.dslContext.select(ACCOUNT.ACCOUNT_NAME.as("name"),WITNESS.URL,VOTING_ROUND_STATS.ADDRESS,VOTING_ROUND_STATS.VOTE_COUNT.as("votes"),VOTING_ROUND.ROUND,VOTING_ROUND.START_DATE,VOTING_ROUND.END_DATE,VOTING_ROUND_STATS.POSITION)
+		SelectJoinStep<?> listQuery = this.dslContext.select(ACCOUNT.ACCOUNT_NAME.as("name"),WITNESS.URL,VOTING_ROUND_STATS.ADDRESS,VOTING_ROUND_STATS.VOTE_COUNT.as("votes"),VOTING_ROUND.ROUND,VOTING_ROUND.START_DATE,VOTING_ROUND.END_DATE,VOTING_ROUND_STATS.POSITION,VOTING_ROUND_STATS.POSITION_CHANGE,VOTING_ROUND_STATS.VOTES_CHANGE)
 					.from(ACCOUNT,WITNESS,VOTING_ROUND_STATS,VOTING_ROUND);
 		
 		
@@ -141,7 +141,7 @@ public class VoteService {
 		
 		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
 		
-		Query query = listQuery.where(conditions).orderBy(VOTING_ROUND_STATS.VOTE_COUNT.desc());
+		Query query = listQuery.where(conditions).orderBy(VOTING_ROUND_STATS.POSITION.asc());
 		
 		if (criteria.getMaxRound()==null) {
 			query = ((SelectLimitStep<?>) query).limit(criteria.getLimit()).offset(criteria.getOffSet());
@@ -218,7 +218,7 @@ public class VoteService {
 		conditions.add(VOTE_LIVE.ADDRESS.eq(ACCOUNT.ADDRESS));
 		conditions.add(VOTE_LIVE.ADDRESS.eq(WITNESS.ADDRESS));
 		
-		SelectJoinStep<?> listQuery = this.dslContext.select(ACCOUNT.ACCOUNT_NAME.as("name"),WITNESS.URL,VOTE_LIVE.ADDRESS,VOTE_LIVE.POSITION,VOTE_LIVE.VOTE_COUNT.as("votes"))
+		SelectJoinStep<?> listQuery = this.dslContext.select(ACCOUNT.ACCOUNT_NAME.as("name"),WITNESS.URL,VOTE_LIVE.ADDRESS,VOTE_LIVE.POSITION,VOTE_LIVE.VOTE_COUNT.as("votes"),VOTE_LIVE.POSITION_CHANGE,VOTE_LIVE.VOTE_CHANGE)
 					.from(VOTE_LIVE,ACCOUNT,WITNESS);
 		
 		

@@ -20,9 +20,27 @@ public class VotingRoundStatsModel {
 	
 	private Timestamp endDate;
 	
+	private int positionChange;
 	
+	private long votesChange;
+
 	
 
+	public int getPositionChange() {
+		return positionChange;
+	}
+
+	public void setPositionChange(int positionChange) {
+		this.positionChange = positionChange;
+	}
+
+	public long getVotesChange() {
+		return votesChange;
+	}
+
+	public void setVotesChange(long votesChange) {
+		this.votesChange = votesChange;
+	}
 
 	public long getStartDate() {
 		return startDate.getTime()/1000;
