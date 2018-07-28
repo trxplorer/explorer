@@ -135,8 +135,11 @@ public class VotingRoundJob {
 			.from(VOTING_ROUND_STATS,VOTE_LIVE)
 			.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(DSL.select(VOTING_ROUND.ID)
 					.from(VOTING_ROUND)
-					.where(VOTING_ROUND.ROUND.eq(UInteger.valueOf(previousRound))
-					.and(VOTING_ROUND_STATS.ADDRESS.eq(VOTE_LIVE.ADDRESS))))).asTable("tmp");
+					.where(VOTING_ROUND.ROUND.eq(UInteger.valueOf(previousRound)))
+					
+					)
+					.and(VOTING_ROUND_STATS.ADDRESS.eq(VOTE_LIVE.ADDRESS)
+					)).asTable("tmp");
 			
 			this.dslContext.update(vl)
 			.set(vl.POSITION_CHANGE,DSL.select(vlPositionTable.field("position",Integer.class)).from(vlPositionTable).where(vlPositionTable.field("address", String.class).eq(vl.ADDRESS)))
@@ -403,48 +406,29 @@ public class VotingRoundJob {
 		//update stats from previous round
 		int previousRound = round.getRound().intValue()-1;
 		if (previousRound>0) {
-			for(String address:addresses) {
-				Record2<UInteger, ULong> res = this.dslContext.select(VOTING_ROUND_STATS.POSITION,VOTING_ROUND_STATS.VOTE_COUNT)
-				.from(VOTING_ROUND_STATS)
-				.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(DSL.select(VOTING_ROUND.ID)
-						.from(VOTING_ROUND)
-						.where(VOTING_ROUND.ROUND.eq(UInteger.valueOf(previousRound))
-						.and(VOTING_ROUND_STATS.ADDRESS.eq(address))		
-								)))
-				.fetchOne();		
-				;
-				
-				
-				if (res!=null ) {
-					
-					if (res.get(0)!=null) {
-						
-						this.dslContext.update(VOTING_ROUND_STATS)
-						.set(VOTING_ROUND_STATS.POSITION_CHANGE,VOTING_ROUND_STATS.POSITION.cast(Integer.class).minus(res.get(0, Integer.class)).cast(Integer.class).multiply(-1))
-						.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
-						.and(VOTING_ROUND_STATS.ADDRESS.eq(address))
-						.execute();
-						;		
-						
-					}
-					
-					if (res.get(1)!=null) {
-						
-						this.dslContext.update(VOTING_ROUND_STATS)
-						.set(VOTING_ROUND_STATS.VOTES_CHANGE,VOTING_ROUND_STATS.VOTE_COUNT.cast(Long.class).minus(res.get(1, Long.class)).cast(Long.class))
-						.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
-						.and(VOTING_ROUND_STATS.ADDRESS.eq(address))
-						.execute();
-						;		
-						
-					}
-									
-				}
-				
-				
-				
-				
-			}	
+			
+			VotingRoundStats vrs1 = VOTING_ROUND_STATS.as("vrs1");
+			VotingRoundStats vrs2 = VOTING_ROUND_STATS.as("vrs2");
+			Table<Record3<Integer, Long, String>> vrsChangeTable = DSL.select(vrs1.POSITION.cast(Integer.class).minus(vrs2.POSITION.cast(Integer.class)).as("position"),
+					vrs2.VOTE_COUNT.cast(Long.class).minus(vrs1.VOTE_COUNT.cast(Long.class)).as("votes"),
+					vrs1.ADDRESS)
+			.from(vrs1,vrs2)
+			.where(vrs1.VOTING_ROUND_ID.eq(DSL.select(VOTING_ROUND.ID)
+					.from(VOTING_ROUND)
+					.where(VOTING_ROUND.ROUND.eq(UInteger.valueOf(previousRound))))
+					.and(vrs1.ADDRESS.eq(vrs2.ADDRESS))
+					.and(vrs2.VOTING_ROUND_ID.eq(round.getId()))
+					).asTable("tmp");
+			
+			this.dslContext.update(VOTING_ROUND_STATS)
+			.set(VOTING_ROUND_STATS.POSITION_CHANGE,DSL.select(vrsChangeTable.field("position",Integer.class)).from(vrsChangeTable).where(vrsChangeTable.field("address", String.class).eq(VOTING_ROUND_STATS.ADDRESS)))
+			.set(VOTING_ROUND_STATS.VOTES_CHANGE,DSL.select(vrsChangeTable.field("votes",Long.class)).from(vrsChangeTable).where(vrsChangeTable.field("address", String.class).eq(VOTING_ROUND_STATS.ADDRESS)))
+			.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
+			.execute();
+			;	
+			
+			
+
 		}
 		
 		//mark round sync as completed			
