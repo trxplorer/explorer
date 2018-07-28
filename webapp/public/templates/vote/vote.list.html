@@ -276,12 +276,16 @@ new Vue({
 	    	  
 	    	  if (this.roundStats && this.roundStats.items.length>0){
 		    	  if (!this.chart){
+		    		  var orders = [];
+		    		  for(var i=1;i<=100;i++){
+		    			  orders.push(i);
+		    		  }
 			    	  this.chart = new tauCharts.Chart({
 			    		  settings: {
 			    			  	
 			    			},
 			    		    data: this.roundStats.items,
-			    		    type: 'line',
+			    		    type: 'bar',
 			    		    guide:{
 			    		    	
 			    		    	    x:{
@@ -295,8 +299,16 @@ new Vue({
 			    		    },
 			    		    x:'round',
 			    		    y: 'votes',
+			    		    dimensions: {
+			    		        votes:{
+			    		        	type:'measure',
+				    		           order:orders
+			    		        },
+			    		        round:{
+			    		        	type:'measure'
+			    		        },
+		    		        },
 			    		    color: 'name',
-			    		    size:null,
 			    		    plugins:plugins
 			    		});
 			    	
