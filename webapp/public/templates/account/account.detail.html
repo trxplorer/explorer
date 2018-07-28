@@ -145,7 +145,7 @@
 		</div>
 		<div class="six wide column">
 			<div id="currentVotesContainer" style="display:none;">
-			<b>Latest votes repartition</b>
+			<b>Current votes repartition</b>
 			
 			<div id="currentVotes" style="height:300px;"></div>
 			</div>
@@ -677,7 +677,7 @@ $.get('{{apiConfig.endpoint}}/vote/stats/{{currentRound.round}}',{address:"{{acc
 
 {%endif%}
 
-$.get('{{apiConfig.endpoint}}/account/votes',{address:"{{account.address}}"}).success(function(data){
+$.get('{{apiConfig.endpoint}}/account/liveVotes',{address:"{{account.address}}"}).success(function(data){
 	
 	if (data.items.length==0){
 		return;
@@ -685,27 +685,35 @@ $.get('{{apiConfig.endpoint}}/account/votes',{address:"{{account.address}}"}).su
 	
 	$('#currentVotesContainer').show();
 	var chart = new tauCharts.Chart({
-	    type: 'stacked-area',
+	    type: 'horizontal-bar',
 	    guide:{
 	    	
     	    x:{
-		    	label:'Round',
-		    	autoScale:false
+		    	label:'Votes',
+		    	autoScale:true
 		    },
 		    y:{
-		    	label:'Votes',
-		    	autoScale:false
+		    	label:'Candidate',
+		    	autoScale:true
 		    }
     	},
-	    x: 'round',
-	    y: 'votes',
+    	dimensions:{
+    	  to:{
+    		  type:'order'
+    	  },
+    	  votes:{
+    		  type:'measure'
+    	  }
+    	},
+	    x: 'votes',
+	    y: 'to',
 	    color: 'to',
 	    data: data.items,
 	    plugins:
 	    	[
 	    		tauCharts.api.plugins.get('tooltip')({
 	    			fields:['to','votes']
-	    		}),
+	    		})
 	    		
 	    	]
 	});
