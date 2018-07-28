@@ -80,7 +80,7 @@ public class VoteService {
 		Integer maxVotingRound = this.dslContext.select(DSL.max(VOTING_ROUND.ROUND))
 				.from(VOTING_ROUND).fetchOneInto(Integer.class);
 		
-		if (maxVotingRound==round) {
+		if (maxVotingRound.equals(round)) {
 			
 			return this.dslContext.select(VOTE_LIVE.ADDRESS,VOTE_LIVE.POSITION,VOTE_LIVE.VOTE_COUNT.as("votes"),ACCOUNT.ACCOUNT_NAME.as("name"),VOTING_ROUND.START_DATE,VOTING_ROUND.END_DATE,VOTING_ROUND.ROUND)
 					.from(VOTE_LIVE,VOTING_ROUND,ACCOUNT)
