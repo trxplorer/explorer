@@ -18,12 +18,14 @@ import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tron.protos.Protocol.Block;
 
 import com.google.inject.Inject;
 
 import io.trxplorer.model.tables.pojos.SyncNode;
 import io.trxplorer.model.tables.records.SyncBlockRecord;
 import io.trxplorer.syncnode.SyncNodeConfig;
+import io.trxplorer.troncli.TronFullNodeCli;
 
 public class BlockSyncService {
 
@@ -35,13 +37,16 @@ public class BlockSyncService {
 
 	private SyncNodeConfig config;
 
+	private TronFullNodeCli fullNodeCli;
+
 	private static final Logger logger = LoggerFactory.getLogger(BlockSyncService.class);
 	
 	@Inject
-	public BlockSyncService(DSLContext dslContext,SyncNodeConfig config,BlockService blockService) {
+	public BlockSyncService(DSLContext dslContext,SyncNodeConfig config,BlockService blockService,TronFullNodeCli fullNodeCli) {
 		this.dslContext = dslContext;
 		this.blockService = blockService;
 		this.config = config;
+		this.fullNodeCli = fullNodeCli;
 	}
 	
 	/**
@@ -192,16 +197,27 @@ public class BlockSyncService {
 	
 	public void syncBlocks(long start,long stop) {
 		
-
-		for (long i = start; i < stop; i++) {
-			logger.info("==> Syncing block: {}",i);
-			try {
-				this.blockService.importBlock(i);
-			}catch(Exception e) {
-				logger.error("Could not import block {}",i,e);
-			}
+		List<Block> blocks = this.fullNodeCli.getBlocks(start, stop);
+		
+		for(Block block:blocks) {
 			
+			logger.info("==> Syncing block: {}",block.getBlockHeader().getRawData().getNumber());
+			try {
+				this.blockService.importBlock(block);
+			}catch(Exception e) {
+				logger.error("Could not import block {}",block.getBlockHeader().getRawData().getNumber(),e);
+			}
 		}
+		
+//		for (long i = start; i < stop; i++) {
+//			logger.info("==> Syncing block: {}",i);
+//			try {
+//				this.blockService.importBlock(i);
+//			}catch(Exception e) {
+//				logger.error("Could not import block {}",i,e);
+//			}
+//			
+//		}
 		
 	}
 	
@@ -341,7 +357,7 @@ public class BlockSyncService {
 			logger.info("==> sync block: {}",blockNumToSync);
 			this.startBlockSync(blockNumToSync);
 			
-			this.blockService.importBlock(blockNumToSync);
+			//this.blockService.importBlock(blockNumToSync);
 			
 			this.endBlockSync(blockNumToSync);
 		}

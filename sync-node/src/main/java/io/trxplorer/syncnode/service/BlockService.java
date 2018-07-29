@@ -44,10 +44,12 @@ public class BlockService {
 	 * @param blockNum
 	 * @throws ServiceException 
 	 */
-	public void importBlock(Long blockNum) throws ServiceException {
+	public void importBlock(Block block) throws ServiceException {
+		
+		long blockNum = block.getBlockHeader().getRawData().getNumber();
 		
 		try {
-		Block block = this.tronFullNodeCli.getBlockByNum(blockNum);
+		
 		
 		BlockRecord record = new BlockRecord();
 		

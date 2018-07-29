@@ -16,6 +16,7 @@ import com.google.inject.Singleton;
 
 import io.trxplorer.syncnode.service.BlockService;
 import io.trxplorer.syncnode.service.ServiceException;
+import io.trxplorer.troncli.TronFullNodeCli;
 
 @Singleton
 @DisallowConcurrentExecution
@@ -24,12 +25,14 @@ public class ReSyncJob {
 
 	private DSLContext dslContext;
 	private BlockService blockService;
+	private TronFullNodeCli fullNodeCli;
 	private static final Logger logger = LoggerFactory.getLogger(ReSyncJob.class);
 
 	@Inject
-	public ReSyncJob(DSLContext dslContext,BlockService blockService) {
+	public ReSyncJob(DSLContext dslContext,BlockService blockService,TronFullNodeCli fullNodeCli) {
 		this.dslContext = dslContext;
 		this.blockService = blockService;
+		this.fullNodeCli = fullNodeCli;
 	}
 	
 	@Scheduled("1m")
@@ -43,8 +46,9 @@ public class ReSyncJob {
 		for(ULong blockNum:blocks) {
 			
 			logger.info("[RESYNC] => Resyncing block:"+blockNum);
+			
 			this.dslContext.deleteFrom(BLOCK).where(BLOCK.NUM.eq(blockNum)).execute();
-			this.blockService.importBlock(blockNum.longValue());
+			this.blockService.importBlock(this.fullNodeCli.getBlockByNum(blockNum.longValue()));
 			this.blockService.confirmBlock(blockNum.longValue());
 			this.dslContext.deleteFrom(BLOCK_RESYNC).where(BLOCK_RESYNC.NUM.eq(blockNum)).execute();
 		}
