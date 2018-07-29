@@ -28,4 +28,8 @@ public class SyncNodeConfig{
 		return this.config.getInt("node.syncBatchSize");
 	}
 	
+	public boolean isVoteJobEnabled() {
+		return this.config.getBoolean("jobs.votes");
+	}
+	
 }

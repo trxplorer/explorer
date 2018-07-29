@@ -34,6 +34,7 @@ import io.trxplorer.model.tables.VotingRound;
 import io.trxplorer.model.tables.VotingRoundStats;
 import io.trxplorer.model.tables.Witness;
 import io.trxplorer.model.tables.records.VotingRoundRecord;
+import io.trxplorer.syncnode.SyncNodeConfig;
 import io.trxplorer.troncli.TronFullNodeCli;
 
 @Singleton
@@ -44,6 +45,7 @@ public class VotingRoundJob {
 	private TronFullNodeCli fullNodeCli;
 	
 	private HashMap<String,Long> genesisVotes;
+	private SyncNodeConfig config;
 	
 	{
 		genesisVotes = new HashMap<>();
@@ -79,13 +81,18 @@ public class VotingRoundJob {
 	}
 	
 	@Inject
-	public VotingRoundJob(DSLContext dslContext,TronFullNodeCli fullNodeCli) {
+	public VotingRoundJob(DSLContext dslContext,TronFullNodeCli fullNodeCli,SyncNodeConfig config) {
 		this.dslContext = dslContext;
 		this.fullNodeCli = fullNodeCli;
+		this.config = config;
 	}
 
 	@Scheduled("30s")
 	public void buildLiveVotes() {
+		
+		if (!this.config.isVoteJobEnabled()) {
+			return;
+		}
 		
 		this.dslContext.truncate(VOTE_LIVE).execute();
 		
@@ -221,7 +228,9 @@ public class VotingRoundJob {
 	@Scheduled("1m")
 	public void buildVoteRounds() {
 		
-
+		if (!this.config.isVoteJobEnabled()) {
+			return;
+		}
 		
 		List<VotingRoundRecord> rounds = this.dslContext.select(VOTING_ROUND.fields())
 		.from(VOTING_ROUND)
