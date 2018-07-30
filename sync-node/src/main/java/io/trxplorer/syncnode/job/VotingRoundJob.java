@@ -269,7 +269,7 @@ public class VotingRoundJob {
 
 
 		List<String> addresses = this.dslContext.select(WITNESS.ADDRESS).from(WITNESS,ACCOUNT)
-				.where(WITNESS.ACCOUNT_ID.eq(ACCOUNT.ID).and(ACCOUNT.CREATE_TIME.lt(round.getEndDate()))).fetchInto(String.class); 
+				.where(WITNESS.ADDRESS.eq(ACCOUNT.ADDRESS).and(ACCOUNT.CREATE_TIME.lt(round.getEndDate()))).fetchInto(String.class); 
 		
 		
 		this.dslContext.deleteFrom(VOTING_ROUND_VOTE)
