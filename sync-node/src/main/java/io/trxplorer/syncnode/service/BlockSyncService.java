@@ -5,6 +5,8 @@ import static io.trxplorer.model.Tables.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.jooq.DSLContext;
@@ -20,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tron.protos.Protocol.Block;
 
+import com.google.common.collect.ComparisonChain;
 import com.google.inject.Inject;
 
 import io.trxplorer.model.tables.pojos.SyncNode;
@@ -197,27 +200,25 @@ public class BlockSyncService {
 	
 	public void syncBlocks(long start,long stop) {
 		
-		List<Block> blocks = this.fullNodeCli.getBlocks(start, stop);
+		List<Block> blocks = new ArrayList<>(fullNodeCli.getBlocks(start, stop));
 		
-		for(Block block:blocks) {
-			
+		Collections.sort(blocks, (b1,b2)->{
+			 return ComparisonChain.start().compare(b1.getBlockHeader().getRawData().getNumber(),b2.getBlockHeader().getRawData().getNumber()).result();
+		});
+		
+		Iterator<Block> it = blocks.iterator();
+		
+		while(it.hasNext()) {
+			Block block = it.next();
 			logger.info("==> Syncing block: {}",block.getBlockHeader().getRawData().getNumber());
 			try {
 				this.blockService.importBlock(block);
 			}catch(Exception e) {
 				logger.error("Could not import block {}",block.getBlockHeader().getRawData().getNumber(),e);
 			}
+			
+			
 		}
-		
-//		for (long i = start; i < stop; i++) {
-//			logger.info("==> Syncing block: {}",i);
-//			try {
-//				this.blockService.importBlock(i);
-//			}catch(Exception e) {
-//				logger.error("Could not import block {}",i,e);
-//			}
-//			
-//		}
 		
 	}
 	

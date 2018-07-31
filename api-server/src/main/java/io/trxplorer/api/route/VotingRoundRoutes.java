@@ -1,10 +1,13 @@
 package io.trxplorer.api.route;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.jooby.mvc.GET;
 import org.jooby.mvc.Path;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -21,10 +24,15 @@ import io.trxplorer.service.dto.vote.VotingRoundStatsModel;
 public class VotingRoundRoutes {
 
 	private VoteService voteService;
-
+	
+	private Cache<Integer, ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria>> roundStatsCache;
+	
 	@Inject
 	public VotingRoundRoutes(VoteService voteService) {
 		this.voteService = voteService;
+		this.roundStatsCache = CacheBuilder.newBuilder()
+			    .expireAfterAccess(5, TimeUnit.MINUTES)
+			    .build();
 	}
 
 	@GET
@@ -51,6 +59,14 @@ public class VotingRoundRoutes {
 	@Path(ApiAppRoutePaths.V1.VOTE_ROUND_STATS)
 	public ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRoundStats(Integer maxRound,Optional<String> address,Optional<Integer> page) throws Throwable {
 		
+		if (address==null) {
+			ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> cache = this.roundStatsCache.getIfPresent(maxRound);
+			if (cache!=null) {
+				return cache;				
+			}
+		}
+		
+		
 		VotingRoundStatsListCriteria criteria = new VotingRoundStatsListCriteria();
 		
 		criteria.setLimit(1);//FIXME not considered just to prevent NPE
@@ -58,7 +74,14 @@ public class VotingRoundRoutes {
 		criteria.setMaxRound(maxRound);
 		criteria.setAddress(address.orElse(null));
 		
-		return this.voteService.listRoundStats(criteria);		
+		ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> result = this.voteService.listRoundStats(criteria);
+		
+		if (address==null) {
+			this.roundStatsCache.put(maxRound, result);			
+		}
+
+		
+		return result;		
 	}
 	
 	@GET
