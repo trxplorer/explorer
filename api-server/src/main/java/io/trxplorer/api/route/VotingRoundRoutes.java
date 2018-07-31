@@ -59,7 +59,7 @@ public class VotingRoundRoutes {
 	@Path(ApiAppRoutePaths.V1.VOTE_ROUND_STATS)
 	public ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRoundStats(Integer maxRound,Optional<String> address,Optional<Integer> page) throws Throwable {
 		
-		if (address==null) {
+		if (!address.isPresent()) {
 			ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> cache = this.roundStatsCache.getIfPresent(maxRound);
 			if (cache!=null) {
 				return cache;				
@@ -76,7 +76,7 @@ public class VotingRoundRoutes {
 		
 		ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> result = this.voteService.listRoundStats(criteria);
 		
-		if (address==null) {
+		if (!address.isPresent()) {
 			this.roundStatsCache.put(maxRound, result);			
 		}
 
