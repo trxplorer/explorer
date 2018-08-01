@@ -89,7 +89,7 @@ public class TransactionService {
 
 	public TransactionModel getTxByHash(String hash) {
 		
-		TransactionModel result = this.dslContext.select(TRANSACTION.ID,TRANSACTION.HASH,TRANSACTION.TIMESTAMP,BLOCK.NUM.as("block"),TRANSACTION.FROM,TRANSACTION.TYPE)
+		TransactionModel result = this.dslContext.select(TRANSACTION.ID,TRANSACTION.HASH,TRANSACTION.TIMESTAMP,BLOCK.NUM.as("block"),TRANSACTION.FROM,TRANSACTION.TYPE,TRANSACTION.CONFIRMED)
 				.from(TRANSACTION)
 				.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
 		.where(TRANSACTION.HASH.eq(hash))
@@ -157,7 +157,7 @@ public class TransactionService {
 			conditions.add(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)));	
 		}
 
-		SelectOnConditionStep<?> listQuery = this.dslContext.select(TRANSACTION.ID,TRANSACTION.HASH,TRANSACTION.TIMESTAMP,BLOCK.NUM.as("block"),TRANSACTION.FROM,TRANSACTION.TYPE)
+		SelectOnConditionStep<?> listQuery = this.dslContext.select(TRANSACTION.ID,TRANSACTION.HASH,TRANSACTION.TIMESTAMP,BLOCK.NUM.as("block"),TRANSACTION.FROM,TRANSACTION.TYPE,TRANSACTION.CONFIRMED)
 		.from(TRANSACTION)
 		.join(BLOCK).on(BLOCK.ID.eq(TRANSACTION.BLOCK_ID))
 		;
