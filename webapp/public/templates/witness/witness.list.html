@@ -74,7 +74,6 @@
 				<th class="center aligned">Last block</th>
 				<th class="center aligned">Blocks produced</th>
 				<th class="center aligned">Blocks missed</th>
-				<th class="center aligned">Votes</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -105,13 +104,12 @@
 				<td>{{witness.lastBlock}}</td>
 				<td>{{witness.getTotalProducedStr()}}</td>
 				<td>{{witness.totalMissed}}</td>
-				<td>{%if witness.voteCount > 0 %}<a href="/vote/{{stats.currentRound.round-1}}/{{witness.address}}">{{witness.getVoteCountStr()}}</a>{%else%}{{witness.getVoteCountStr()}}{%endif%}</td>
 			</tr>
 
 			{%endfor%}
 		</tbody>
 		 <tfoot>
-		    <tr><th colspan="7">
+		    <tr><th colspan="6">
 				{% include 'partials/pagination' %}
 		  </tr></tfoot>
 	</table>
