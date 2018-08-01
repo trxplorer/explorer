@@ -75,7 +75,7 @@ public class ListModel<T,C extends CommonCriteriaDTO> {
 	
 	public String params(){
 		
-		StringBuilder sb = new StringBuilder("&limit="+criteria.getLimit());
+		StringBuilder sb = new StringBuilder();
 		
 		
 		for(String key:criteria.params().keySet()){
