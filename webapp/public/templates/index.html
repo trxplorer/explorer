@@ -63,7 +63,7 @@
 			  </div>
 			  <div class="grey statistic">
 			    <div class="value">
-			      {{lastTxCount}}
+			      {{lastTxCount|numberlocale}}
 			    </div>
 			    <div class="label">
 			    	Transactions <br><small>(last 24h)</small>
@@ -71,7 +71,7 @@
 			  </div>
 			  <div class="orange statistic">
 			    <div class="value">
-			      {{totalAccounts}}
+			      {{totalAccounts|numberlocale}}
 			    </div>
 			    <div class="label">
 			      Accounts
@@ -80,7 +80,7 @@
 
 			  <div class="green statistic">
 			    <div class="value">
-			      {{lastVotesCount}}
+			      {{lastVotesCount|numberlocale}}
 			    </div>
 			    <div class="label">
 			      Voters<br><small>(last 24h)</small>

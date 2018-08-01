@@ -20,7 +20,7 @@
 			<div class="ui four small statistics">
 			  <div class="small grey statistic">
 			    <div class="value">
-			      <small>{{stats.totalTx}}</small>
+			      <small>{{stats.totalTx|numberlocale}}</small>
 			    </div>
 			    <div class="label">
 			      Total transactions
@@ -28,7 +28,7 @@
 			  </div>
 			  <div class="small green statistic">
 			    <div class="value">
-			      <small>{{stats.totalTxConfirmed}}</small>
+			      <small>{{stats.totalTxConfirmed|numberlocale}}</small>
 			    </div>
 			    <div class="label">
 			    	TX confirmed
@@ -36,7 +36,7 @@
 			  </div>
 			  <div class="yellow statistic">
 			    <div class="value">
-			      <small>{{stats.totalTx6h}}</small>
+			      <small>{{stats.totalTx6h|numberlocale}}</small>
 			    </div>
 			    <div class="label">
 			      TX Last 6h
@@ -45,7 +45,7 @@
 
 			  <div class="orange statistic">
 			    <div class="value">
-			      <small>{{stats.totalTx24h}}</small>
+			      <small>{{stats.totalTx24h|numberlocale}}</small>
 			    </div>
 			    <div class="label">
 			      TX Last 24h
