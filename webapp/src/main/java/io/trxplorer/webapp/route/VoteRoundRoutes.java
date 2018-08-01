@@ -89,6 +89,17 @@ public class VoteRoundRoutes {
 
 	}
 	
+	@GET
+	@Path(TRXPlorerRoutePaths.Front.GENESIS_VOTES)	
+	public void listGenesisVotes(Request req,Response res,Chain chain) throws Throwable {
+		
+		View view = Results.html("vote/genesis.votes");
+		
+		view.put("data", this.voteService.listGenesisWitnessesVotes());
+		
+		res.send(view);
+	}
+	
 	
 	
 }

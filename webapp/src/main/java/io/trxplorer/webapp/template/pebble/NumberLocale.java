@@ -1,5 +1,6 @@
 package io.trxplorer.webapp.template.pebble;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -30,7 +31,9 @@ public class NumberLocale implements Filter{
 		if (input instanceof Long ) {
 			
 			return nf.format((Long)input);
-			
+		}else if (input instanceof BigDecimal ) {
+				
+			return nf.format((BigDecimal)input);
 		}else {
 
 			String amount = (String) input;

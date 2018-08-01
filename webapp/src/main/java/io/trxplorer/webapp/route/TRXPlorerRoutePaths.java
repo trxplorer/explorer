@@ -36,6 +36,7 @@ public interface TRXPlorerRoutePaths {
 		public static final String VOTE_LIST_LIVE = "/votes";
 		public static final String VOTE_ROUND_DETAIL = "/vote/:round";		
 		public static final String VOTE_ROUND_ADDRESS_DETAIL = "/vote/:round/:address";
+		public static final String GENESIS_VOTES = "/votes/genesis";
 		
 		//SEARCH
 		public static final String SEARCH = "/search";
@@ -52,6 +53,9 @@ public interface TRXPlorerRoutePaths {
 		
 		//MARKET
 		public static final String MARKET_LIST = "/markets";
+		
+
+
 		
 		//API
 		public static final String API = "/api";

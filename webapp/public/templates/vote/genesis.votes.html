@@ -1,0 +1,88 @@
+{% extends "main" %}
+{% block title %}Tron transactions list{% endblock %}
+{%block description%}See all transactions on Tron blockchain{%endblock%}
+
+{% block header %} 
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jspanel3/3.10.0/jquery.jspanel.min.css"/> -->
+
+{% endblock %}
+
+{% block content %}
+
+	
+<h1 class="ui dividing header"><small>Genesis Representatives votes</small></h1>
+	
+<div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
+    <div class="ui stackable grid container">
+      <div class="row">
+			
+			<div class="column">
+			<div class="ui two small statistics">
+			  <div class="small grey statistic">
+			    <div class="value">
+			      <small>{{data.totalVotes|numberlocale}}</small>
+			    </div>
+			    <div class="label">
+			      Total votes
+			    </div>
+			  </div>
+			  <div class="small red statistic">
+			    <div class="value">
+			      <small>{{data.votes.size()}}</small>
+			    </div>
+			    <div class="label">
+			    	Vote count
+			    </div>
+			  </div>
+
+
+
+			</div>
+			</div>
+			
+      </div>
+
+      </div>
+</div>
+
+<table class="ui fixed striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">Genesis Representative</th>
+			<th class="center aligned">Genesis Votes</th>
+			<th class="center aligned">Total votes from accounts</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for gr in data.genesisAccounts%}
+		<tr class="center aligned">
+			<td><a href="/address/{{gr.address}}">{{gr.url}}</a></td>
+			<td>{{gr.genesisVotes|numberlocale}}</td>
+			<td>{{gr.votes|numberlocale}}</td>
+
+		</tr>
+		{%endfor%}
+	</tbody>
+</table>
+
+<h2 class="ui dividing header"><small>Votes from accounts</small></h2>
+<table class="ui fixed striped table">
+	<thead>
+		<tr>
+			<th class="center aligned">Voter</th>
+			<th class="center aligned">GR</th>
+			<th class="center aligned">Votes</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for vote in data.votes%}
+		<tr class="center aligned">
+			<td><a href="/address/{{vote.from}}">{{vote.from}}</a></td>
+			<td><a href="/address/{{vote.to}}">{{vote.to}}</a></td>
+			<td>{{vote.votes|numberlocale}}</td>
+		</tr>
+		{%endfor%}
+	</tbody>
+</table>
+
+{%endblock%}
