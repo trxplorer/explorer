@@ -631,6 +631,7 @@ var Votes = Vue.component('votes',{
 		  }
 	  }
 });
+
 var Voters = Vue.component('voters',{
 	  template: '#voters',
 	  mixins:[common],
@@ -640,11 +641,14 @@ var Voters = Vue.component('voters',{
 		  }  
 	  },
 	  methods:{
+	 {%if account.witness!=null%}
 		  getVotesPercentage: function(vote){
 			  return new Number((vote.votes/{{account.witness.liveVotes}})*100).toFixed(6)
 		  }
+	  {%endif%}
 	  }
 });
+
 var Withdrawal = Vue.component('widthdrawal',{
 	  template: '#widthdrawals',
 	  mixins:[common],
