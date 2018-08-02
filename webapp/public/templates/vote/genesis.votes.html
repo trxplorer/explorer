@@ -48,6 +48,7 @@
 <table class="ui fixed striped table">
 	<thead>
 		<tr>
+			<th class="center aligned">#</th>
 			<th class="center aligned">Genesis Representative</th>
 			<th class="center aligned">Genesis Votes</th>
 			<th class="center aligned">Total votes from accounts</th>
@@ -56,10 +57,10 @@
 	<tbody>
 		{%for gr in data.genesisAccounts%}
 		<tr class="center aligned">
+			<td>{{loop.index+1}}</td>
 			<td><a href="/address/{{gr.address}}">{{gr.url}}</a></td>
 			<td>{{gr.genesisVotes|numberlocale}}</td>
 			<td>{{gr.votes|numberlocale}}</td>
-
 		</tr>
 		{%endfor%}
 	</tbody>
@@ -69,6 +70,7 @@
 <table class="ui fixed striped table">
 	<thead>
 		<tr>
+			<th class="center aligned">#</th>
 			<th class="center aligned">Voter</th>
 			<th class="center aligned">GR</th>
 			<th class="center aligned">Votes</th>
@@ -77,6 +79,7 @@
 	<tbody>
 		{%for vote in data.votes%}
 		<tr class="center aligned">
+			<td>{{loop.index+1}}</td>
 			<td><a href="/address/{{vote.from}}">{{vote.from}}</a></td>
 			<td><a href="/address/{{vote.to}}">{{vote.url}}</a></td>
 			<td>{{vote.votes|numberlocale}}</td>
