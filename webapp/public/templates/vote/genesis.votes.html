@@ -78,7 +78,7 @@
 		{%for vote in data.votes%}
 		<tr class="center aligned">
 			<td><a href="/address/{{vote.from}}">{{vote.from}}</a></td>
-			<td><a href="/address/{{vote.to}}">{{vote.to}}</a></td>
+			<td><a href="/address/{{vote.to}}">{{vote.url}}</a></td>
 			<td>{{vote.votes|numberlocale}}</td>
 		</tr>
 		{%endfor%}

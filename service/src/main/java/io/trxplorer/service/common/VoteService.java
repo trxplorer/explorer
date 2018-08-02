@@ -289,8 +289,8 @@ public class VoteService {
 			
 		}
 		
-		List<Map<String, Object>> votes = this.dslContext.select(ACCOUNT.ADDRESS.as("from"),ACCOUNT_VOTE.VOTE_ADDRESS.as("to"),ACCOUNT_VOTE.VOTE_COUNT.as("votes"))
-		.from(ACCOUNT_VOTE,ACCOUNT).where(ACCOUNT.ID.eq(ACCOUNT_VOTE.ACCOUNT_ID).and(ACCOUNT_VOTE.VOTE_ADDRESS.in(genesisVotes.keySet()))).orderBy(ACCOUNT_VOTE.VOTE_COUNT.desc()).fetchMaps();
+		List<Map<String, Object>> votes = this.dslContext.select(ACCOUNT.ADDRESS.as("from"),WITNESS.URL,ACCOUNT_VOTE.VOTE_ADDRESS.as("to"),ACCOUNT_VOTE.VOTE_COUNT.as("votes"))
+		.from(ACCOUNT_VOTE,ACCOUNT,WITNESS).where(ACCOUNT.ID.eq(ACCOUNT_VOTE.ACCOUNT_ID).and(ACCOUNT_VOTE.VOTE_ADDRESS.in(genesisVotes.keySet()).and(WITNESS.ADDRESS.eq(ACCOUNT_VOTE.VOTE_ADDRESS)))).orderBy(ACCOUNT_VOTE.VOTE_COUNT.desc()).fetchMaps();
 		
 		HashMap<String,Object> results = new HashMap<>();
 		results.put("genesisAccounts", result);
