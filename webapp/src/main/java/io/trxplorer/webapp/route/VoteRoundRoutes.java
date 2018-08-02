@@ -1,5 +1,7 @@
 package io.trxplorer.webapp.route;
 
+import java.util.concurrent.TimeUnit;
+
 import org.jooby.Request;
 import org.jooby.Response;
 import org.jooby.Results;
@@ -8,11 +10,12 @@ import org.jooby.View;
 import org.jooby.mvc.GET;
 import org.jooby.mvc.Path;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import io.trxplorer.job.QuickStatsJob;
-import io.trxplorer.service.common.AccountService;
 import io.trxplorer.service.common.VoteService;
 import io.trxplorer.service.dto.vote.VotingRoundListCriteria;
 
@@ -21,13 +24,15 @@ public class VoteRoundRoutes {
 
 	private VoteService voteService;
 	private QuickStatsJob quickStats;
-	private AccountService accountService;
+	private Cache<String, Object> genesisVotesCache;
 	
 	@Inject
-	public VoteRoundRoutes(VoteService voteService,AccountService accountService,QuickStatsJob quickStats) {
+	public VoteRoundRoutes(VoteService voteService,QuickStatsJob quickStats) {
 		this.voteService = voteService;
 		this.quickStats = quickStats;
-		this.accountService = accountService;
+		this.genesisVotesCache = CacheBuilder.newBuilder()
+			    .expireAfterAccess(1, TimeUnit.MINUTES)
+			    .build();
 	}
 	
 	@GET
@@ -95,7 +100,13 @@ public class VoteRoundRoutes {
 		
 		View view = Results.html("vote/genesis.votes");
 		
-		view.put("data", this.voteService.listGenesisWitnessesVotes());
+		Object votes = this.genesisVotesCache.getIfPresent("votes");
+		
+		if (votes==null) {
+			votes = this.voteService.listGenesisWitnessesVotes();
+		}
+		
+		view.put("data", votes);	
 		
 		res.send(view);
 	}
