@@ -1,20 +1,38 @@
 <div class="eyecatcher"></div>
  <div class="ui stackable borderless main menu">
  
-    <div class="ui container">
+    <div class="ui container topmenu">
    		<a href="/" class="header item">
         <img class="ui image" src="/img/logo_30.png" width="29" height="30"/>&nbsp; <span class="logo">TRXPL<i class="search icon" style="margin-right:-2px;margin-left:-2px"></i>RER<small>.io</small></span>
       </a>
-      
-      <div class="item nomobile"><a href="/blocks" >Blocks</a></div>
-      <div class="item nomobile"><a href="/transactions" >Transactions</a></div>
+      <div class="ui dropdown item nomobile">
+		<div >Blockchain</div>
+		  <i class="dropdown icon"></i>
+		  <div class="menu">
+	      	<a class="item nomobile" href="/blocks" >Blocks</a>
+	      	<a class="item nomobile" href="/transactions" >Transactions</a>
+	      	<a class="item nomobile" href="/accounts" >Accounts</a>
+	      	<a class="item nomobile" href="/charts" >Charts</a>
+    	</div>
+      </div>
+
 	  <div class="item nomobile"><a href="/nodes" >Nodes</a></div>
 	  <div class="item nomobile"><a href="/representatives" >Representatives</a></div>
-      <div class="item nomobile"><a href="/votes" >Votes</a></div>
-      <div class="item nomobile"><a href="/accounts" >Accounts</a></div>
+
+      <div class="ui dropdown item nomobile">
+		<div >Votes</div>
+		  <i class="dropdown icon"></i>
+		  <div class="menu">
+	  		<a class="item nomobile" href="/votes" >Votes statistics</a>
+	  		<a class="item nomobile" href="/votes/genesis" >Genesis votes</a>
+    	</div>
+      </div>
+
+      
+      
       <div class="item nomobile"><a href="/tokens" >Tokens</a></div>
 	  <div class="item nomobile"><a href="/markets" >Markets</a></div>
-      <div class="item nomobile"><a href="/charts" >Charts</a></div>
+
       
 
   	 <form class="header item nomobile" action="/search" method="post">

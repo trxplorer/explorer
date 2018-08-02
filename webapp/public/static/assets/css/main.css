@@ -48,6 +48,13 @@ background-position: center;
 font-family: 'Exo 2';	
 }
 
+.ui.menu .item {
+color: #4183c4;	
+}
+
+.homemenu .ui.menu .item {
+color: #000;
+}
 
 .home{
 background:#eee;
