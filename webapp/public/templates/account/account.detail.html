@@ -773,7 +773,18 @@ $.get('{{apiConfig.endpoint}}/account/liveVotes',{address:"{{account.address}}"}
 	    plugins:
 	    	[
 	    		tauCharts.api.plugins.get('tooltip')({
-	    			fields:['to','votes']
+	    			fields:['toName','toUrl','to','votes'],
+	    			formatters: {
+	    				toUrl: {
+	    					label : 'URL'
+	    				},
+	    				toName:{
+	    					label: 'Name'
+	    				},
+	    				to:{
+	    					label: 'Address'
+	    				}
+	    			}
 	    		})
 	    		
 	    	]

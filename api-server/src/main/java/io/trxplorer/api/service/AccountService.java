@@ -228,17 +228,20 @@ public class AccountService {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
+		io.trxplorer.model.tables.Account ACCOUNT2 = ACCOUNT.as("account2");
+		
 		conditions.add(ACCOUNT.ADDRESS.eq(criteria.getAddress()));
 		conditions.add(ACCOUNT_VOTE.ACCOUNT_ID.eq(ACCOUNT.ID));
-	
+		conditions.add(ACCOUNT_VOTE.VOTE_ADDRESS.eq(ACCOUNT2.ADDRESS));
+		conditions.add(WITNESS.ADDRESS.eq(ACCOUNT2.ADDRESS));
 		
-		SelectJoinStep<?> listQuery = this.dslContext.select(ACCOUNT.ADDRESS.as("from"),ACCOUNT_VOTE.VOTE_ADDRESS.as("to"),ACCOUNT_VOTE.VOTE_COUNT.as("votes"))
-				.from(ACCOUNT_VOTE,ACCOUNT);
+		SelectJoinStep<?> listQuery = this.dslContext.select(ACCOUNT.ADDRESS.as("from"),ACCOUNT_VOTE.VOTE_ADDRESS.as("to"),ACCOUNT2.ACCOUNT_NAME.as("toName"),WITNESS.URL.as("toUrl"),ACCOUNT_VOTE.VOTE_COUNT.as("votes"))
+				.from(ACCOUNT_VOTE,ACCOUNT,ACCOUNT2,WITNESS);
 				
 		
 		
 		SelectJoinStep<Record1<Integer>> countQuery = dslContext.select(DSL.count())
-		.from(ACCOUNT_VOTE,ACCOUNT);
+		.from(ACCOUNT_VOTE,ACCOUNT,ACCOUNT2,WITNESS);
 		
 		
 		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
