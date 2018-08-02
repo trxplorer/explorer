@@ -3,14 +3,11 @@ package io.trxplorer.service.common;
 import static io.trxplorer.model.Tables.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.SelectJoinStep;
 import org.jooq.SelectOnConditionStep;
@@ -20,8 +17,9 @@ import org.jooq.impl.DSL;
 import com.google.inject.Inject;
 
 import io.trxplorer.service.dto.common.ListModel;
-import io.trxplorer.service.dto.witness.WitnessModel;
 import io.trxplorer.service.dto.witness.WitnessListCriteriaDTO;
+import io.trxplorer.service.dto.witness.WitnessModel;
+import io.trxplorer.service.utils.Constants;
 import io.trxplorer.troncli.TronFullNodeCli;
 
 public class WitnessService {
@@ -39,10 +37,18 @@ public class WitnessService {
 	
 	
 	public WitnessModel getWitnessByAddress(String address) {
-		return this.dslContext.select(WITNESS.URL,WITNESS.VOTE_COUNT,WITNESS.TOTAL_MISSED,WITNESS.TOTAL_PRODUCED,DSL.sum(ACCOUNT_VOTE.VOTE_COUNT).as("liveVotes"))
+		
+		WitnessModel result = this.dslContext.select(WITNESS.URL,WITNESS.VOTE_COUNT,WITNESS.TOTAL_MISSED,WITNESS.TOTAL_PRODUCED,DSL.sum(ACCOUNT_VOTE.VOTE_COUNT).as("liveVotes"))
 		.from(WITNESS,ACCOUNT_VOTE).where(WITNESS.ADDRESS.eq(address))
 		.and(WITNESS.ADDRESS.eq(ACCOUNT_VOTE.VOTE_ADDRESS))
 		.fetchOneInto(WitnessModel.class);
+		
+		Long genesisVotes = Constants.genesisVotes.get(address); 
+		if (genesisVotes!=null) {
+			result.setLiveVotes(result.getLiveVotes()+genesisVotes);
+		}
+		
+		return result; 
 	}
 	
 	
