@@ -10,7 +10,7 @@ import com.google.inject.Singleton;
 
 import io.trxplorer.api.dto.account.AccountInfo;
 import io.trxplorer.api.dto.common.ListResult;
-import io.trxplorer.api.dto.witness.WitnessDTO;
+import io.trxplorer.api.dto.witness.WitnessModel;
 import io.trxplorer.api.dto.witness.WitnessListCriteriaDTO;
 import io.trxplorer.api.service.WitnessService;
 
@@ -34,7 +34,7 @@ public class WitnessRoutes {
 	 */
 	@GET
 	@Path(ApiAppRoutePaths.V1.WITNESS_ALL)
-	public ListResult<WitnessDTO, WitnessListCriteriaDTO> all(Optional<Boolean> isSR,Optional<Integer> limit,Optional<Integer> page) throws Throwable {
+	public ListResult<WitnessModel, WitnessListCriteriaDTO> all(Optional<Boolean> isSR,Optional<Integer> limit,Optional<Integer> page) throws Throwable {
 		
 
 		

@@ -10,7 +10,7 @@ import io.trxplorer.service.dto.asset.AssetParticipationDTO;
 import io.trxplorer.service.dto.transaction.TransactionModel;
 import io.trxplorer.service.dto.vote.VoteModel;
 import io.trxplorer.service.dto.witness.AllowanceWidthdrawDTO;
-import io.trxplorer.service.dto.witness.WitnessDTO;
+import io.trxplorer.service.dto.witness.WitnessModel;
 import io.trxplorer.service.utils.TransactionHelper;
 
 public class AccountDTO {
@@ -57,7 +57,7 @@ public class AccountDTO {
 	
 	private Timestamp createTime;
 	
-	private WitnessDTO witness;
+	private WitnessModel witness;
 	
 	private AccountDetailCriteriaDTO criteria;
 	
@@ -235,11 +235,11 @@ public class AccountDTO {
 		return percentage;
 	}
 	
-	public void setWitness(WitnessDTO witness) {
+	public void setWitness(WitnessModel witness) {
 		this.witness = witness;
 	}
 	
-	public WitnessDTO getWitness() {
+	public WitnessModel getWitness() {
 		return witness;
 	}
 	

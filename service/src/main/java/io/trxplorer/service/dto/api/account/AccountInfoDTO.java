@@ -2,7 +2,7 @@ package io.trxplorer.service.dto.api.account;
 
 import java.sql.Timestamp;
 
-import io.trxplorer.service.dto.witness.WitnessDTO;
+import io.trxplorer.service.dto.witness.WitnessModel;
 
 public class AccountInfoDTO {
 	
@@ -30,7 +30,7 @@ public class AccountInfoDTO {
 	
 	private Timestamp createTime;
 	
-	private WitnessDTO witness;
+	private WitnessModel witness;
 	
 	private boolean isWitness;
 
@@ -130,11 +130,11 @@ public class AccountInfoDTO {
 		this.createTime = createTime;
 	}
 
-	public WitnessDTO getWitness() {
+	public WitnessModel getWitness() {
 		return witness;
 	}
 
-	public void setWitness(WitnessDTO witness) {
+	public void setWitness(WitnessModel witness) {
 		this.witness = witness;
 	}
 

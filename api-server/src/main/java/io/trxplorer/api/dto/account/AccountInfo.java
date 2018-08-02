@@ -1,6 +1,6 @@
 package io.trxplorer.api.dto.account;
 
-import io.trxplorer.api.dto.witness.WitnessDTO;
+import io.trxplorer.api.dto.witness.WitnessModel;
 
 public class AccountInfo {
 	
@@ -28,7 +28,7 @@ public class AccountInfo {
 	
 	private long createTime;
 	
-	private WitnessDTO witness;
+	private WitnessModel witness;
 	
 	private boolean isWitness;
 
@@ -128,11 +128,11 @@ public class AccountInfo {
 		this.createTime = createTime;
 	}
 
-	public WitnessDTO getWitness() {
+	public WitnessModel getWitness() {
 		return witness;
 	}
 
-	public void setWitness(WitnessDTO witness) {
+	public void setWitness(WitnessModel witness) {
 		this.witness = witness;
 	}
 

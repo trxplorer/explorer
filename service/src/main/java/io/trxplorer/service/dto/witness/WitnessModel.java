@@ -5,7 +5,7 @@ import java.util.Locale;
 
 import io.trxplorer.service.utils.TransactionHelper;
 
-public class WitnessDTO {
+public class WitnessModel {
 	
 	private long voteCount;
 	
@@ -23,8 +23,18 @@ public class WitnessDTO {
 	
 	private String name;
 	
+	private long liveVotes;
 	
 	
+	
+	public long getLiveVotes() {
+		return liveVotes;
+	}
+
+	public void setLiveVotes(long liveVotes) {
+		this.liveVotes = liveVotes;
+	}
+
 	public long getLastBlock() {
 		return lastBlock;
 	}

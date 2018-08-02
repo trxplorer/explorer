@@ -16,7 +16,7 @@ import org.jooq.impl.DSL;
 import com.google.inject.Inject;
 
 import io.trxplorer.api.dto.common.ListResult;
-import io.trxplorer.api.dto.witness.WitnessDTO;
+import io.trxplorer.api.dto.witness.WitnessModel;
 import io.trxplorer.api.dto.witness.WitnessListCriteriaDTO;
 
 public class WitnessService {
@@ -31,17 +31,17 @@ public class WitnessService {
 	}
 
 
-	public WitnessDTO getWitnessByAddress(String address) {
+	public WitnessModel getWitnessByAddress(String address) {
 				
 		
-		return this.dslContext.select(WITNESS.fields()).from(WITNESS).where(WITNESS.ADDRESS.eq(address)).fetchOneInto(WitnessDTO.class);
+		return this.dslContext.select(WITNESS.fields()).from(WITNESS).where(WITNESS.ADDRESS.eq(address)).fetchOneInto(WitnessModel.class);
 		
 		
 
 	}
 
 	
-	public ListResult<WitnessDTO, WitnessListCriteriaDTO> listWitnesses(WitnessListCriteriaDTO criteria){
+	public ListResult<WitnessModel, WitnessListCriteriaDTO> listWitnesses(WitnessListCriteriaDTO criteria){
 		
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
@@ -71,10 +71,10 @@ public class WitnessService {
 			sortFields.add(WITNESS.VOTE_COUNT.desc());
 		}
 		
-		List<WitnessDTO> items = listQuery.where(conditions).orderBy(sortFields).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(WitnessDTO.class);
+		List<WitnessModel> items = listQuery.where(conditions).orderBy(sortFields).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(WitnessModel.class);
 		
 		
-		ListResult<WitnessDTO, WitnessListCriteriaDTO> result = new ListResult<WitnessDTO, WitnessListCriteriaDTO>(criteria, items, totalCount);
+		ListResult<WitnessModel, WitnessListCriteriaDTO> result = new ListResult<WitnessModel, WitnessListCriteriaDTO>(criteria, items, totalCount);
 		
 		return result;
 		

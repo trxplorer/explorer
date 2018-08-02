@@ -20,7 +20,7 @@ import org.jooq.impl.DSL;
 import com.google.inject.Inject;
 
 import io.trxplorer.service.dto.common.ListModel;
-import io.trxplorer.service.dto.witness.WitnessDTO;
+import io.trxplorer.service.dto.witness.WitnessModel;
 import io.trxplorer.service.dto.witness.WitnessListCriteriaDTO;
 import io.trxplorer.troncli.TronFullNodeCli;
 
@@ -38,13 +38,15 @@ public class WitnessService {
 	
 	
 	
-	public WitnessDTO getWitnessByAddress(String address) {
-		return this.dslContext.select(WITNESS.URL,WITNESS.VOTE_COUNT,WITNESS.TOTAL_MISSED,WITNESS.TOTAL_PRODUCED)
-		.from(WITNESS).where(WITNESS.ADDRESS.eq(address)).fetchOneInto(WitnessDTO.class);
+	public WitnessModel getWitnessByAddress(String address) {
+		return this.dslContext.select(WITNESS.URL,WITNESS.VOTE_COUNT,WITNESS.TOTAL_MISSED,WITNESS.TOTAL_PRODUCED,DSL.sum(ACCOUNT_VOTE.VOTE_COUNT).as("liveVotes"))
+		.from(WITNESS,ACCOUNT_VOTE).where(WITNESS.ADDRESS.eq(address))
+		.and(WITNESS.ADDRESS.eq(ACCOUNT_VOTE.VOTE_ADDRESS))
+		.fetchOneInto(WitnessModel.class);
 	}
 	
 	
-	public ListModel<WitnessDTO, WitnessListCriteriaDTO> listWitnesses(WitnessListCriteriaDTO criteria){
+	public ListModel<WitnessModel, WitnessListCriteriaDTO> listWitnesses(WitnessListCriteriaDTO criteria){
 		
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
@@ -68,11 +70,11 @@ public class WitnessService {
 		sortFields.add(WITNESS.VOTE_COUNT.desc());
 
 		
-		List<WitnessDTO> items = listQuery.where(conditions).orderBy(sortFields).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(WitnessDTO.class);
+		List<WitnessModel> items = listQuery.where(conditions).orderBy(sortFields).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(WitnessModel.class);
 		
 		prepareWitnessDTO(items);
 		
-		ListModel<WitnessDTO, WitnessListCriteriaDTO> result = new ListModel<WitnessDTO, WitnessListCriteriaDTO>(criteria, items, totalCount);
+		ListModel<WitnessModel, WitnessListCriteriaDTO> result = new ListModel<WitnessModel, WitnessListCriteriaDTO>(criteria, items, totalCount);
 		
 		return result;
 		
@@ -81,9 +83,9 @@ public class WitnessService {
 	
 
 	
-	private void prepareWitnessDTO(List<WitnessDTO> witnesses) {
+	private void prepareWitnessDTO(List<WitnessModel> witnesses) {
 		
-		for(WitnessDTO witness:witnesses) {
+		for(WitnessModel witness:witnesses) {
 
 			witness.setShortUrl(StringUtils.abbreviate(witness.getUrl().trim(), 50));
 			

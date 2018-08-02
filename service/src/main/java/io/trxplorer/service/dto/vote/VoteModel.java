@@ -16,8 +16,28 @@ public class VoteModel {
 	
 	private Long totalRoundVotes;
 	
+	private String toName;
+	
+	private String toUrl;
 	
 	
+	
+	public String getToUrl() {
+		return toUrl;
+	}
+
+	public void setToUrl(String toUrl) {
+		this.toUrl = toUrl;
+	}
+
+	public String getToName() {
+		return toName;
+	}
+
+	public void setToName(String toName) {
+		this.toName = toName;
+	}
+
 	public Long getTotalRoundVotes() {
 		return totalRoundVotes;
 	}

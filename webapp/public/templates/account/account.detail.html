@@ -116,8 +116,8 @@
 						<td><a href="{{account.witness.url}}" target="blank">{{account.witness.url}}</a></td>
 					</tr>
 					<tr>
-						<td>Votes received</td>
-						<td>{{account.witness.getVoteCountStr()}} {%if account.witness.voteCount > 0 %}<a href="/vote/{{currentRound.round-1}}/{{account.address}}">[See voters details]</a>{%endif%}</td>
+						<td>Votes received </td>
+						<td>Last round: {{account.witness.getVoteCountStr()}} - Live: {{account.witness.liveVotes|numberlocale}}</td>
 					</tr>
 					<tr>
 						<td>Blocks</td>
@@ -165,10 +165,12 @@
   <router-link to="/" active-class="active" class="item" exact>Transfers</router-link>
   <router-link to="/tokens" active-class="active" class="item" exact>Tokens</router-link>
   <router-link to="/tp" active-class="active" class="item" exact>Token participations</router-link>
-  <router-link to="/votes" active-class="active" class="item" exact>Votes repartition history</router-link>
+  <router-link to="/votes" active-class="active" class="item" exact>Votes repartition</router-link>
   <!-- <router-link to="/freeze" active-class="active" class="item">Freeze history</router-link> -->
   {%if account.witness!=null%}
+  <router-link to="/voters" active-class="active" class="item" exact>Voters</router-link>
   <router-link to="/aw" active-class="active" class="item" exact>Witdhdrawal</router-link>
+
   {%endif%}
 </div>
 
@@ -362,6 +364,49 @@
      </table>
 </div>
 </script>
+<!-- VOTERS -->
+ <script type="text/x-template"  id="voters">
+<div v-cloak>
+<div class="ui active tiny teal progress" data-value="99" data-total="100" v-show="loading">
+  <div class="bar">
+  </div>
+<div class="label">Loading...</div>
+</div>
+<div class="ui icon small info message" v-show="list.totalCount==0">
+  <div class="content">
+    <div class="header">
+      <i class="circle info icon"></i> No voters yet from this account
+    </div>
+  </div>
+</div>
+     <table class="ui fixed striped table" v-show="list.totalCount>0">
+       <thead>
+         <tr>
+			<th class="center aligned">Voter</th>
+			<th class="center aligned">Votes</th>
+			<th class="center aligned">Percentage</th>
+         </tr>
+       </thead>
+       <tbody>
+		<template v-for="(vote,index) in list.items" :key="index">
+	         <tr class="center aligned" >
+				<td><a :href="'/address/'+vote.from">[[vote.from]]</a></td>
+				<td>[[vote.votes|toLocale]]</td>
+				<td>[[getVotesPercentage(vote)]]%</td>				
+	         </tr>         
+		</template>
+       </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="3" v-show="totalPages>1">
+				{% include 'account/jspartial/pagination' %}
+            </th>
+          </tr>
+        </tfoot>
+     </table>
+</div>
+</script>
+
 <!-- FREEZE -->
  <script type="text/x-template"  id="freeze">
      <table class="ui fixed striped table" v-cloak>
@@ -586,6 +631,20 @@ var Votes = Vue.component('votes',{
 		  }
 	  }
 });
+var Voters = Vue.component('voters',{
+	  template: '#voters',
+	  mixins:[common],
+	  data: function(){
+		  return {
+			endpoint:'{{apiConfig.endpoint}}/account/voters'
+		  }  
+	  },
+	  methods:{
+		  getVotesPercentage: function(vote){
+			  return new Number((vote.votes/{{account.witness.liveVotes}})*100).toFixed(6)
+		  }
+	  }
+});
 var Withdrawal = Vue.component('widthdrawal',{
 	  template: '#widthdrawals',
 	  mixins:[common],
@@ -606,16 +665,17 @@ var Freeze = Vue.component('freeze',{
 	  }
 });
 */
-const routes = [
+var routes = [
 	  { path: '/', component: Transfers },
 	  { path: '/tokens', component: Tokens },
 	  { path: '/tp', component: TP },
 	  { path: '/votes', component: Votes },
+	  { path: '/voters', component: Voters },
 	  { path: '/aw', component: Withdrawal },
 	  /*{ path: '/freeze', component: Freeze },*/
 	]
-const router = new VueRouter({
-	  routes
+var router = new VueRouter({
+	  routes:routes
 	})
 new Vue({
 	  router:router
@@ -626,9 +686,6 @@ $('.progress').progress('set', 100);
 $.get('{{apiConfig.endpoint}}/vote/stats/{{currentRound.round}}',{address:"{{account.address}}"}).success(function(data){
 
 	  var chart = new tauCharts.Chart({
-		  settings: {
-			  	
-			},
 		    data: data.items,
 		    type: 'line',
 		    guide:{

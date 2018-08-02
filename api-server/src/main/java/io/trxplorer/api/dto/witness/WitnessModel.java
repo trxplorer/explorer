@@ -2,7 +2,7 @@ package io.trxplorer.api.dto.witness;
 
 import io.trxplorer.api.utils.TransactionHelper;
 
-public class WitnessDTO {
+public class WitnessModel {
 
 	private long voteCount;
 
@@ -16,8 +16,18 @@ public class WitnessDTO {
 	
 	private boolean isSR;
 	
+	private long liveVotes;
 	
 	
+	
+	public long getLiveVotes() {
+		return liveVotes;
+	}
+
+	public void setLiveVotes(long liveVotes) {
+		this.liveVotes = liveVotes;
+	}
+
 	public boolean isSR() {
 		return isSR;
 	}

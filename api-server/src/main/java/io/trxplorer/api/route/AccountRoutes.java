@@ -135,6 +135,20 @@ public class AccountRoutes {
 		
 		return this.accountService.listVotes(criteria);
 	}
+	
+	
+	@GET
+	@Path(ApiAppRoutePaths.V1.ACCOUNT_VOTERS)	
+	public ListResult<VoteModel, AccountCriteria> listVoters(String address,Optional<Integer> limit,Optional<Integer> page) {
+		
+		AccountCriteria criteria = new AccountCriteria();
+		
+		criteria.setAddress(address);
+		criteria.setLimit(limit.orElse(20));
+		criteria.setPage(page.orElse(1));
+		
+		return this.accountService.listVoters(criteria);
+	}
 
 	@GET
 	@Path(ApiAppRoutePaths.V1.ACCOUNT_LIVE_VOTES)	
