@@ -71,7 +71,7 @@
 		<template v-for="(tx,index) in list.items" :key="index">
 	         <tr class="center aligned" >
 	           <td><a :href="'/tx/'+tx.hash">[[tx.hash]]</a></td>
-	           <td><a :href="'/block/{{tx.block}}'">[[tx.block]]</a></td>
+	           <td><a :href="'/block/[[tx.block]]'">[[tx.block]]</a></td>
 	           <td>[[tx.timestamp]]</td>
 	           <td><a :href="'/address/'+tx.from">[[tx.from]]</a></td>
 	           <td>[[tx.type]]</td>
