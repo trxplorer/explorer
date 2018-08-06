@@ -208,7 +208,7 @@ public class VoteService {
 
 		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
 		
-		List<VoteModel> items = listQuery.where(conditions).orderBy(VOTING_ROUND_VOTE.VOTE_COUNT.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VoteModel.class);
+		List<VoteModel> items = listQuery.where(conditions).orderBy(VOTING_ROUND_VOTE.VOTE_COUNT.desc(),VOTING_ROUND_VOTE.OWNER_ADDRESS.asc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VoteModel.class);
 
 		ListModel<VoteModel, VoteListCriteria> result = new ListModel<VoteModel, VoteListCriteria>(criteria, items, totalCount);
 		
