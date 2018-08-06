@@ -1,5 +1,6 @@
 package io.trxplorer.syncnode;
 
+import java.util.List;
 import java.util.Random;
 
 import com.google.inject.Inject;
@@ -32,4 +33,7 @@ public class SyncNodeConfig{
 		return this.config.getBoolean("jobs.votes");
 	}
 	
+	public List<String> getSeedNodes() {
+		return this.config.getStringList("tron.seedNodes");
+	}
 }

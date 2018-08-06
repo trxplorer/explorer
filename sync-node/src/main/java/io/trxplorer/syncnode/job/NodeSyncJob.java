@@ -21,11 +21,23 @@ public class NodeSyncJob {
 	}
 	
 	@Scheduled("1m")
-	public void synNodes(){
+	public void addNewNodes(){
 		
 		this.nodeSyncService.syncNodes();
 		
 		
+	}
+	
+	@Scheduled("1m")
+	public void updateNodesStatus() {
+		
+		this.nodeSyncService.updateNodesStatus();
+		
+	}
+
+	@Scheduled("5m")
+	public void removeDownNodes() {
+		this.nodeSyncService.removeDownNodes();
 	}
 	
 	@Scheduled("5m")
@@ -34,6 +46,8 @@ public class NodeSyncJob {
 		this.nodeSyncService.updateNodesLocalizationData();
 		
 	}
+	
+
 	
 	
 }

@@ -39,7 +39,9 @@ public class WitnessService {
 	public WitnessModel getWitnessByAddress(String address) {
 		
 		WitnessModel result = this.dslContext.select(WITNESS.URL,WITNESS.VOTE_COUNT,WITNESS.TOTAL_MISSED,WITNESS.TOTAL_PRODUCED,DSL.sum(ACCOUNT_VOTE.VOTE_COUNT).as("liveVotes"))
-		.from(WITNESS,ACCOUNT_VOTE).where(WITNESS.ADDRESS.eq(address))
+		.from(WITNESS)
+		.leftOuterJoin(ACCOUNT_VOTE).on(ACCOUNT_VOTE.VOTE_ADDRESS.eq(WITNESS.ADDRESS))
+		.where(WITNESS.ADDRESS.eq(address))
 		.and(WITNESS.ADDRESS.eq(ACCOUNT_VOTE.VOTE_ADDRESS))
 		.fetchOneInto(WitnessModel.class);
 		

@@ -52,6 +52,7 @@ public class QuickStatsJob {
 	private Long totalAccountBalance;
 	private int totalNodesUp;
 	private Integer totalNodes24h;
+	private int totalNodesDiscovered;
 	
 	private HashMap<String,Object> topNodeCountry;
 	private Integer totalTokens;
@@ -213,6 +214,9 @@ public class QuickStatsJob {
 		this.topNodeCountry.put("country",topCountry.get(0));
 		this.topNodeCountry.put("nodes", topCountry.get(1));
 		
+		//total nodes discovered
+		this.totalNodesDiscovered = this.dslContext.select(DSL.count()).from(NODE).fetchOneInto(Integer.class);
+		
 		//Total tokens
 		this.totalTokens = this.dslContext.select(DSL.count())
 		.from(CONTRACT_ASSET_ISSUE)
@@ -281,6 +285,10 @@ public class QuickStatsJob {
 		
 		this.currentVotingRound = this.dslContext.select(VOTING_ROUND.fields()).from(VOTING_ROUND).orderBy(VOTING_ROUND.ROUND.desc()).limit(1).fetchOneInto(VotingRound.class);
 		
+	}
+	
+	public int getTotalNodesDiscovered() {
+		return totalNodesDiscovered;
 	}
 	
 	public VotingRound getCurrentVotingRound() {
