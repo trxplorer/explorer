@@ -281,8 +281,6 @@ public class QuickStatsJob {
 		
 		
 		//Vote round
-		Integer currentRound = this.dslContext.select(DSL.max(VOTING_ROUND.ROUND)).from(VOTING_ROUND).where(VOTING_ROUND.SYNC_END.isNotNull()).fetchOneInto(Integer.class);
-		
 		this.currentVotingRound = this.dslContext.select(VOTING_ROUND.fields()).from(VOTING_ROUND).orderBy(VOTING_ROUND.ROUND.desc()).limit(1).fetchOneInto(VotingRound.class);
 		
 	}
