@@ -69,6 +69,7 @@ public class TransactionService {
 		return this.dslContext.select(TRANSACTION.TIMESTAMP,CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.as("from"),CONTRACT_VOTE_WITNESS.VOTE_ADDRESS.as("to"),CONTRACT_VOTE_WITNESS.VOTE_COUNT.as("votes"))
 		.from(CONTRACT_VOTE_WITNESS)
 		.join(TRANSACTION).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID)).and(DSL.year(TRANSACTION.TIMESTAMP).gt(TRON_START_YEAR-1)).and(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)))
+		.where(TRANSACTION.TYPE.eq(4))
 		.orderBy(TRANSACTION.TIMESTAMP.desc())
 		.limit(limit)
 		.fetchInto(VoteModel.class);
