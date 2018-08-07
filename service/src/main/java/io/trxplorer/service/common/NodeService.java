@@ -42,7 +42,7 @@ public class NodeService {
 		List<Map<String, Object>> result = (List<Map<String, Object>>) this.cache.getIfPresent("countries");
 		
 		if (result==null) {
-			result = this.dslContext.selectDistinct(NODE.COUNTRY,NODE.COUNTRY_CODE.as("code")).from(NODE).where(NODE.COUNTRY.isNotNull().and(NODE.COUNTRY_CODE.isNotNull())).fetchMaps();
+			result = this.dslContext.selectDistinct(NODE.COUNTRY,NODE.COUNTRY_CODE.as("code")).from(NODE).where(NODE.COUNTRY.isNotNull().and(NODE.COUNTRY_CODE.isNotNull())).orderBy(NODE.COUNTRY.asc()).fetchMaps();
 			this.cache.put("countries", result);
 		}
 		

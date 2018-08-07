@@ -38,7 +38,7 @@ public class NodeSyncService {
 	private TronFullNodeCli tronFullNodeCli;
 	private SyncNodeConfig config;
 	
-	private static final int NODE_PING_TIMEOUT = 3000;
+	private static final int NODE_PING_TIMEOUT = 5000;
 	
 	@Inject
 	public NodeSyncService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli,SyncNodeConfig config) {
@@ -118,18 +118,18 @@ public class NodeSyncService {
 	}
 	
 	public void removeDownNodes() {
-		Timestamp oneDayAgo = Timestamp.valueOf(LocalDateTime.now().minusDays(1));
+		Timestamp delay = Timestamp.valueOf(LocalDateTime.now().minusHours(1));
 
 		this.dslContext.deleteFrom(NODE)
 		.where(NODE.UP.eq((byte)0)
-			.and(NODE.LAST_UP.lt(oneDayAgo)))
+			.and(NODE.LAST_UP.lt(delay)))
 		.execute();
 		
 
 		this.dslContext.deleteFrom(NODE)
 		.where(NODE.UP.eq((byte)0)
 			.and(NODE.LAST_UP.isNull())
-			.and(NODE.DATE_CREATED.lt(oneDayAgo))
+			.and(NODE.DATE_CREATED.lt(delay))
 		)
 		
 		.execute();		

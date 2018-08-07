@@ -35,7 +35,7 @@ public class NodeSyncJob {
 		
 	}
 
-	@Scheduled("5m")
+	@Scheduled("1m")
 	public void removeDownNodes() {
 		this.nodeSyncService.removeDownNodes();
 	}
