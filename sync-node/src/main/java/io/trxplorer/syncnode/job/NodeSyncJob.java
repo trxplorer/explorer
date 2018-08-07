@@ -21,7 +21,7 @@ public class NodeSyncJob {
 	}
 	
 	@Scheduled("1m")
-	public void addNewNodes(){
+	public void addNewNodes() throws InterruptedException{
 		
 		this.nodeSyncService.syncNodes();
 		

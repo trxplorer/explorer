@@ -19,6 +19,8 @@ import io.trxplorer.syncnode.job.ReSyncJob;
 import io.trxplorer.syncnode.job.SyncNodeJob;
 import io.trxplorer.syncnode.job.VotingRoundJob;
 import io.trxplorer.syncnode.job.WitnessSyncJob;
+import io.trxplorer.troncli.TronFullNodeCli;
+import io.trxplorer.troncli.TronSolidityNodeCli;
 
 public class SyncNodeApp extends Jooby {
 	
@@ -52,6 +54,17 @@ public class SyncNodeApp extends Jooby {
 			dslContext.configuration().set(settings);
 
 		});
+		
+		onStop((registry)->{
+
+			TronFullNodeCli fullCli = registry.require(TronFullNodeCli.class);
+			fullCli.shutdown();
+			
+			TronSolidityNodeCli solidityCli = registry.require(TronSolidityNodeCli.class);
+			solidityCli.shutdown();
+			
+		});
+		
 
 		get("/", (req, res) -> {
 

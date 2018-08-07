@@ -47,7 +47,7 @@ public class NodeSyncService {
 		this.config = config;
 	}
 	
-	public void syncNodes() {
+	public void syncNodes() throws InterruptedException {
 		
 		HashMap<String, Node> nodesMap = new HashMap<>();
 		
@@ -58,6 +58,7 @@ public class NodeSyncService {
 				nodesMap.put(node.getAddress().getHost().toStringUtf8()+":"+node.getAddress().getPort(), node);
 			}
 			
+			cli.shutdown();
 		}
 		
 		List<Node> nodes = new ArrayList<>(nodesMap.values());

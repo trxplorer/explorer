@@ -2,6 +2,7 @@ package io.trxplorer.troncli;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,6 +162,11 @@ public class TronFullNodeCli {
 		return result;
 	}
 	
+	public void shutdown() throws InterruptedException {
+		this.channelFull.shutdown();
+		this.channelFull.awaitTermination(10, TimeUnit.SECONDS);
+
+	}
 
 
 
