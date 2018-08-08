@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+<servers>
+    <server>
+      <id>nexus</id>
+      <username>admin</username>
+      <password>R0ugaille5</password>
+    </server>
+    <server>
+      <!--for docker registry-->
+      <id>91.121.81.166:7082</id>
+      <username>admin</username>
+      <password>R0ugaille5</password>
+    </server>
+  </servers>
+       
+            
+<profiles>
+    <profile>
+      <id>jenkins</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+
+        <repository>
+          <id>nexus</id>
+          <name>Netmedia Repositories</name>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+            <checksumPolicy>warn</checksumPolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+            <checksumPolicy>fail</checksumPolicy>
+          </snapshots>
+          <url>http://91.121.81.166:7081/repository/maven-public</url>
+          <layout>default</layout>
+        </repository>
+      </repositories>
+<pluginRepositories>
+        <pluginRepository>
+            <id>my-repo</id>
+            <name>my-repo</name>
+            <url>http://central.maven.org/maven2/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    </profile>
+  </profiles>
+            
+            
+            <activeProfiles>
+    <activeProfile>jenkins</activeProfile>
+  </activeProfiles>
+            
+<pluginGroups>
+  <pluginGroup>com.itemis.maven.plugins</pluginGroup>
+</pluginGroups>
+            
+</settings>
