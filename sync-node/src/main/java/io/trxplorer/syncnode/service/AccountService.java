@@ -3,10 +3,14 @@ package io.trxplorer.syncnode.service;
 import static io.trxplorer.model.Tables.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jooq.DSLContext;
+import org.jooq.Record1;
+import org.jooq.SelectConditionStep;
+import org.jooq.impl.DSL;
 import org.jooq.types.UByte;
 import org.jooq.types.ULong;
 import org.slf4j.Logger;
@@ -18,6 +22,7 @@ import org.tron.protos.Protocol.Vote;
 
 import com.google.inject.Inject;
 
+import io.trxplorer.model.tables.AccountVote;
 import io.trxplorer.model.tables.records.AccountAssetRecord;
 import io.trxplorer.model.tables.records.AccountRecord;
 import io.trxplorer.model.tables.records.AccountVoteRecord;
@@ -121,13 +126,30 @@ public class AccountService {
 				
 				AccountVoteRecord voteRecord = new AccountVoteRecord();
 				voteRecord.setVoteAddress(Wallet.encode58Check(accountVote.getVoteAddress().toByteArray()));
-				voteRecord.setVoteCount(accountVote.getVoteCount());
+				voteRecord.setVoteCount(ULong.valueOf(accountVote.getVoteCount()));
 				voteRecord.setAccountId(record.getId());
-				
+				//voteRecord.setTimestamp();
 				accountVoteRecords.add(voteRecord);
 			}
 			
+			//update vote timestamp
+			AccountVote AccountVote = ACCOUNT_VOTE.as("av");
+			
 			this.dslContext.batchInsert(accountVoteRecords).execute();
+			
+			SelectConditionStep<Record1<Timestamp>> voteTimestamp = DSL.select(DSL.max(BLOCK.TIMESTAMP))
+			.from(CONTRACT_VOTE_WITNESS)
+			.join(TRANSACTION).on(TRANSACTION.ID.eq(CONTRACT_VOTE_WITNESS.TRANSACTION_ID))
+			.join(BLOCK).on(TRANSACTION.BLOCK_ID.eq(BLOCK.ID))
+			.where(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.eq(address))
+			.and(CONTRACT_VOTE_WITNESS.VOTE_COUNT.eq(AccountVote.VOTE_COUNT))
+			.and(CONTRACT_VOTE_WITNESS.VOTE_ADDRESS.eq(AccountVote.VOTE_ADDRESS));
+			
+			this.dslContext.update(AccountVote)
+			.set(AccountVote.TIMESTAMP,voteTimestamp)
+			.where(AccountVote.ACCOUNT_ID.eq(record.getId()))
+			.execute();
+			
 		}
 		
 		// Update frozen balance (keep history)

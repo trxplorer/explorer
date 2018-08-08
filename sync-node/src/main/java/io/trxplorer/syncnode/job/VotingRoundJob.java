@@ -225,7 +225,7 @@ public class VotingRoundJob {
 		
 	}
 	
-	@Scheduled("1m")
+	//@Scheduled("1m")
 	public void buildVoteRounds() {
 		
 		if (!this.config.isVoteJobEnabled()) {
@@ -258,6 +258,162 @@ public class VotingRoundJob {
 
 	}
 	
+	@Scheduled("30s")
+	public void saveRoundVoteSnapshot() {
+		
+		io.trxplorer.model.tables.pojos.VotingRound round = this.dslContext.select(VOTING_ROUND.fields()).from(VOTING_ROUND).orderBy(VOTING_ROUND.ROUND.desc()).limit(1).fetchOneInto(io.trxplorer.model.tables.pojos.VotingRound.class);
+		
+		Timestamp lastBlockTs = this.dslContext.select(DSL.max(BLOCK.TIMESTAMP)).from(BLOCK).fetchOneInto(Timestamp.class);
+		
+		if (round.getSyncEnd()!=null || round.getEndDate().after(lastBlockTs)) {
+			return;
+		}
+		
+		this.dslContext.update(VOTING_ROUND)
+		.set(VOTING_ROUND.SYNC_START,Timestamp.valueOf(LocalDateTime.now()))
+		.where(VOTING_ROUND.ID.eq(round.getId()))
+		.execute();
+
+		
+		List<String> addresses = this.dslContext.select(WITNESS.ADDRESS).from(WITNESS,ACCOUNT)
+				.where(WITNESS.ADDRESS.eq(ACCOUNT.ADDRESS).and(ACCOUNT.CREATE_TIME.lt(round.getEndDate()))).fetchInto(String.class);
+		
+		this.dslContext.deleteFrom(VOTING_ROUND_VOTE)
+		.where(VOTING_ROUND_VOTE.VOTING_ROUND_ID.eq(round.getId()))
+		.execute();
+		
+		this.dslContext.deleteFrom(VOTING_ROUND_VOTE_LOST)
+		.where(VOTING_ROUND_VOTE_LOST.VOTING_ROUND_ID.eq(round.getId()))
+		.execute();
+		
+		this.dslContext.deleteFrom(VOTING_ROUND_STATS)
+		.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
+		.execute();
+		
+		this.dslContext.insertInto(VOTING_ROUND_VOTE)
+		.columns(VOTING_ROUND_VOTE.VOTING_ROUND_ID,
+				VOTING_ROUND_VOTE.OWNER_ADDRESS,
+				VOTING_ROUND_VOTE.VOTE_ADDRESS,
+				VOTING_ROUND_VOTE.VOTE_COUNT,
+				VOTING_ROUND_VOTE.TIMESTAMP)
+		.select(
+				DSL.select(
+				DSL.value(round.getId()),
+				ACCOUNT.ADDRESS,
+				ACCOUNT_VOTE.VOTE_ADDRESS,
+				ACCOUNT_VOTE.VOTE_COUNT.cast(Long.class),
+				ACCOUNT_VOTE.TIMESTAMP
+				).from(ACCOUNT,ACCOUNT_VOTE)
+				.where(ACCOUNT.ID.eq(ACCOUNT_VOTE.ACCOUNT_ID))
+		)
+		.execute()
+		;
+		
+		for(String witnessAddress:addresses) {
+
+			this.dslContext.insertInto(VOTING_ROUND_STATS)
+			.set(VOTING_ROUND_STATS.ADDRESS,witnessAddress)
+			.set(VOTING_ROUND_STATS.VOTING_ROUND_ID,round.getId())
+			.set(VOTING_ROUND_STATS.VOTE_COUNT,DSL.select(DSL.sum(VOTING_ROUND_VOTE.VOTE_COUNT).cast(ULong.class))
+					.from(VOTING_ROUND_VOTE)
+					.where(VOTING_ROUND_VOTE.VOTING_ROUND_ID.eq(round.getId()))
+					.and(VOTING_ROUND_VOTE.VOTE_ADDRESS.eq(witnessAddress)))
+			.set(VOTING_ROUND_STATS.VOTE_LOST_COUNT,DSL.select(DSL.sum(VOTING_ROUND_VOTE_LOST.VOTE_COUNT).cast(ULong.class))
+					.from(VOTING_ROUND_VOTE_LOST)
+					.where(VOTING_ROUND_VOTE_LOST.VOTING_ROUND_ID.eq(round.getId()))
+					.and(VOTING_ROUND_VOTE_LOST.VOTE_ADDRESS.eq(witnessAddress)))			
+			.execute();
+			
+			
+		}
+		
+		//update round vote count
+		SelectConditionStep<Record1<ULong>> totalRoundVoteCount = DSL.select(DSL.sum(VOTING_ROUND_STATS.VOTE_COUNT).cast(ULong.class)).from(VOTING_ROUND_STATS).where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()));
+		this.dslContext.update(VOTING_ROUND)
+		.set(VOTING_ROUND.VOTE_COUNT,totalRoundVoteCount)
+		.where(VOTING_ROUND.ID.eq(round.getId()))
+		.execute();
+		
+	
+		
+		
+		//update genesis witnesses for current round
+		//Done after previous update on total round votes on purpose: we don't want to count those "fake" genesis votes
+		for(String address:genesisVotes.keySet()) {
+			//create witness in round if no votes associated
+			 ULong addressVoteCount = this.dslContext.select(VOTING_ROUND_STATS.VOTE_COUNT)
+			.from(VOTING_ROUND_STATS)
+			.where(VOTING_ROUND_STATS.ADDRESS.eq(address))
+			.and(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
+			.fetchOneInto(ULong.class);
+			
+			if (addressVoteCount==null) {
+				this.dslContext.update(VOTING_ROUND_STATS)
+				.set(VOTING_ROUND_STATS.VOTE_COUNT,ULong.valueOf(0))
+				.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
+				.and(VOTING_ROUND_STATS.ADDRESS.eq(address))
+				.execute();
+			}
+			
+			
+			this.dslContext.update(VOTING_ROUND_STATS)
+			.set(VOTING_ROUND_STATS.VOTE_COUNT,VOTING_ROUND_STATS.VOTE_COUNT.plus(genesisVotes.get(address)))
+			.where(VOTING_ROUND_STATS.ADDRESS.eq(address))
+			.and(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
+			.execute();			
+		}
+		
+		//update witnesses positions in current round
+		VotingRoundStats vrs = VOTING_ROUND_STATS.as("vrs");
+		Table<Record2<Object, UInteger>> tmp = DSL.select(DSL.field("@rownum := @rownum+1").as("position"),VOTING_ROUND_STATS.ID)
+				.from(VOTING_ROUND_STATS).crossJoin("(select @rownum:=0) tmp")
+				.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
+				.orderBy(VOTING_ROUND_STATS.VOTE_COUNT.desc()).asTable("tmp");
+		
+		this.dslContext.update(vrs)
+		.set(vrs.POSITION,DSL.select(DSL.field("position",UInteger.class)).from(tmp).where(vrs.ID.eq(tmp.field("id",UInteger.class))))
+		.where(vrs.VOTING_ROUND_ID.eq(round.getId()))
+		.execute();			
+		
+		
+		//update stats from previous round
+		int previousRound = round.getRound().intValue()-1;
+		if (previousRound>0) {
+			
+			VotingRoundStats vrs1 = VOTING_ROUND_STATS.as("vrs1");
+			VotingRoundStats vrs2 = VOTING_ROUND_STATS.as("vrs2");
+			Table<Record3<Integer, Long, String>> vrsChangeTable = DSL.select(vrs1.POSITION.cast(Integer.class).minus(vrs2.POSITION.cast(Integer.class)).as("position"),
+					vrs2.VOTE_COUNT.cast(Long.class).minus(vrs1.VOTE_COUNT.cast(Long.class)).as("votes"),
+					vrs1.ADDRESS)
+			.from(vrs1,vrs2)
+			.where(vrs1.VOTING_ROUND_ID.eq(DSL.select(VOTING_ROUND.ID)
+					.from(VOTING_ROUND)
+					.where(VOTING_ROUND.ROUND.eq(UInteger.valueOf(previousRound))))
+					.and(vrs1.ADDRESS.eq(vrs2.ADDRESS))
+					.and(vrs2.VOTING_ROUND_ID.eq(round.getId()))
+					).asTable("tmp");
+			
+			this.dslContext.update(VOTING_ROUND_STATS)
+			.set(VOTING_ROUND_STATS.POSITION_CHANGE,DSL.select(vrsChangeTable.field("position",Integer.class)).from(vrsChangeTable).where(vrsChangeTable.field("address", String.class).eq(VOTING_ROUND_STATS.ADDRESS)))
+			.set(VOTING_ROUND_STATS.VOTES_CHANGE,DSL.select(vrsChangeTable.field("votes",Long.class)).from(vrsChangeTable).where(vrsChangeTable.field("address", String.class).eq(VOTING_ROUND_STATS.ADDRESS)))
+			.where(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(round.getId()))
+			.execute();
+			;	
+			
+			
+
+		}
+		
+		//mark round sync as completed			
+		this.dslContext.update(VOTING_ROUND)
+		.set(VOTING_ROUND.SYNC_END,Timestamp.valueOf(LocalDateTime.now()))
+		.where(VOTING_ROUND.ID.eq(round.getId()))
+		.execute();
+			
+		
+
+		
+	}
 	
 	private void computeRoundVotes(VotingRoundRecord round) {
 		
