@@ -29,6 +29,19 @@
 	  <tag>HEAD</tag>
   </scm>
 
+	<distributionManagement>
+		<repository>
+			<id>nexus</id>
+			<name>Releases</name>
+			<url>${releaseURL}</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus</id>
+			<name>Snapshot</name>
+			<url>${snapshotURL}</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<modules>
 		<module>tron-cli</module>
 		<module>model</module>
