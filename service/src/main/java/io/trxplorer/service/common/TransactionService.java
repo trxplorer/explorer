@@ -9,7 +9,10 @@ import java.util.List;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Record1;
+import org.jooq.SelectOffsetStep;
 import org.jooq.SelectOnConditionStep;
+import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
 import org.tron.protos.Protocol.Transaction.Contract.ContractType;
@@ -66,11 +69,18 @@ public class TransactionService {
 	
 	public List<VoteModel> getLastestVotes(int limit) {
 
-		return this.dslContext.select(TRANSACTION.TIMESTAMP,CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.as("from"),CONTRACT_VOTE_WITNESS.VOTE_ADDRESS.as("to"),CONTRACT_VOTE_WITNESS.VOTE_COUNT.as("votes"))
-		.from(CONTRACT_VOTE_WITNESS)
-		.join(TRANSACTION).on(CONTRACT_VOTE_WITNESS.TRANSACTION_ID.eq(TRANSACTION.ID)).and(DSL.year(TRANSACTION.TIMESTAMP).gt(TRON_START_YEAR-1)).and(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)))
+		Table<Record1<ULong>> txTable = DSL.select(TRANSACTION.ID)
+		.from(TRANSACTION)
+		.join(BLOCK).on(TRANSACTION.BLOCK_ID.eq(BLOCK.ID)).and(DSL.year(TRANSACTION.TIMESTAMP).gt(TRON_START_YEAR-1)).and(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1)))
 		.where(TRANSACTION.TYPE.eq(4))
 		.orderBy(TRANSACTION.TIMESTAMP.desc())
+		.limit(limit)
+		.asTable("tmp")
+		;
+		
+		return this.dslContext.select(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.as("from"),CONTRACT_VOTE_WITNESS.VOTE_ADDRESS.as("to"),CONTRACT_VOTE_WITNESS.VOTE_COUNT.as("votes"))
+		.from(CONTRACT_VOTE_WITNESS)
+		.join(txTable).on(txTable.field(0, ULong.class).eq(CONTRACT_VOTE_WITNESS.TRANSACTION_ID))
 		.limit(limit)
 		.fetchInto(VoteModel.class);
 		
