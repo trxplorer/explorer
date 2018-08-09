@@ -23,7 +23,7 @@ public class AccountSyncJob {
 		this.accountSyncService = accountSyncService;
 	}
 	
-	@Scheduled("100ms")
+	@Scheduled("10ms")
 	public void syncAccount() throws ServiceException {
 		
 		this.accountSyncService.syncAccounts();
