@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jooq.types.ULong;
 
 import com.mitchellbosecke.pebble.extension.Filter;
 
@@ -32,6 +33,8 @@ public class NumberLocale implements Filter{
 			return nf.format((Long)input);
 		}else if (input instanceof Integer ) {
 			return nf.format((Integer)input);
+		}else if (input instanceof ULong ) {
+			return nf.format(((ULong)input).longValue());
 		}else if (input instanceof BigDecimal ) {
 			return nf.format((BigDecimal)input);
 		}else {
