@@ -9,6 +9,7 @@ import org.tron.core.config.Parameter.ChainConstant;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import io.trxplorer.syncnode.SyncNodeConfig;
 import io.trxplorer.syncnode.service.BlockService;
 import io.trxplorer.syncnode.service.BlockSyncService;
 import io.trxplorer.syncnode.service.ServiceException;
@@ -22,15 +23,17 @@ public class BlockSyncJob {
 	private TronFullNodeCli fullNodeClient;
 	private TronSolidityNodeCli solidityNodeClient;
 	private BlockSyncService blockSyncService;
+	private SyncNodeConfig config;
 	private static final Logger logger = LoggerFactory.getLogger(BlockSyncJob.class);
 	
 
 	
 	@Inject
-	public BlockSyncJob(BlockSyncService syncBlockService,BlockService blockService,TronFullNodeCli tronFullNodeCli,TronSolidityNodeCli tronSolidityCli) {
+	public BlockSyncJob(BlockSyncService syncBlockService,BlockService blockService,TronFullNodeCli tronFullNodeCli,TronSolidityNodeCli tronSolidityCli,SyncNodeConfig config) {
 		this.fullNodeClient = tronFullNodeCli;
 		this.blockSyncService = syncBlockService;
 		this.solidityNodeClient = tronSolidityCli;
+		this.config = config;
 	}
 	
 	//@Scheduled(ChainConstant.BLOCK_PRODUCED_INTERVAL+"ms")
@@ -54,6 +57,10 @@ public class BlockSyncJob {
 	@Scheduled(ChainConstant.BLOCK_PRODUCED_INTERVAL+"ms")
 	public void syncFullNodeBlocks() throws ServiceException {
 		
+		if (!this.config.isBlockJobEnabled()) {
+			return;
+		}
+		
 		Long lastBlockNum = fullNodeClient.getLastBlock().getBlockHeader().getRawData().getNumber();
 		
 		logger.info("current full node block:"+lastBlockNum);
@@ -70,6 +77,10 @@ public class BlockSyncJob {
 	
 	@Scheduled(ChainConstant.BLOCK_PRODUCED_INTERVAL+10+"ms")
 	public void syncSolidityNodeBlocks() throws ServiceException {
+		
+		if (!this.config.isBlockJobEnabled()) {
+			return;
+		}
 		
 		Long lastBlockNum = solidityNodeClient.getLastBlock().getBlockHeader().getRawData().getNumber();
 		

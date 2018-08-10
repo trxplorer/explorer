@@ -33,6 +33,30 @@ public class SyncNodeConfig{
 		return this.config.getBoolean("jobs.votes");
 	}
 	
+	public boolean isNodesJobEnabled() {
+		return this.config.getBoolean("jobs.nodes");
+	}
+	
+	public boolean isResyncJobEnabled() {
+		return this.config.getBoolean("jobs.resync");
+	}
+	
+	public boolean isWitnessJobEnabled() {
+		return this.config.getBoolean("jobs.witness");
+	}
+	
+	public boolean isAccountJobEnabled() {
+		return this.config.getBoolean("jobs.account");
+	}
+	
+	public boolean isMartketJobEnabled() {
+		return this.config.getBoolean("jobs.market");
+	}
+	
+	public boolean isBlockJobEnabled() {
+		return this.config.getBoolean("jobs.block");
+	}
+	
 	public List<String> getSeedNodes() {
 		return this.config.getStringList("tron.seedNodes");
 	}

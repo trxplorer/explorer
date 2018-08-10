@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import io.trxplorer.syncnode.SyncNodeConfig;
 import io.trxplorer.syncnode.service.BlockService;
 import io.trxplorer.syncnode.service.ServiceException;
 import io.trxplorer.troncli.TronFullNodeCli;
@@ -26,17 +27,23 @@ public class ReSyncJob {
 	private DSLContext dslContext;
 	private BlockService blockService;
 	private TronFullNodeCli fullNodeCli;
+	private SyncNodeConfig config;
 	private static final Logger logger = LoggerFactory.getLogger(ReSyncJob.class);
 
 	@Inject
-	public ReSyncJob(DSLContext dslContext,BlockService blockService,TronFullNodeCli fullNodeCli) {
+	public ReSyncJob(DSLContext dslContext,BlockService blockService,TronFullNodeCli fullNodeCli,SyncNodeConfig config) {
 		this.dslContext = dslContext;
 		this.blockService = blockService;
 		this.fullNodeCli = fullNodeCli;
+		this.config = config;
 	}
 	
 	@Scheduled("1m")
 	public void reSyncBlocks() throws ServiceException {
+		
+		if (!this.config.isResyncJobEnabled()) {
+			return;
+		}
 		
 		List<ULong> blocks = this.dslContext.select(BLOCK_RESYNC.NUM)
 		.from(BLOCK_RESYNC)

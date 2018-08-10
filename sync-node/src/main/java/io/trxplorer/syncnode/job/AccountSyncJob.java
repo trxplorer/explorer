@@ -6,6 +6,7 @@ import org.quartz.DisallowConcurrentExecution;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import io.trxplorer.syncnode.SyncNodeConfig;
 import io.trxplorer.syncnode.service.AccountService;
 import io.trxplorer.syncnode.service.AccountSyncService;
 import io.trxplorer.syncnode.service.ServiceException;
@@ -15,15 +16,21 @@ public class AccountSyncJob {
 
 	private AccountService accountService;
 	private AccountSyncService accountSyncService;
+	private SyncNodeConfig config;
 
 	@Inject
-	public AccountSyncJob(AccountSyncService accountSyncService,AccountService accountService) {
+	public AccountSyncJob(AccountSyncService accountSyncService,AccountService accountService,SyncNodeConfig config) {
 		this.accountService = accountService;
 		this.accountSyncService = accountSyncService;
+		this.config = config;
 	}
 	
 	@Scheduled("10ms")
 	public void syncAccount() throws ServiceException {
+		
+		if (!this.config.isAccountJobEnabled()) {
+			return;
+		}
 		
 		this.accountSyncService.syncAccounts();
 		
@@ -31,6 +38,10 @@ public class AccountSyncJob {
 	
 	@Scheduled("10ms")
 	public void syncAccountVote() throws ServiceException {
+
+		if (!this.config.isAccountJobEnabled()) {
+			return;
+		}
 		
 		this.accountSyncService.syncAccountVote();
 		
