@@ -25,6 +25,7 @@ import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import io.trxplorer.service.dto.common.ListModel;
 import io.trxplorer.service.dto.vote.VoteListCriteria;
@@ -36,15 +37,16 @@ import io.trxplorer.service.dto.vote.VotingRoundListCriteria;
 import io.trxplorer.service.dto.vote.VotingRoundStatsListCriteria;
 import io.trxplorer.service.dto.vote.VotingRoundStatsModel;
 
+@Singleton
 public class VoteService {
 
 	private DSLContext dslContext;
 
+	private ListModel<VoteLiveModel, VoteLiveListCriteria> liveVoteStatsCache;
 	
 	@Inject
 	public VoteService(DSLContext dslContext) {
 		this.dslContext = dslContext;
-		
 	}
 	
 	
@@ -232,9 +234,15 @@ public class VoteService {
 
 		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
 		
-		List<VoteLiveModel> items = listQuery.where(conditions).orderBy(VOTE_LIVE.VOTE_COUNT.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VoteLiveModel.class);
+		List<VoteLiveModel> items = listQuery.where(conditions).orderBy(VOTE_LIVE.VOTE_COUNT.desc()).fetchInto(VoteLiveModel.class);
 
 		ListModel<VoteLiveModel, VoteLiveListCriteria> result = new ListModel<VoteLiveModel, VoteLiveListCriteria>(criteria, items, totalCount);
+		
+		if (result.getItems().size()==0) {
+			return this.liveVoteStatsCache;
+		}else {
+			this.liveVoteStatsCache= result;
+		}
 		
 		return result;
 	}

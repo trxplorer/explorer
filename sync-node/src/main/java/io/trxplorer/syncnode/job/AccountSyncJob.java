@@ -30,6 +30,13 @@ public class AccountSyncJob {
 		
 	}
 	
+	@Scheduled("100ms")
+	public void syncAccountVote() throws ServiceException {
+		
+		this.accountSyncService.syncAccountVote();
+		
+	}
+	
 	public void syncGenesisAccounts() {
 		//TODO:
 		//Genesis accounts might be used without any transactions appearing on blockchain : for example block rewarding

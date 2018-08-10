@@ -42,7 +42,18 @@ public class AccountSyncService {
 	
 	private void prepareSync() {
 
-		Table<Record1<ULong>> account2Update = DSL.select(SYNC_ACCOUNT.ID).from(SYNC_ACCOUNT).where(SYNC_ACCOUNT.DATE_LOCKED.isNull()).orderBy(SYNC_ACCOUNT.DATE_CREATED.asc()).limit(20).asTable("tmp");
+		Table<Record1<ULong>> account2Update = DSL.select(SYNC_ACCOUNT.ID).from(SYNC_ACCOUNT).where(SYNC_ACCOUNT.DATE_LOCKED.isNull()).and(SYNC_ACCOUNT.ORIGIN.notIn("contract_vote_witness","contract_unfreeze_balance")).orderBy(SYNC_ACCOUNT.DATE_CREATED.asc()).limit(20).asTable("tmp");
+		this.dslContext.update(SYNC_ACCOUNT.join(account2Update).on(account2Update.field(0, ULong.class).eq(SYNC_ACCOUNT.ID)))
+		.set(SYNC_ACCOUNT.DATE_LOCKED,Timestamp.valueOf(LocalDateTime.now()))
+		.set(SYNC_ACCOUNT.NODE_ID,UInteger.valueOf(this.config.getNodeId()))
+		.execute();
+		
+		
+	}
+
+	private void prepareSyncVote() {
+
+		Table<Record1<ULong>> account2Update = DSL.select(SYNC_ACCOUNT.ID).from(SYNC_ACCOUNT).where(SYNC_ACCOUNT.DATE_LOCKED.isNull()).and(SYNC_ACCOUNT.ORIGIN.in("contract_vote_witness","contract_unfreeze_balance")).orderBy(SYNC_ACCOUNT.DATE_CREATED.asc()).limit(20).asTable("tmp");
 		this.dslContext.update(SYNC_ACCOUNT.join(account2Update).on(account2Update.field(0, ULong.class).eq(SYNC_ACCOUNT.ID)))
 		.set(SYNC_ACCOUNT.DATE_LOCKED,Timestamp.valueOf(LocalDateTime.now()))
 		.set(SYNC_ACCOUNT.NODE_ID,UInteger.valueOf(this.config.getNodeId()))
@@ -55,7 +66,7 @@ public class AccountSyncService {
 		
 		this.prepareSync();
 		
-		List<String> addresses = this.dslContext.select(SYNC_ACCOUNT.ADDRESS).from(SYNC_ACCOUNT).where(SYNC_ACCOUNT.NODE_ID.eq(UInteger.valueOf(this.config.getNodeId()))).orderBy(SYNC_ACCOUNT.DATE_CREATED.asc()).limit(20)
+		List<String> addresses = this.dslContext.select(SYNC_ACCOUNT.ADDRESS).from(SYNC_ACCOUNT).where(SYNC_ACCOUNT.NODE_ID.eq(UInteger.valueOf(this.config.getNodeId()))).and(SYNC_ACCOUNT.ORIGIN.notIn("contract_vote_witness","contract_unfreeze_balance")).orderBy(SYNC_ACCOUNT.DATE_CREATED.asc()).limit(20)
 		.fetchInto(String.class);
 
 		for(String address:addresses) {
@@ -72,12 +83,35 @@ public class AccountSyncService {
 
 	}
 	
+	
+	public void syncAccountVote() throws ServiceException{
+
+		this.prepareSyncVote();
+		
+		List<String> addresses = this.dslContext.select(SYNC_ACCOUNT.ADDRESS).from(SYNC_ACCOUNT).where(SYNC_ACCOUNT.NODE_ID.eq(UInteger.valueOf(this.config.getNodeId()))).and(SYNC_ACCOUNT.ORIGIN.in("contract_vote_witness","contract_unfreeze_balance")).orderBy(SYNC_ACCOUNT.DATE_CREATED.asc()).limit(20)
+		.fetchInto(String.class);
+
+		for(String address:addresses) {
+
+			logger.debug("=> Syncing account:"+address);
+
+			
+			this.accountService.createOrUpdateAccount(address);
+			
+			
+			this.endSync(address);
+			
+		}
+		
+	}
+	
+	
 	public void startSync(String address) {
 		this.dslContext.update(SYNC_ACCOUNT).set(SYNC_ACCOUNT.DATE_LOCKED, Timestamp.valueOf(LocalDateTime.now())).where(SYNC_ACCOUNT.ADDRESS.eq(address)).execute();
 	}
 	
 	public void endSync(String address) {
-		this.dslContext.delete(SYNC_ACCOUNT).where(SYNC_ACCOUNT.ADDRESS.eq(address).and(SYNC_ACCOUNT.DATE_LOCKED.isNotNull())).execute();
+		this.dslContext.delete(SYNC_ACCOUNT).where(SYNC_ACCOUNT.ADDRESS.eq(address)).execute();
 	}
 	
 	

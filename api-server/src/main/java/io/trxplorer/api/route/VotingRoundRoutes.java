@@ -26,6 +26,8 @@ public class VotingRoundRoutes {
 	private VoteService voteService;
 	
 	private Cache<Integer, ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria>> roundStatsCache;
+
+	private Cache<String, ListModel<VoteLiveModel, VoteLiveListCriteria>> voteLiveStatsCache;
 	
 	@Inject
 	public VotingRoundRoutes(VoteService voteService) {
@@ -41,8 +43,10 @@ public class VotingRoundRoutes {
 		
 		VoteLiveListCriteria criteria = new VoteLiveListCriteria();
 		
-		criteria.setLimit(50);
+		criteria.setLimit(-1);
 		criteria.setPage(page.orElse(1));
+		
+
 		
 		return this.voteService.listLiveVotesStats(criteria);		
 	}	
