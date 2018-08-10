@@ -137,18 +137,18 @@ public class AccountService {
 			
 			this.dslContext.batchInsert(accountVoteRecords).execute();
 			
-			SelectConditionStep<Record1<Timestamp>> voteTimestamp = DSL.select(DSL.max(BLOCK.TIMESTAMP))
-			.from(CONTRACT_VOTE_WITNESS)
-			.join(TRANSACTION).on(TRANSACTION.ID.eq(CONTRACT_VOTE_WITNESS.TRANSACTION_ID))
-			.join(BLOCK).on(TRANSACTION.BLOCK_ID.eq(BLOCK.ID))
-			.where(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.eq(address))
-			.and(CONTRACT_VOTE_WITNESS.VOTE_COUNT.eq(AccountVote.VOTE_COUNT))
-			.and(CONTRACT_VOTE_WITNESS.VOTE_ADDRESS.eq(AccountVote.VOTE_ADDRESS));
-			
-			this.dslContext.update(AccountVote)
-			.set(AccountVote.TIMESTAMP,voteTimestamp)
-			.where(AccountVote.ACCOUNT_ID.eq(record.getId()))
-			.execute();
+//			SelectConditionStep<Record1<Timestamp>> voteTimestamp = DSL.select(DSL.max(BLOCK.TIMESTAMP))
+//			.from(CONTRACT_VOTE_WITNESS)
+//			.join(TRANSACTION).on(TRANSACTION.ID.eq(CONTRACT_VOTE_WITNESS.TRANSACTION_ID))
+//			.join(BLOCK).on(TRANSACTION.BLOCK_ID.eq(BLOCK.ID))
+//			.where(CONTRACT_VOTE_WITNESS.OWNER_ADDRESS.eq(address))
+//			.and(CONTRACT_VOTE_WITNESS.VOTE_COUNT.eq(AccountVote.VOTE_COUNT))
+//			.and(CONTRACT_VOTE_WITNESS.VOTE_ADDRESS.eq(AccountVote.VOTE_ADDRESS));
+//			
+//			this.dslContext.update(AccountVote)
+//			.set(AccountVote.TIMESTAMP,voteTimestamp)
+//			.where(AccountVote.ACCOUNT_ID.eq(record.getId()))
+//			.execute();
 			
 		}
 		

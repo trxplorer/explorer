@@ -160,7 +160,7 @@ public class VotingRoundJob {
 		
 	}
 	
-	@Scheduled("10m")
+	
 	public void createMissingVotingRounds() {
 		
 		Timestamp lastEndDate = this.dslContext.select(DSL.max(VOTING_ROUND.END_DATE)).from(VOTING_ROUND).fetchOneInto(Timestamp.class);
@@ -261,7 +261,9 @@ public class VotingRoundJob {
 	@Scheduled("30s")
 	public void saveRoundVoteSnapshot() {
 		
-		io.trxplorer.model.tables.pojos.VotingRound round = this.dslContext.select(VOTING_ROUND.fields()).from(VOTING_ROUND).where(VOTING_ROUND.SYNC_END.isNull()).orderBy(VOTING_ROUND.ROUND.desc()).limit(1).fetchOneInto(io.trxplorer.model.tables.pojos.VotingRound.class);
+		this.createMissingVotingRounds();
+		
+		io.trxplorer.model.tables.pojos.VotingRound round = this.dslContext.select(VOTING_ROUND.fields()).from(VOTING_ROUND).orderBy(VOTING_ROUND.ROUND.desc()).limit(1).fetchOneInto(io.trxplorer.model.tables.pojos.VotingRound.class);
 		
 		Timestamp lastBlockTs = this.dslContext.select(DSL.max(BLOCK.TIMESTAMP)).from(BLOCK).fetchOneInto(Timestamp.class);
 		

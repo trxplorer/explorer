@@ -11,7 +11,6 @@ import io.trxplorer.syncnode.service.AccountSyncService;
 import io.trxplorer.syncnode.service.ServiceException;
 
 @Singleton
-@DisallowConcurrentExecution
 public class AccountSyncJob {
 
 	private AccountService accountService;
@@ -30,7 +29,7 @@ public class AccountSyncJob {
 		
 	}
 	
-	@Scheduled("100ms")
+	@Scheduled("10ms")
 	public void syncAccountVote() throws ServiceException {
 		
 		this.accountSyncService.syncAccountVote();
