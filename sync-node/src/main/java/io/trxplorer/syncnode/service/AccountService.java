@@ -95,20 +95,29 @@ public class AccountService {
 
 			this.dslContext.delete(ACCOUNT_ASSET).where(ACCOUNT_ASSET.ACCOUNT_ID.eq(record.getId())).execute();
 			
-			List<AccountAssetRecord> accountAssetRecords = new ArrayList<>();
+			//List<AccountAssetRecord> accountAssetRecords = new ArrayList<>();
+			
+			List<Query> queries = new ArrayList<>();
 			
 			for(String assetName:tronAccount.getAssetMap().keySet()) {
 				
-				AccountAssetRecord assetRecord = new AccountAssetRecord();
-				assetRecord.setAssetName(assetName);
-				assetRecord.setBalance(ULong.valueOf(tronAccount.getAssetMap().get(assetName)));
-				assetRecord.setAccountId(record.getId());
+//				AccountAssetRecord assetRecord = new AccountAssetRecord();
+//				assetRecord.setAssetName(assetName);
+//				assetRecord.setBalance(ULong.valueOf(tronAccount.getAssetMap().get(assetName)));
+//				assetRecord.setAccountId(record.getId());
+//				
+//				accountAssetRecords.add(assetRecord);
 				
-				accountAssetRecords.add(assetRecord);
+				queries.add(DSL.insertInto(ACCOUNT_ASSET)
+						.set(ACCOUNT_ASSET.ASSET_NAME,assetName)
+						.set(ACCOUNT_ASSET.BALANCE,ULong.valueOf(tronAccount.getAssetMap().get(assetName)))
+						.set(ACCOUNT_ASSET.ACCOUNT_ID,record.getId())
+						.onDuplicateKeyIgnore());
 				
 			}
 			
-			this.dslContext.batchInsert(accountAssetRecords).execute();
+			this.dslContext.batch(queries).execute();
+			//this.dslContext.batchInsert(accountAssetRecords).execute();
 			
 		}
 		
@@ -159,19 +168,32 @@ public class AccountService {
 			
 		}
 		
-		// Update frozen balance (keep history)
+		
+		this.dslContext.delete(ACCOUNT_FROZEN).where(ACCOUNT_FROZEN.ACCOUNT_ID.eq(record.getId())).execute();
+		
+		// Update frozen balance
 		if (tronAccount.getFrozenList()!=null && tronAccount.getFrozenList().size()>0) {
+			
+			List<Query> queries = new ArrayList<>();
 			
 			for(Frozen frozen:tronAccount.getFrozenList()) {
 				
-				this.dslContext.insertInto(ACCOUNT_FROZEN)
-				.set(ACCOUNT_FROZEN.EXPIRE_TIME, new Timestamp(frozen.getExpireTime()))
-				.set(ACCOUNT_FROZEN.BALANCE,frozen.getFrozenBalance())
-				.set(ACCOUNT_FROZEN.ACCOUNT_ID,record.getId())
-				.onDuplicateKeyIgnore()
-				.execute();
-
+//				this.dslContext.insertInto(ACCOUNT_FROZEN)
+//				.set(ACCOUNT_FROZEN.EXPIRE_TIME, new Timestamp(frozen.getExpireTime()))
+//				.set(ACCOUNT_FROZEN.BALANCE,frozen.getFrozenBalance())
+//				.set(ACCOUNT_FROZEN.ACCOUNT_ID,record.getId())
+//				.onDuplicateKeyIgnore()
+//				.execute();
+				
+				queries.add(DSL.insertInto(ACCOUNT_FROZEN)
+						.set(ACCOUNT_FROZEN.EXPIRE_TIME, new Timestamp(frozen.getExpireTime()))
+						.set(ACCOUNT_FROZEN.BALANCE,frozen.getFrozenBalance())
+						.set(ACCOUNT_FROZEN.ACCOUNT_ID,record.getId())
+						.onDuplicateKeyIgnore());
+				
 			}
+			
+			this.dslContext.batch(queries).execute();
 			
 
 		}

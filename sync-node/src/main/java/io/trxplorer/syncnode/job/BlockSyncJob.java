@@ -91,5 +91,12 @@ public class BlockSyncJob {
 		
 	}
 	
+	@Scheduled("1m")
+	public void reimportErrorBlock() {
+		
+		this.blockSyncService.reimportErrorBlock();
+		
+	}
+	
 	
 }

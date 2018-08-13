@@ -411,5 +411,14 @@ public class BlockSyncService {
 		return false;
 	}
 	
+	public void reimportErrorBlock() {
+		
+		this.dslContext.insertInto(BLOCK_RESYNC).columns(BLOCK_RESYNC.NUM)
+		.select(DSL.select(BLOCK_ERROR.BLOCK).from(BLOCK_ERROR))
+		.onDuplicateKeyIgnore()
+		.execute();
+		
+		this.dslContext.truncate(BLOCK_ERROR).execute();
+	}
 
 }
