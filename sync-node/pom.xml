@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>io.trxplorer</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.50-SNAPSHOT</version>
+		<version>1.0.50</version>
 	</parent>
 
 	<artifactId>syncnode</artifactId>
@@ -40,7 +40,7 @@
 		<dependency>
 			<groupId>io.trxplorer</groupId>
 			<artifactId>tron-cli</artifactId>
-			<version>1.0.50-SNAPSHOT</version>
+			<version>1.0.50</version>
 		</dependency>
 
 		<dependency>
