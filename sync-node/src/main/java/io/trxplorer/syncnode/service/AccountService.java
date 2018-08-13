@@ -3,13 +3,11 @@ package io.trxplorer.syncnode.service;
 import static io.trxplorer.model.Tables.*;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jooq.DSLContext;
-import org.jooq.Record1;
-import org.jooq.SelectConditionStep;
+import org.jooq.Query;
 import org.jooq.impl.DSL;
 import org.jooq.types.UByte;
 import org.jooq.types.ULong;
@@ -120,22 +118,31 @@ public class AccountService {
 		if (tronAccount.getVotesList()!=null && tronAccount.getVotesList().size()>0) {
 			
 			
-			List<AccountVoteRecord> accountVoteRecords = new ArrayList<>();
+			//List<AccountVoteRecord> accountVoteRecords = new ArrayList<>();
+			List<Query> queries = new ArrayList<>();
 			
 			for(Vote accountVote:tronAccount.getVotesList()) {
 				
-				AccountVoteRecord voteRecord = new AccountVoteRecord();
-				voteRecord.setVoteAddress(Wallet.encode58Check(accountVote.getVoteAddress().toByteArray()));
-				voteRecord.setVoteCount(ULong.valueOf(accountVote.getVoteCount()));
-				voteRecord.setAccountId(record.getId());
+//				AccountVoteRecord voteRecord = new AccountVoteRecord();
+//				voteRecord.setVoteAddress(Wallet.encode58Check(accountVote.getVoteAddress().toByteArray()));
+//				voteRecord.setVoteCount(ULong.valueOf(accountVote.getVoteCount()));
+//				voteRecord.setAccountId(record.getId());
 				//voteRecord.setTimestamp();
-				accountVoteRecords.add(voteRecord);
+				//accountVoteRecords.add(voteRecord);
+				queries.add(DSL.insertInto(ACCOUNT_VOTE)
+						.set(ACCOUNT_VOTE.VOTE_ADDRESS,Wallet.encode58Check(accountVote.getVoteAddress().toByteArray()))
+						.set(ACCOUNT_VOTE.VOTE_COUNT,ULong.valueOf(accountVote.getVoteCount()))
+						.set(ACCOUNT_VOTE.ACCOUNT_ID,record.getId())
+						.onDuplicateKeyIgnore());
+				
 			}
+			
+			this.dslContext.batch(queries).execute();
 			
 			//update vote timestamp
 			AccountVote AccountVote = ACCOUNT_VOTE.as("av");
 			
-			this.dslContext.batchInsert(accountVoteRecords).execute();
+			
 			
 //			SelectConditionStep<Record1<Timestamp>> voteTimestamp = DSL.select(DSL.max(BLOCK.TIMESTAMP))
 //			.from(CONTRACT_VOTE_WITNESS)

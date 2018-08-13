@@ -36,7 +36,7 @@ public class AccountSyncJob {
 		
 	}
 	
-	@Scheduled("10ms")
+	@Scheduled("20ms")
 	public void syncAccountVote() throws ServiceException {
 
 		if (!this.config.isAccountJobEnabled()) {
