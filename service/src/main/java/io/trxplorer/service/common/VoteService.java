@@ -54,6 +54,7 @@ public class VoteService {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		conditions.add(VOTING_ROUND.SYNC_END.isNotNull());
+		conditions.add(VOTING_ROUND.VALID.eq((byte)1));
 		
 		 SelectJoinStep<?> listQuery = this.dslContext.select(VOTING_ROUND.START_DATE,VOTING_ROUND.END_DATE,VOTING_ROUND.ROUND,VOTING_ROUND.VOTE_COUNT)
 		.from(VOTING_ROUND);

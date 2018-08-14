@@ -47,6 +47,24 @@ public class AccountSyncJob {
 		
 	}
 	
+	@Scheduled("30ms")
+	public void syncAccountResync() throws ServiceException {
+
+		if (!this.config.isAccountJobEnabled()) {
+			return;
+		}
+		
+		this.accountSyncService.syncAccountResync();
+		
+	}
+	
+	
+	
+	@Scheduled("5m")
+	public void removeLocks() {
+		this.accountSyncService.removeLocks();
+	}
+	
 	public void syncGenesisAccounts() {
 		//TODO:
 		//Genesis accounts might be used without any transactions appearing on blockchain : for example block rewarding

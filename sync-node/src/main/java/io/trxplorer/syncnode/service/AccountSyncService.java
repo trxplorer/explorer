@@ -44,7 +44,9 @@ public class AccountSyncService {
 		return this.dslContext.select(SYNC_ACCOUNT.ADDRESS).from(SYNC_ACCOUNT).where(SYNC_ACCOUNT.DATE_LOCKED.isNull()).and(SYNC_ACCOUNT.ORIGIN.in("contract_vote_witness","contract_unfreeze_balance")).orderBy(SYNC_ACCOUNT.DATE_CREATED.asc()).limit(1).fetchOneInto(String.class);
 	}
 	
-
+	private String getNextAcountResyncToSync() {
+		return this.dslContext.select(SYNC_ACCOUNT.ADDRESS).from(SYNC_ACCOUNT).where(SYNC_ACCOUNT.DATE_LOCKED.isNull()).and(SYNC_ACCOUNT.ORIGIN.in("resync")).orderBy(SYNC_ACCOUNT.DATE_CREATED.asc()).limit(1).fetchOneInto(String.class);
+	}
 
 	
 	public void syncAccounts() throws ServiceException {
@@ -89,6 +91,28 @@ public class AccountSyncService {
 	}
 	
 	
+	public void syncAccountResync() throws ServiceException{
+
+		String address = this.getNextAcountResyncToSync();
+		
+		if (address==null) {
+			return;
+		}
+		
+		logger.debug("=> Syncing account:"+address);
+
+		this.startSync(address);
+		
+		this.accountService.createOrUpdateAccount(address);
+		
+		
+		this.endSync(address);
+
+	}
+	
+	
+
+
 	public void startSync(String address) {
 		this.dslContext.update(SYNC_ACCOUNT).set(SYNC_ACCOUNT.DATE_LOCKED, Timestamp.valueOf(LocalDateTime.now())).where(SYNC_ACCOUNT.ADDRESS.eq(address)).execute();
 	}
@@ -97,5 +121,8 @@ public class AccountSyncService {
 		this.dslContext.delete(SYNC_ACCOUNT).where(SYNC_ACCOUNT.ADDRESS.eq(address)).execute();
 	}
 	
+	public void removeLocks() {
+		this.dslContext.update(SYNC_ACCOUNT).set(SYNC_ACCOUNT.DATE_LOCKED,DSL.val((Timestamp)null)).execute();
+	}
 	
 }
