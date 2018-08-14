@@ -37,7 +37,7 @@ public class AccountSyncService {
 	}
 	
 	public String getNextAcountToSync() {
-		return this.dslContext.select(SYNC_ACCOUNT.ADDRESS).from(SYNC_ACCOUNT).where(SYNC_ACCOUNT.DATE_LOCKED.isNull()).and(SYNC_ACCOUNT.ORIGIN.notIn("contract_vote_witness","contract_unfreeze_balance")).orderBy(SYNC_ACCOUNT.DATE_CREATED.asc()).limit(1).fetchOneInto(String.class);
+		return this.dslContext.select(SYNC_ACCOUNT.ADDRESS).from(SYNC_ACCOUNT).where(SYNC_ACCOUNT.DATE_LOCKED.isNull()).and(SYNC_ACCOUNT.ORIGIN.notIn("contract_vote_witness","contract_unfreeze_balance","resync")).orderBy(SYNC_ACCOUNT.DATE_CREATED.asc()).limit(1).fetchOneInto(String.class);
 	}
 	
 	public String getNextAcountVoteToSync() {
