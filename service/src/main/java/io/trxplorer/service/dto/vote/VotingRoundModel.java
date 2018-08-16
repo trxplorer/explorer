@@ -4,7 +4,9 @@ import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-public class VotingRoundDTO {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+public class VotingRoundModel {
 
 	private Timestamp startDate;
 	
@@ -14,18 +16,38 @@ public class VotingRoundDTO {
 	
 	private long voteCount;
 
+	@JsonIgnore
 	public Timestamp getStartDate() {
 		return startDate;
 	}
 
+	public long getStart() {
+		if (this.startDate!=null) {
+			return this.startDate.getTime()/1000;
+		}else {
+			return 0;
+		}
+		
+	}
+	
 	public void setStartDate(Timestamp startDate) {
 		this.startDate = startDate;
 	}
 
+	@JsonIgnore
 	public Timestamp getEndDate() {
 		return endDate;
 	}
 
+	public long getEnd() {
+		if (this.endDate!=null) {
+			return this.endDate.getTime()/1000;
+		}else {
+			return 0;
+		}
+		
+	}
+	
 	public void setEndDate(Timestamp endDate) {
 		this.endDate = endDate;
 	}
@@ -46,6 +68,7 @@ public class VotingRoundDTO {
 		this.voteCount = voteCount;
 	}
 	
+	@JsonIgnore
 	public String getVoteCountStr() {
 		return NumberFormat.getNumberInstance(Locale.US).format(voteCount);
 	}

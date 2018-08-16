@@ -1,5 +1,6 @@
 package io.trxplorer.api.route;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -17,6 +18,7 @@ import io.trxplorer.service.dto.vote.VoteListCriteria;
 import io.trxplorer.service.dto.vote.VoteLiveListCriteria;
 import io.trxplorer.service.dto.vote.VoteLiveModel;
 import io.trxplorer.service.dto.vote.VoteModel;
+import io.trxplorer.service.dto.vote.VotingRoundModel;
 import io.trxplorer.service.dto.vote.VotingRoundStatsListCriteria;
 import io.trxplorer.service.dto.vote.VotingRoundStatsModel;
 
@@ -60,6 +62,15 @@ public class VotingRoundRoutes {
 	}	
 
 	@GET
+	@Path(ApiAppRoutePaths.V1.VOTE_ROUNDS)
+	public List<VotingRoundModel> listRounds(Optional<Integer> limit) throws Throwable {
+		
+
+		
+		return this.voteService.listRoundsBasic(limit.orElse(10));		
+	}
+	
+	@GET
 	@Path(ApiAppRoutePaths.V1.VOTE_ROUND_STATS)
 	public ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRoundStats(Integer maxRound,Optional<String> address,Optional<Integer> page) throws Throwable {
 		
@@ -90,7 +101,7 @@ public class VotingRoundRoutes {
 	
 	@GET
 	@Path(ApiAppRoutePaths.V1.VOTE_ROUND)
-	public ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRounds(Integer round,Optional<Integer> page) throws Throwable {
+	public ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRoundsStats(Integer round,Optional<Integer> page) throws Throwable {
 		
 		VotingRoundStatsListCriteria criteria = new VotingRoundStatsListCriteria();
 		
@@ -100,6 +111,9 @@ public class VotingRoundRoutes {
 		
 		return this.voteService.listRoundStats(criteria);		
 	}
+	
+	
+
 	
 	@GET
 	@Path(ApiAppRoutePaths.V1.VOTE_LIVE_VOTES)

@@ -32,7 +32,7 @@ import io.trxplorer.service.dto.vote.VoteListCriteria;
 import io.trxplorer.service.dto.vote.VoteLiveListCriteria;
 import io.trxplorer.service.dto.vote.VoteLiveModel;
 import io.trxplorer.service.dto.vote.VoteModel;
-import io.trxplorer.service.dto.vote.VotingRoundDTO;
+import io.trxplorer.service.dto.vote.VotingRoundModel;
 import io.trxplorer.service.dto.vote.VotingRoundListCriteria;
 import io.trxplorer.service.dto.vote.VotingRoundStatsListCriteria;
 import io.trxplorer.service.dto.vote.VotingRoundStatsModel;
@@ -50,7 +50,7 @@ public class VoteService {
 	}
 	
 	
-	public ListModel<VotingRoundDTO, VotingRoundListCriteria> listRounds(VotingRoundListCriteria criteria){
+	public ListModel<VotingRoundModel, VotingRoundListCriteria> listRounds(VotingRoundListCriteria criteria){
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		conditions.add(VOTING_ROUND.SYNC_END.isNotNull());
@@ -67,19 +67,19 @@ public class VoteService {
 		
 		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
 		
-		List<VotingRoundDTO> items = listQuery.where(conditions).orderBy(VOTING_ROUND.START_DATE.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VotingRoundDTO.class);
+		List<VotingRoundModel> items = listQuery.where(conditions).orderBy(VOTING_ROUND.START_DATE.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(VotingRoundModel.class);
 		
 		
 		
-		ListModel<VotingRoundDTO, VotingRoundListCriteria> result = new ListModel<VotingRoundDTO, VotingRoundListCriteria>(criteria, items, totalCount);
+		ListModel<VotingRoundModel, VotingRoundListCriteria> result = new ListModel<VotingRoundModel, VotingRoundListCriteria>(criteria, items, totalCount);
 		
 		return result;
 	}
 	
 	
-	public VotingRoundDTO getVotingRoundByNum(Integer num) {
+	public VotingRoundModel getVotingRoundByNum(Integer num) {
 		
-		return this.dslContext.select(VOTING_ROUND.fields()).from(VOTING_ROUND).where(VOTING_ROUND.ROUND.eq(UInteger.valueOf(num))).fetchOneInto(VotingRoundDTO.class);
+		return this.dslContext.select(VOTING_ROUND.fields()).from(VOTING_ROUND).where(VOTING_ROUND.ROUND.eq(UInteger.valueOf(num))).fetchOneInto(VotingRoundModel.class);
 		
 	}
 	
@@ -110,6 +110,18 @@ public class VoteService {
 		}
 		
 
+	}
+	
+	public List<VotingRoundModel> listRoundsBasic(int limit){
+
+		if (limit>10) {
+			limit = 10;
+		}
+		return this.dslContext.select(VOTING_ROUND.fields()).from(VOTING_ROUND)
+				.where(VOTING_ROUND.VALID.eq((byte)1))
+				.orderBy(VOTING_ROUND.ROUND.desc()).limit(limit)
+				.fetchInto(VotingRoundModel.class);
+		
 	}
 	
 	public ListModel<VotingRoundStatsModel, VotingRoundStatsListCriteria> listRoundStats(VotingRoundStatsListCriteria criteria){

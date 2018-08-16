@@ -35,6 +35,7 @@ public interface ApiAppRoutePaths {
 		
 		//VOTES
 		public static final String VOTE_ROUND = VERSION+"/vote/:round";
+		public static final String VOTE_ROUNDS = VERSION+"/vote/rounds";
 		public static final String VOTE_ROUND_STATS = VERSION+"/vote/stats/:maxRound";
 		public static final String VOTE_ROUND_VOTES = VERSION+"/vote/:round/:address";
 		public static final String VOTE_LIVE_VOTES = VERSION+"/vote/live/:address";
