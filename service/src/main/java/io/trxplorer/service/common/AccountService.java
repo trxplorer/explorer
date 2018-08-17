@@ -103,7 +103,7 @@ public class AccountService {
 		if (quickStats.getMarketData()!=null && quickStats.getMarketData().get("price")!=null) {
 			BigDecimal price = (BigDecimal)quickStats.getMarketData().get("price");
 			NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
-			nf.setMaximumFractionDigits(2);
+			nf.setMaximumFractionDigits(4);
 			
 			result.setUsdValue(nf.format(price.multiply(new BigDecimal(TransactionHelper.getTrxFromSun(result.getBalance())))));	
 		}
