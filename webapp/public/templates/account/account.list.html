@@ -14,7 +14,7 @@
       <div class="row">
 			
 			<div class="column">
-			<div class="ui three small statistics">
+			<div class="ui four small statistics">
 			  <div class="small grey statistic">
 			    <div class="value">
 			      <small>{{stats.totalAccounts|numberlocale}}</small>
@@ -37,7 +37,15 @@
 			      {{stats.totalAccountBalance}} TRX
 			    </div>
 			    <div class="label">
-			      Total Balance<br><small>available</small>
+			      Total Available <a href="#"  data-tooltip="Total of account balances that are currently available (not frozen)" data-position="bottom center"><i class="ui icon circle info"></i></a>
+			    </div>
+			  </div>
+			  <div class="blue statistic">
+			    <div class="text value">
+			      {{stats.totalAccountFrozen}} TRX
+			    </div>
+			    <div class="label">
+			      Total Frozen <a href="#"  data-tooltip="Total of account balances that are currently frozen (not available)" data-position="bottom center"><i class="ui icon circle info"></i></a>
 			    </div>
 			  </div>
 

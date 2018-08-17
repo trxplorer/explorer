@@ -82,7 +82,7 @@ public class AccountRoutes {
 		stats.put("totalAccounts", quickStats.getTotalAccounts());
 		stats.put("totalAccounts24h", quickStats.getTotalAccounts24h());
 		stats.put("totalAccountBalance", quickStats.getTotalAccountBalance());
-
+		stats.put("totalAccountFrozen", quickStats.getTotalAccountFrozen());
 		
 		view.put("stats",stats);
 		

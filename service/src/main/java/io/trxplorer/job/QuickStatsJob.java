@@ -50,6 +50,8 @@ public class QuickStatsJob {
 	private Long totalAccounts;
 	private Long totalAccounts24h;
 	private Long totalAccountBalance;
+	private Long totalAccountFrozen;
+	
 	private int totalNodesUp;
 	private Integer totalNodes24h;
 	private int totalNodesDiscovered;
@@ -187,6 +189,12 @@ public class QuickStatsJob {
 		.from(ACCOUNT)
 		.where(ACCOUNT.BALANCE.gt(0l))
 		.fetchOneInto(Long.class);
+		
+		this.totalAccountFrozen = this.dslContext.select(DSL.sum(ACCOUNT_FROZEN.BALANCE))
+				.from(ACCOUNT_FROZEN)
+				.fetchOneInto(Long.class);
+		
+		
 		
 		//Total up nodes
 		this.totalNodesUp = this.dslContext.select(DSL.count())
@@ -327,6 +335,10 @@ public class QuickStatsJob {
 	
 	public Long getTotalAccounts() {
 		return totalAccounts;
+	}
+	
+	public String getTotalAccountFrozen() {
+		return TransactionHelper.getTrxAmount(totalAccountFrozen);
 	}
 	
 	public String getTotalAccountBalance() {
