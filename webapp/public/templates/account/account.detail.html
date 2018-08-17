@@ -52,7 +52,17 @@
 										  <div class="label">
 										    Tron power
 										  </div>
-										</div>	
+										</div>
+										{%if account.usdValue!=null%}	
+										<div style="margin-bottom: 0;"  class="ui mini green statistic">
+										  <div class="value">
+										    {{account.usdValue}}$
+										  </div>
+										  <div class="label">
+										    USD VALUE
+										  </div>
+										</div>
+										{%endif%}
 									</div>		
 					
 								</div>

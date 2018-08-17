@@ -63,9 +63,16 @@ public class AccountDTO {
 	
 	private boolean isWitness;
 	
-	
-	
+	private String usdValue;
 
+	
+	public String getUsdValue() {
+		return usdValue;
+	}
+
+	public void setUsdValue(String usdValue) {
+		this.usdValue = usdValue;
+	}
 
 	public List<AllowanceWidthdrawDTO> getAllowanceWithdrawals() {
 		return allowanceWithdrawals;

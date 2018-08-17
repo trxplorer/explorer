@@ -2,9 +2,12 @@ package io.trxplorer.service.common;
 
 import static io.trxplorer.model.Tables.*;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
@@ -27,6 +30,7 @@ import io.trxplorer.service.dto.account.FrozenBalanceDTO;
 import io.trxplorer.service.dto.common.ListModel;
 import io.trxplorer.service.dto.vote.VoteModel;
 import io.trxplorer.service.dto.witness.AllowanceWidthdrawDTO;
+import io.trxplorer.service.utils.TransactionHelper;
 import io.trxplorer.troncli.TronFullNodeCli;
 
 
@@ -95,8 +99,14 @@ public class AccountService {
 		
 		//TODO: handle fallback on blockchain api
 		
-
-		
+		//set usd value
+		if (quickStats.getMarketData()!=null && quickStats.getMarketData().get("price")!=null) {
+			BigDecimal price = (BigDecimal)quickStats.getMarketData().get("price");
+			NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+			nf.setMaximumFractionDigits(2);
+			
+			result.setUsdValue(nf.format(price.multiply(new BigDecimal(TransactionHelper.getTrxFromSun(result.getBalance())))));	
+		}
 
 
 		result.setCriteria(accountCriteria);
