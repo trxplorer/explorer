@@ -84,9 +84,7 @@ public class AccountService {
 		
 		Field<?> rankField = DSL.field("@rank := @rank + 1").cast(Long.class).as("rank");
 		
-		
-		Table<Record> dummyTable = DSL.select().from("select @rank := 0").asTable("dummy");
-		;
+
 		
 		Field<?> frozenBalanceField = DSL.select(ACCOUNT_FROZEN.BALANCE).from(ACCOUNT_FROZEN).where(ACCOUNT_FROZEN.ACCOUNT_ID.eq(ACCOUNT.ID)).orderBy(ACCOUNT_FROZEN.EXPIRE_TIME.desc()).limit(1).asField("frozenBalance");
 		Field<?> frozenExpireField = DSL.select(DSL.field("UNIX_TIMESTAMP({0})",Long.class,ACCOUNT_FROZEN.EXPIRE_TIME)).from(ACCOUNT_FROZEN).where(ACCOUNT_FROZEN.ACCOUNT_ID.eq(ACCOUNT.ID)).orderBy(ACCOUNT_FROZEN.EXPIRE_TIME.desc()).limit(1).asField("frozenExpire");
@@ -327,6 +325,12 @@ public class AccountService {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
+		io.trxplorer.model.tables.pojos.Account account = this.dslContext.select(ACCOUNT.TRANSFER_FROM_COUNT,ACCOUNT.TRANSFER_TO_COUNT)
+		.from(ACCOUNT)
+		.where(ACCOUNT.ADDRESS.eq(criteria.getAddress()))
+		.fetchOneInto(io.trxplorer.model.tables.pojos.Account.class);
+		
+
 		
 		conditions.add(TRANSFER.FROM.eq(criteria.getAddress()).or(TRANSFER.TO.eq(criteria.getAddress())));
 		conditions.add(TRANSFER.TRANSACTION_ID.eq(TRANSACTION.ID));
@@ -338,11 +342,14 @@ public class AccountService {
 					.from(TRANSFER,TRANSACTION);
 
 
+		if (account.getTransferFromCount()==null) {
+			account.setTransferFromCount(0);
+		}
+		if (account.getTransferToCount()==null) {
+			account.setTransferToCount(0);
+		}
 		
-		Integer totalCount = this.dslContext.select(DSL.count())
-				.from(TRANSFER,TRANSACTION)
-				.where(conditions)
-				.fetchOneInto(Integer.class);
+		Integer totalCount = account.getTransferFromCount() + account.getTransferToCount();
 		
 		List<TransferModel> items = listQuery.where(conditions).orderBy(TRANSFER.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(TransferModel.class);
 		

@@ -64,8 +64,40 @@ public class AccountDTO {
 	private boolean isWitness;
 	
 	private String usdValue;
-
 	
+	private Long transferFromCount;
+	
+	private Long transferToCount;
+	
+	private Long tokensCount;
+	
+	
+
+
+	public Long getTransferFromCount() {
+		return transferFromCount;
+	}
+
+	public void setTransferFromCount(Long transferFromCount) {
+		this.transferFromCount = transferFromCount;
+	}
+
+	public Long getTransferToCount() {
+		return transferToCount;
+	}
+
+	public void setTransferToCount(Long transferToCount) {
+		this.transferToCount = transferToCount;
+	}
+
+	public Long getTokensCount() {
+		return tokensCount;
+	}
+
+	public void setTokensCount(Long tokensCount) {
+		this.tokensCount = tokensCount;
+	}
+
 	public String getUsdValue() {
 		return usdValue;
 	}

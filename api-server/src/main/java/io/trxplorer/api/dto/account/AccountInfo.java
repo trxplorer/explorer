@@ -32,6 +32,38 @@ public class AccountInfo {
 	
 	private boolean isWitness;
 
+	private long totalTransfersFrom;
+	
+	private long totalTransfersTo;
+	
+	private long totalTokens;
+	
+	
+	
+	public long getTotalTransfersFrom() {
+		return totalTransfersFrom;
+	}
+
+	public void setTotalTransfersFrom(long totalTransfersFrom) {
+		this.totalTransfersFrom = totalTransfersFrom;
+	}
+
+	public long getTotalTransfersTo() {
+		return totalTransfersTo;
+	}
+
+	public void setTotalTransfersTo(long totalTransfersTo) {
+		this.totalTransfersTo = totalTransfersTo;
+	}
+
+	public long getTotalTokens() {
+		return totalTokens;
+	}
+
+	public void setTotalTokens(long totalTokens) {
+		this.totalTokens = totalTokens;
+	}
+
 	public String getName() {
 		return name;
 	}

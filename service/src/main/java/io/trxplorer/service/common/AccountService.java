@@ -84,7 +84,7 @@ public class AccountService {
 		
 		
 		
-		AccountDTO result = this.dslContext.select(ACCOUNT.ACCOUNT_NAME.as("name"),ACCOUNT.TYPE,ACCOUNT.IS_WITNESS,ACCOUNT.CREATE_TIME,ACCOUNT.ADDRESS,ACCOUNT.BALANCE,ACCOUNT.ALLOWANCE,ACCOUNT.BANDWIDTH,frozenBalanceField,frozenExpireField)
+		AccountDTO result = this.dslContext.select(ACCOUNT.ACCOUNT_NAME.as("name"),ACCOUNT.TYPE,ACCOUNT.IS_WITNESS,ACCOUNT.CREATE_TIME,ACCOUNT.ADDRESS,ACCOUNT.BALANCE,ACCOUNT.ALLOWANCE,ACCOUNT.BANDWIDTH,frozenBalanceField,frozenExpireField,ACCOUNT.TRANSFER_FROM_COUNT,ACCOUNT.TRANSFER_TO_COUNT,ACCOUNT.TOKENS_COUNT)
 				.from(ACCOUNT).where(ACCOUNT.ADDRESS.eq(accountCriteria.getAddress())).fetchOneInto(AccountDTO.class);
 		
 		if (result==null) {
@@ -95,7 +95,33 @@ public class AccountService {
 		if (result.isWitness()) {
 			result.setWitness(this.witnessService.getWitnessByAddress(result.getAddress()));			
 		}
+		
+		
+		//Check if counts are properly set and set if required
+		//TODO: remove once we have no null anymore on these info
 
+		
+		if (result.getTransferFromCount()==null) {
+			this.dslContext.update(ACCOUNT)
+			.set(ACCOUNT.TRANSFER_FROM_COUNT,DSL.select(DSL.count()).from(TRANSFER).where(TRANSFER.FROM.eq(result.getAddress())))
+			.where(ACCOUNT.ADDRESS.eq(result.getAddress()))
+			.execute();
+		}
+		
+		if (result.getTransferToCount()==null) {
+			this.dslContext.update(ACCOUNT)
+			.set(ACCOUNT.TRANSFER_TO_COUNT,DSL.select(DSL.count()).from(TRANSFER).where(TRANSFER.TO.eq(result.getAddress())))
+			.where(ACCOUNT.ADDRESS.eq(result.getAddress()))
+			.execute();			
+		}
+		
+		if (result.getTokensCount()==null) {
+			this.dslContext.update(ACCOUNT)
+			.set(ACCOUNT.TOKENS_COUNT,DSL.select(DSL.count()).from(ACCOUNT_ASSET,ACCOUNT).where(ACCOUNT.ADDRESS.eq(result.getAddress())).and(ACCOUNT.ID.eq(ACCOUNT_ASSET.ACCOUNT_ID)))
+			.where(ACCOUNT.ADDRESS.eq(result.getAddress()))
+			.execute();						
+		}
+		
 		
 		//TODO: handle fallback on blockchain api
 		
