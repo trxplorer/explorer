@@ -90,15 +90,15 @@ public class AccountRoutes {
 	}
 	
 	/**
-	 * Get all the transactions related to a specific account
+	 * Get all the incomming transfers related to a specific account
 	 * @param address
 	 * @param limit
 	 * @param page
 	 * @return
 	 */
 	@GET
-	@Path(ApiAppRoutePaths.V1.ACCOUNT_TRANSFERS)	
-	public ListResult<TransferModel, AccountCriteria> transactions(String address,Optional<Integer> limit,Optional<Integer> page) {
+	@Path(ApiAppRoutePaths.V1.ACCOUNT_TRANSFERS_IN)	
+	public ListResult<TransferModel, AccountCriteria> transfersIn(String address,Optional<Integer> limit,Optional<Integer> page) {
 		
 		AccountCriteria criteria = new AccountCriteria();
 		
@@ -106,9 +106,21 @@ public class AccountRoutes {
 		criteria.setLimit(limit.orElse(20));
 		criteria.setPage(page.orElse(1));
 		
-		return this.accountService.listTransfers(criteria);
+		return this.accountService.listTransfersIn(criteria);
 	}
-	
+
+	@GET
+	@Path(ApiAppRoutePaths.V1.ACCOUNT_TRANSFERS_OUT)	
+	public ListResult<TransferModel, AccountCriteria> transfersOut(String address,Optional<Integer> limit,Optional<Integer> page) {
+		
+		AccountCriteria criteria = new AccountCriteria();
+		
+		criteria.setAddress(address);
+		criteria.setLimit(limit.orElse(20));
+		criteria.setPage(page.orElse(1));
+		
+		return this.accountService.listTransfersOut(criteria);
+	}
 	
 	@GET
 	@Path(ApiAppRoutePaths.V1.ACCOUNT_TOKENPARTICIPATIONS)	

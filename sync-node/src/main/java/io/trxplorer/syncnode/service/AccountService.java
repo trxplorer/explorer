@@ -84,8 +84,13 @@ public class AccountService {
 			.set(ACCOUNT.BANDWIDTH,tronAccount.getNetUsage())
 			.set(ACCOUNT.IS_WITNESS,(tronAccount.getIsWitness()==true ? UByte.valueOf((byte)1) : UByte.valueOf((byte)0)))
 			.set(ACCOUNT.IS_COMMITTEE,(tronAccount.getIsCommittee()==true ? UByte.valueOf((byte)1) : UByte.valueOf((byte)0)))
+			.set(ACCOUNT.TRANSFER_TO_COUNT,DSL.select(DSL.count()).from(TRANSFER).where(TRANSFER.TO.eq(address)))
+			.set(ACCOUNT.TRANSFER_FROM_COUNT,DSL.select(DSL.count()).from(TRANSFER).where(TRANSFER.FROM.eq(address)))
+			.set(ACCOUNT.TOKENS_COUNT,DSL.select(DSL.count()).from(ACCOUNT_ASSET).where(ACCOUNT_ASSET.ACCOUNT_ID.eq(record.getId())))
+			.set(ACCOUNT.PARTICIPATIONS_COUNT,DSL.select(DSL.count()).from(CONTRACT_PARTICIPATE_ASSET_ISSUE).where(CONTRACT_PARTICIPATE_ASSET_ISSUE.OWNER_ADDRESS.eq(address)))
 			.where(ACCOUNT.ID.eq(record.getId()))
 			.execute();
+			
 			
 		}
 		

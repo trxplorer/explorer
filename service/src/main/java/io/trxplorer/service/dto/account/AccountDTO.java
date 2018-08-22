@@ -14,7 +14,9 @@ import io.trxplorer.service.dto.witness.WitnessModel;
 import io.trxplorer.service.utils.TransactionHelper;
 
 public class AccountDTO {
-
+	
+	private Long id;
+	
 	private String name;
 	
 	private long balance;
@@ -65,36 +67,55 @@ public class AccountDTO {
 	
 	private String usdValue;
 	
-	private Long transferFromCount;
+	private Integer transferFromCount;
 	
-	private Long transferToCount;
+	private Integer transferToCount;
 	
-	private Long tokensCount;
+	private Integer tokensCount;
+	
+	private Integer participationsCount;
 	
 	
 
+	public Long getId() {
+		return id;
+	}
 
-	public Long getTransferFromCount() {
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	
+
+	public Integer getParticipationsCount() {
+		return participationsCount;
+	}
+
+	public void setParticipationsCount(Integer participationsCount) {
+		this.participationsCount = participationsCount;
+	}
+
+	public Integer getTransferFromCount() {
 		return transferFromCount;
 	}
 
-	public void setTransferFromCount(Long transferFromCount) {
+	public void setTransferFromCount(Integer transferFromCount) {
 		this.transferFromCount = transferFromCount;
 	}
 
-	public Long getTransferToCount() {
+	public Integer getTransferToCount() {
 		return transferToCount;
 	}
 
-	public void setTransferToCount(Long transferToCount) {
+	public void setTransferToCount(Integer transferToCount) {
 		this.transferToCount = transferToCount;
 	}
 
-	public Long getTokensCount() {
+	public Integer getTokensCount() {
 		return tokensCount;
 	}
 
-	public void setTokensCount(Long tokensCount) {
+	public void setTokensCount(Integer tokensCount) {
 		this.tokensCount = tokensCount;
 	}
 

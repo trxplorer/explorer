@@ -13,15 +13,18 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record1;
+import org.jooq.Result;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectJoinStep;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
+import org.jooq.types.ULong;
 
 import com.google.inject.Inject;
 
 import io.trxplorer.job.QuickStatsJob;
+import io.trxplorer.model.tables.records.AccountRecord;
 import io.trxplorer.service.dto.account.AccountDTO;
 import io.trxplorer.service.dto.account.AccountDetailCriteriaDTO;
 import io.trxplorer.service.dto.account.AccountListCriteria;
@@ -84,7 +87,7 @@ public class AccountService {
 		
 		
 		
-		AccountDTO result = this.dslContext.select(ACCOUNT.ACCOUNT_NAME.as("name"),ACCOUNT.TYPE,ACCOUNT.IS_WITNESS,ACCOUNT.CREATE_TIME,ACCOUNT.ADDRESS,ACCOUNT.BALANCE,ACCOUNT.ALLOWANCE,ACCOUNT.BANDWIDTH,frozenBalanceField,frozenExpireField,ACCOUNT.TRANSFER_FROM_COUNT,ACCOUNT.TRANSFER_TO_COUNT,ACCOUNT.TOKENS_COUNT)
+		AccountDTO result = this.dslContext.select(ACCOUNT.ID,ACCOUNT.ACCOUNT_NAME.as("name"),ACCOUNT.TYPE,ACCOUNT.IS_WITNESS,ACCOUNT.CREATE_TIME,ACCOUNT.ADDRESS,ACCOUNT.BALANCE,ACCOUNT.ALLOWANCE,ACCOUNT.BANDWIDTH,frozenBalanceField,frozenExpireField,ACCOUNT.TRANSFER_FROM_COUNT,ACCOUNT.TRANSFER_TO_COUNT,ACCOUNT.TOKENS_COUNT,ACCOUNT.PARTICIPATIONS_COUNT)
 				.from(ACCOUNT).where(ACCOUNT.ADDRESS.eq(accountCriteria.getAddress())).fetchOneInto(AccountDTO.class);
 		
 		if (result==null) {
@@ -116,11 +119,30 @@ public class AccountService {
 		}
 		
 		if (result.getTokensCount()==null) {
-			this.dslContext.update(ACCOUNT)
-			.set(ACCOUNT.TOKENS_COUNT,DSL.select(DSL.count()).from(ACCOUNT_ASSET,ACCOUNT).where(ACCOUNT.ADDRESS.eq(result.getAddress())).and(ACCOUNT.ID.eq(ACCOUNT_ASSET.ACCOUNT_ID)))
+			 this.dslContext.update(ACCOUNT)
+			.set(ACCOUNT.TOKENS_COUNT,DSL.select(DSL.count()).from(ACCOUNT_ASSET).where(ACCOUNT_ASSET.ACCOUNT_ID.eq(ULong.valueOf(result.getId()))))
 			.where(ACCOUNT.ADDRESS.eq(result.getAddress()))
-			.execute();						
+			.execute();
 		}
+		
+		if (result.getParticipationsCount()==null) {
+			 this.dslContext.update(ACCOUNT)
+			.set(ACCOUNT.PARTICIPATIONS_COUNT,DSL.select(DSL.count()).from(CONTRACT_PARTICIPATE_ASSET_ISSUE).where(CONTRACT_PARTICIPATE_ASSET_ISSUE.OWNER_ADDRESS.eq(result.getAddress())))
+			.where(ACCOUNT.ADDRESS.eq(result.getAddress()))
+			.execute();			
+		}
+		
+		if (result.getTokensCount()==null || result.getTransferFromCount()==null || result.getTransferToCount()==null || result.getParticipationsCount()==null) {
+			AccountDTO refreshedAccount = this.dslContext.select(ACCOUNT.TOKENS_COUNT,ACCOUNT.TRANSFER_FROM_COUNT,ACCOUNT.TRANSFER_TO_COUNT,ACCOUNT.PARTICIPATIONS_COUNT)
+			.from(ACCOUNT)
+			.where(ACCOUNT.ID.eq(ULong.valueOf(result.getId())))
+			.fetchOneInto(AccountDTO.class);
+			result.setTransferFromCount(refreshedAccount.getTransferFromCount());
+			result.setTransferToCount(refreshedAccount.getTransferToCount());
+			result.setTokensCount(refreshedAccount.getTokensCount());
+			result.setParticipationsCount(refreshedAccount.getParticipationsCount());
+		}
+		
 		
 		
 		//TODO: handle fallback on blockchain api

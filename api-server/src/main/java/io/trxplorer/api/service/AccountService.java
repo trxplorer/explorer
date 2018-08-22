@@ -321,35 +321,60 @@ public class AccountService {
 
 	
 
-	public ListResult<TransferModel, AccountCriteria> listTransfers(AccountCriteria criteria) {
+	public ListResult<TransferModel, AccountCriteria> listTransfersIn(AccountCriteria criteria) {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
-		io.trxplorer.model.tables.pojos.Account account = this.dslContext.select(ACCOUNT.TRANSFER_FROM_COUNT,ACCOUNT.TRANSFER_TO_COUNT)
-		.from(ACCOUNT)
-		.where(ACCOUNT.ADDRESS.eq(criteria.getAddress()))
-		.fetchOneInto(io.trxplorer.model.tables.pojos.Account.class);
-		
-
-		
-		conditions.add(TRANSFER.FROM.eq(criteria.getAddress()).or(TRANSFER.TO.eq(criteria.getAddress())));
-		conditions.add(TRANSFER.TRANSACTION_ID.eq(TRANSACTION.ID));
 		
 		List<Field<?>> fields = new ArrayList<>(Arrays.asList(TRANSFER.fields()));
 		fields.add(TRANSACTION.HASH);
 				
 		SelectJoinStep<?> listQuery = this.dslContext.select(fields)
-					.from(TRANSFER,TRANSACTION);
+					.from(TRANSACTION)
+					.join(TRANSFER).on(TRANSFER.TRANSACTION_ID.eq(TRANSACTION.ID)).and((TRANSFER.TO.eq(criteria.getAddress())))
+					;
 
 
-		if (account.getTransferFromCount()==null) {
-			account.setTransferFromCount(0);
-		}
-		if (account.getTransferToCount()==null) {
-			account.setTransferToCount(0);
+		Integer totalCount = this.dslContext.select(ACCOUNT.TRANSFER_TO_COUNT)
+				.from(ACCOUNT)
+				.where(ACCOUNT.ADDRESS.eq(criteria.getAddress()))
+				.fetchOneInto(Integer.class);
+		
+		if (totalCount==null) {
+			totalCount = 0;
 		}
 		
-		Integer totalCount = account.getTransferFromCount() + account.getTransferToCount();
+		List<TransferModel> items = listQuery.where(conditions).orderBy(TRANSFER.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(TransferModel.class);
+		
+		
+		ListResult<TransferModel, AccountCriteria> result = new ListResult<TransferModel, AccountCriteria>(criteria, items, totalCount);
+		
+		return result;
+	}
+	
+	
+	public ListResult<TransferModel, AccountCriteria> listTransfersOut(AccountCriteria criteria) {
+		
+		ArrayList<Condition> conditions = new ArrayList<>();
+		
+		
+		List<Field<?>> fields = new ArrayList<>(Arrays.asList(TRANSFER.fields()));
+		fields.add(TRANSACTION.HASH);
+				
+		SelectJoinStep<?> listQuery = this.dslContext.select(fields)
+					.from(TRANSACTION)
+					.join(TRANSFER).on(TRANSFER.TRANSACTION_ID.eq(TRANSACTION.ID)).and((TRANSFER.FROM.eq(criteria.getAddress())))
+					;
+
+
+		Integer totalCount = this.dslContext.select(ACCOUNT.TRANSFER_FROM_COUNT)
+				.from(ACCOUNT)
+				.where(ACCOUNT.ADDRESS.eq(criteria.getAddress()))
+				.fetchOneInto(Integer.class);
+		
+		if (totalCount==null) {
+			totalCount = 0;
+		}
 		
 		List<TransferModel> items = listQuery.where(conditions).orderBy(TRANSFER.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(TransferModel.class);
 		

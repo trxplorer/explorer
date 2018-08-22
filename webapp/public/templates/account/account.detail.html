@@ -122,7 +122,15 @@
 					</tr>
 					<tr>
 						<td>Transfers</td>
-						<td>Incoming : {{account.transferFromCount}} - Outgoing: {{account.transferToCount}}</td>
+						<td>Incoming : {{account.transferToCount}} - Outgoing: {{account.transferFromCount}}</td>
+					</tr>
+					<tr>
+						<td>Total Tokens</td>
+						<td>{{account.tokensCount}}</td>
+					</tr>
+					<tr>
+						<td>Tokens participations</td>
+						<td>{{account.participationsCount}}</td>
 					</tr>
 {%if account.witness!=null%}			
 					<tr>
@@ -176,9 +184,10 @@
 <div id="app">
 
 <div class="ui stackable fluid secondary menu">
-  <router-link to="/" active-class="active" class="item" exact>Transfers</router-link>
-  <router-link to="/tokens" active-class="active" class="item" exact>Tokens</router-link>
-  <router-link to="/tp" active-class="active" class="item" exact>Token participations</router-link>
+  <router-link to="/" active-class="active" class="item" exact> Transfers In &nbsp;<div class="ui label">{{account.transferToCount}}</div></router-link>
+  <router-link to="/transfersOut" active-class="active" class="item" exact> Transfers Out <div class="ui label">&nbsp;{{account.transferFromCount}}</div></router-link>
+  <router-link to="/tokens" active-class="active" class="item" exact>Tokens &nbsp;<div class="ui label">{{account.tokensCount}}</div></router-link>
+  <router-link to="/tp" active-class="active" class="item" exact>Token participations &nbsp;<div class="ui label">{{account.participationsCount}}</div></router-link>
   <router-link to="/votes" active-class="active" class="item" exact>Votes repartition</router-link>
   <!-- <router-link to="/freeze" active-class="active" class="item">Freeze history</router-link> -->
   {%if account.witness!=null%}
@@ -195,8 +204,8 @@
 
 
 
-<!-- TRANSFERS -->
- <script type="text/x-template"  id="transfers">
+<!-- TRANSFERS IN-->
+ <script type="text/x-template"  id="transfersIn">
    <div v-cloak>
 
 <div class="ui active tiny teal progress" data-value="99" data-total="100" v-show="loading">
@@ -208,7 +217,56 @@
 <div class="ui icon small info message" v-show="list.totalCount==0">
   <div class="content">
     <div class="header">
-      <i class="circle info icon"></i> No transfers yet for this account
+      <i class="circle info icon"></i> No transfers in yet for this account
+    </div>
+  </div>
+</div>
+
+     <table class="ui fixed striped table"  v-show="list.totalCount>0">
+       <thead>
+         <tr>
+           <th class="center aligned">Tx id</th>
+           <th class="center aligned">Timestamp</th>
+           <th class="center aligned">From</th>
+           <th class="center aligned">To</th>
+           <th class="center aligned">Amount</th>
+         </tr>
+       </thead>
+       <tbody>
+		<template v-for="(tx,index) in list.items" :key="index">
+	         <tr class="center aligned" >
+	           <td><a :href="'/tx/'+tx.hash">[[tx.hash]]</a></td>
+	           <td>[[tx.timestamp|dateToLocale]]</td>
+	           <td><a :href="'/address/'+tx.from" v-if="tx.from!=address">[[tx.from]]</a><span v-if="tx.from==address">[[tx.from]]</span></td>
+	           <td><a :href="'/address/'+tx.to" v-if="tx.to!=address">[[tx.to]]</a><span v-if="tx.to==address">[[tx.to]]</span></td>
+	           <td><span v-if="tx.token">[[tx.amount|toLocale]] [[tx.token]]</span><span v-if="!tx.token">[[tx.amount|sunTrx|toLocale]]  TRX</span></td>
+	         </tr>         
+		</template>
+       </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="5" v-show="totalPages>1">
+				{% include 'account/jspartial/pagination' %}
+            </th>
+          </tr>
+        </tfoot>
+     </table>
+  </div>
+</script>
+<!-- TRANSFERS OUT-->
+ <script type="text/x-template"  id="transfersOut">
+   <div v-cloak>
+
+<div class="ui active tiny teal progress" data-value="99" data-total="100" v-show="loading">
+  <div class="bar">
+  </div>
+<div class="label">Loading...</div>
+</div>
+
+<div class="ui icon small info message" v-show="list.totalCount==0">
+  <div class="content">
+    <div class="header">
+      <i class="circle info icon"></i> No transfers out yet for this account
     </div>
   </div>
 </div>
@@ -604,12 +662,21 @@ var common = {
 
 
 
-var Transfers = Vue.component('transfers',{
-	  template: '#transfers',
+var TransfersIn = Vue.component('transfersIn',{
+	  template: '#transfersIn',
 	  mixins:[common],
 	  data: function(){
 		  return {
-			endpoint:'{{apiConfig.endpoint}}/account/transfers'
+			endpoint:'{{apiConfig.endpoint}}/account/transfersIn'
+		  }  
+	  }
+});
+var TransfersOut = Vue.component('transfersOut',{
+	  template: '#transfersOut',
+	  mixins:[common],
+	  data: function(){
+		  return {
+			endpoint:'{{apiConfig.endpoint}}/account/transfersOut'
 		  }  
 	  }
 });
@@ -684,7 +751,8 @@ var Freeze = Vue.component('freeze',{
 });
 */
 var routes = [
-	  { path: '/', component: Transfers },
+	  { path: '/', component: TransfersIn },
+	  { path: '/transfersOut', component: TransfersOut },
 	  { path: '/tokens', component: Tokens },
 	  { path: '/tp', component: TP },
 	  { path: '/votes', component: Votes },
