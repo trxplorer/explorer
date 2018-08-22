@@ -153,7 +153,7 @@ public class AccountService {
 			NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
 			nf.setMaximumFractionDigits(4);
 			
-			result.setUsdValue(nf.format(price.multiply(new BigDecimal(TransactionHelper.getTrxFromSun(result.getBalance())))));	
+			result.setUsdValue(nf.format(price.multiply(new BigDecimal(TransactionHelper.getTrxFromSun(result.getBalance()+result.getFrozenBalance())))));	
 		}
 
 
