@@ -10,12 +10,10 @@
 <h1 class="ui dividing header"><small>Representatives</small></h1>
 
 <div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
-    <div class="ui stackable grid container">
-      <div class="row">
-			
-			<div class="column">
-			<div class="ui four small statistics">
-			  <div class="small green statistic">
+    <div class="ui stackable four column centered grid container">
+
+			<div class="ui center aligned column">
+			  <div class="ui small green statistic">
 			    <div class="value">
 			      {{stats.totalRepresentatives}}
 			    </div>
@@ -23,7 +21,10 @@
 			      Representatives
 			    </div>
 			  </div>
-			  <div class="grey statistic">
+		  	</div>
+			
+			<div class="ui center aligned column">		  	
+			  <div class="ui small grey statistic">
 			    <div class="value">
 			      {{stats.totalRepresentatives24h}}
 			    </div>
@@ -31,7 +32,10 @@
 			    	New candidates <br><small>(last 24h)</small>
 			    </div>
 			  </div>
-			  <div class="yellow statistic">
+			 </div>
+			
+			<div class="ui center aligned column"> 
+			  <div class="ui small yellow statistic">
 			    <div class="value">
 			      {{stats.bestRep6h.percentage}}%
 			    </div>
@@ -40,8 +44,10 @@
 			      Best producer <br><small>(last 6h)</small>
 			    </div>
 			  </div>
-
-			  <div class="orange statistic">
+			</div>
+			
+			<div class="ui center aligned column">
+			  <div class="ui small orange statistic">
 			    <div class="value">
 			      {{stats.bestRepAll.percentage}}%
 			    </div>
@@ -51,9 +57,6 @@
 			    </div>
 			  </div>
 			</div>
-			</div>
-			
-      </div>
 
       </div>
 </div>

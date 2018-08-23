@@ -15,20 +15,21 @@
 <div >
 
 <div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;z-index:10;">
-    <div class="ui stackable grid container">
-      <div class="row">
+
+    <div class="ui stackable four column centered grid container">			
+			<div class="ui center aligned column">			
+				  <div class="ui small green statistic">
+				    <div class="value">
+				      <small>{{stats.totalNodesUp}}</small>
+				    </div>
+				    <div class="label">
+				      Nodes up <a href="#"  data-tooltip="Nodes successfully pinged by TRXPLORER with a timeout of 5s"  data-position="bottom center"><i class="ui icon circle info"></i></a>
+				    </div>
+				  </div>
+			</div>
 			
-			<div class="column">
-			<div class="ui four small statistics">
-			  <div class="small green statistic">
-			    <div class="value">
-			      <small>{{stats.totalNodesUp}}</small>
-			    </div>
-			    <div class="label">
-			      Nodes up <a href="#"  data-tooltip="Nodes successfully pinged by TRXPLORER with a timeout of 5s"  data-position="bottom center"><i class="ui icon circle info"></i></a>
-			    </div>
-			  </div>
-			  <div class="small orange statistic">
+			<div class="ui center aligned column">  
+			  <div class="ui small orange statistic">
 			    <div class="value">
 			      <small>{{stats.nodesDiscovered}}</small>
 			    </div>
@@ -36,7 +37,10 @@
 			      Nodes discovered <a href="#"  data-tooltip="Nodes discovered on TRON Network (Up or Down) - Flushed every hour" data-position="bottom center"><i class="ui icon circle info"></i></a>
 			    </div>
 			  </div>
-			  <div class="small yellow statistic">
+			</div>
+			
+			<div class="ui center aligned column">
+			  <div class="ui small yellow statistic">
 			    <div class="value">
 			      <small>{{stats.totalNodes24h}}</small>
 			    </div>
@@ -44,7 +48,10 @@
 			    	New nodes up<br><small>last 24h</small>
 			    </div>
 			  </div>
-			  <div class="grey statistic">
+			</div>
+			
+			<div class="ui center aligned column">
+			  <div class="ui small grey statistic">
 			    <div class="text value">
 			      {{stats.topNodeCountry.country.toLowerCase()}}<br>{{stats.topNodeCountry.nodes}} nodes<br><br>
 			    </div>
@@ -52,12 +59,11 @@
 			      Top country 
 			    </div>
 			  </div>
-
-
 			</div>
-			</div>
+
 			
-      </div>
+			
+
 
       </div>
 </div>

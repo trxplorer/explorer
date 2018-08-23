@@ -15,12 +15,11 @@
 <div >
  	
 <div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
-    <div class="ui stackable grid container">
-      <div class="row">
+    <div class="ui stackable four column grid container">
+      
 			
-			<div class="column">
-			<div class="ui four small statistics">
-			  <div class="small grey statistic">
+			<div class="ui center aligned column">
+			  <div class="ui small small grey statistic">
 			    <div class="value">
 			      <small>{{stats.totalBlocks|numberlocale}}</small>
 			    </div>
@@ -28,7 +27,10 @@
 			      Total blocks
 			    </div>
 			  </div>
-			  <div class="small green statistic">
+			  </div>
+			
+			<div class="ui center aligned column">  
+			  <div class="ui small small green statistic">
 			    <div class="value">
 			      <small>{{stats.totalBlocksConfirmed|numberlocale}}</small>
 			    </div>
@@ -36,7 +38,10 @@
 			    	Blocks confirmed
 			    </div>
 			  </div>
-			  <div class="yellow statistic">
+			</div>
+			
+			<div class="ui center aligned column">
+			  <div class="ui small yellow statistic">
 			    <div class="value">
 			      <small>{{stats.totalBlocks6h|numberlocale}}</small>
 			    </div>
@@ -44,8 +49,10 @@
 			      Blocks Last 6h
 			    </div>
 			  </div>
-
-			  <div class="orange statistic">
+			</div>
+			
+			<div class="ui center aligned column">
+			  <div class="ui small orange statistic">
 			    <div class="value">
 			      <small>{{stats.totalBlocks24h|numberlocale}}</small>
 			    </div>
@@ -54,9 +61,7 @@
 			    </div>
 			  </div>
 			</div>
-			</div>
 			
-      </div>
 
       </div>
 </div>
