@@ -159,8 +159,8 @@ public class TransactionService {
 		//remove invalid transactions (wrong dates)
 		//FIXME: remove if/when fixed in tron
 		conditions.add(DSL.year(TRANSACTION.TIMESTAMP).gt(TRON_START_YEAR-1));
-		
-		
+		conditions.add(TRANSACTION.TIMESTAMP.le(DSL.select(DSL.max(BLOCK.TIMESTAMP)).from(BLOCK)));
+		conditions.add(TRANSACTION.FROM.isNotNull());
 
 		if (criteria.getBlock()!=null) {
 			conditions.add(TRANSACTION.BLOCK_ID.in(DSL.select(BLOCK.ID).from(BLOCK).where(BLOCK.NUM.eq(ULong.valueOf(criteria.getBlock())))));
