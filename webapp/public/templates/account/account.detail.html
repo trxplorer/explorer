@@ -17,17 +17,19 @@
 <div class="ui vertical stripe segment" style="background: #f5f5f5;opacity: 0.7;">
     <div class="ui grid ">
    			<div class="column">
-   			<table>
-   				<tr>
-   					<td>
-   					<canvas width="40" height="40" data-jdenticon-value="{{account.address}}"></canvas>
-   					</td>
-   					<td>
-   					<h2>{{account.address}} {%if account.name!=null and account.name!='' %}<small><small>({{account.name}})</small></small>{%endif%}</h2>
-   					</td>
-   				</tr>
-   			</table>
-					 
+   			
+	   			<table>
+	   				<tr>
+	   					<td>
+	   					<canvas width="40" height="40" data-jdenticon-value="{{account.address}}"></canvas>
+	   					</td>
+	   					<td>
+	   					<h2 class="ui header nomobile">{{account.address}} {%if account.name!=null and account.name!='' %}<small><small>({{account.name}})</small></small>{%endif%}</h2>
+	   					<b class="mobile-only">{{account.address}} {%if account.name!=null and account.name!='' %}<small><small>({{account.name}})</small></small>{%endif%}</b>
+	   					</td>
+	   				</tr>
+	   			</table>
+						 
 					
 					
 					<div class="ui fluid grid">
@@ -36,24 +38,30 @@
 			
 								<div class="eleven wide column">
 									
-									<div class="ui mini statistics">
-										<div style="margin-bottom: 0;"  class="ui mini red statistic">
-										  <div class="value">
-										    {{account.getBalanceStr()}} TRX
-										  </div>
-										  <div class="label">
-										    Balance
-										  </div>
-										</div>	
-										<div style="margin-bottom: 0;"  class="ui mini orange statistic">
-										  <div class="value">
-										    {{account.getFrozenBalanceStr()}}
-										  </div>
-										  <div class="label">
-										    Tron power
-										  </div>
+									<div class="ui stackable three column centered grid container">
+										
+										<div class="ui aligned column">											
+											<div style="margin-bottom: 0;"  class="ui mini red statistic">
+											  <div class="value">
+											    {{account.getBalanceStr()}} TRX
+											  </div>
+											  <div class="label">
+											    Balance
+											  </div>
+											</div>
 										</div>
-										{%if account.usdValue!=null%}	
+										<div class="ui center aligned column">	
+											<div style="margin-bottom: 0;"  class="ui mini orange statistic">
+											  <div class="value">
+											    {{account.getFrozenBalanceStr()}}
+											  </div>
+											  <div class="label">
+											    Tron power
+											  </div>
+											</div>
+										</div>
+										{%if account.usdValue!=null%}
+										<div class="ui center aligned column">	
 										<div style="margin-bottom: 0;"  class="ui mini green statistic">
 										  <div class="value">
 										    {{account.usdValue}}$
@@ -61,6 +69,7 @@
 										  <div class="label">
 										    USD VALUE
 										  </div>
+										</div>
 										</div>
 										{%endif%}
 									</div>		
