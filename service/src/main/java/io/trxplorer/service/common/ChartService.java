@@ -90,10 +90,10 @@ public class ChartService {
 	
 	public void createTransactionChartSince(Timestamp startTimestamp) {
 		
-		Result<Record3<Integer, Integer, Integer>> records = this.dslContext.select(DSL.month(TRANSACTION.TIMESTAMP).as("month"),DSL.day(TRANSACTION.TIMESTAMP).as("day"),DSL.year(TRANSACTION.TIMESTAMP).as("year"))
-		.from(TRANSACTION)
-		.where(TRANSACTION.TIMESTAMP.gt(startTimestamp).and(DSL.year(TRANSACTION.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1))))
-		.groupBy(DSL.month(TRANSACTION.TIMESTAMP),DSL.day(TRANSACTION.TIMESTAMP),DSL.month(TRANSACTION.TIMESTAMP))
+		Result<Record3<Integer, Integer, Integer>> records = this.dslContext.select(DSL.month(BLOCK.TIMESTAMP).as("month"),DSL.day(BLOCK.TIMESTAMP).as("day"),DSL.year(BLOCK.TIMESTAMP).as("year"))
+		.from(BLOCK)
+		.where(BLOCK.TIMESTAMP.gt(startTimestamp).and(DSL.year(BLOCK.TIMESTAMP).lt(DSL.year(DSL.currentDate()).plus(1))))
+		.groupBy(DSL.month(BLOCK.TIMESTAMP),DSL.day(BLOCK.TIMESTAMP),DSL.month(BLOCK.TIMESTAMP))
 		.fetch();
 		
 		Iterator<Record3<Integer, Integer, Integer>> iterator = records.iterator();
