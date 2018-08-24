@@ -7,9 +7,12 @@ display:none;
 .mobile-only{
 display:inline;
 }
-
-.nomobile{
+.ui.menu .item.nomobile{
   display:none ;
 }
+.nomobile{
+  display:none ;	
+}
+
 
 }
