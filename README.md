@@ -26,13 +26,6 @@ A running instance of docker is required to build the project: the model require
 
 When building the model: a maven plugin starts a docker container, runs flyway on all the database migrations files (see model/src/main/resources) and outputs the java / jooq sources into model/target/generated-sources
 
-**Skiping docker**
-
-If you don't have docker or don't whant to install it, just checkout a branch with current version of the project + "-gen": 
-
-For ex for version 0.0.1-SNAPSHOT do: git checkout 0.0.1-SNAPSHOT-gen
-
-This branch is automatically generated and pushed by Travis
 
 ## Building the project
 
