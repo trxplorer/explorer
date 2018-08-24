@@ -17,6 +17,7 @@ import org.jooq.impl.DSL;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import io.trxplorer.job.QuickStatsJob;
 import io.trxplorer.service.dto.account.TokenHolderModel;
 import io.trxplorer.service.dto.asset.AssetIssueDTO;
 import io.trxplorer.service.dto.asset.TokenCriteria;
@@ -31,11 +32,13 @@ public class AssetService {
 	
 	private DSLContext dslContext;
 	private TransactionService txService;
+	private QuickStatsJob quickStats;
 	
 	@Inject
-	public AssetService(DSLContext dslContext,TransactionService txService) {
+	public AssetService(DSLContext dslContext,TransactionService txService,QuickStatsJob quickStats) {
 		this.dslContext = dslContext;
 		this.txService = txService;
+		this.quickStats = quickStats;
 	}
 	
 	public ListModel<AssetIssueDTO, AssetIssueListCriteriaDTO> listAssetIssues(AssetIssueListCriteriaDTO criteria) {
@@ -186,10 +189,7 @@ public class AssetService {
 
 
 		
-		Integer totalCount = this.dslContext.select(DSL.count())
-				.from(ACCOUNT,ACCOUNT_ASSET)
-				.where(conditions)
-				.fetchOneInto(Integer.class);
+		Integer totalCount = this.quickStats.getTotalTokens();
 		
 		List<TokenHolderModel> items = listQuery.where(conditions).orderBy(ACCOUNT_ASSET.BALANCE.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(TokenHolderModel.class);
 		

@@ -43,7 +43,6 @@ public class NodeRoute {
 	@Path(TRXPlorerRoutePaths.Front.NODE_LIST)
 	public void nodeList(Request req,Response res) throws Throwable {
 		
-		Integer limit = req.param("limit").intValue(500);
 		Integer page = req.param("page").intValue(1);
 		String ip = req.param("ip").value(null);
 		String country = req.param("country").value(null);

@@ -31,6 +31,9 @@ public abstract class CommonCriteriaDTO {
 	
 	
 	public Integer getPage() {
+		if (page==null || page==0) {
+			return 1;
+		}
 		return page;
 	}
 	

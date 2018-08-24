@@ -1,6 +1,7 @@
 package io.trxplorer.webapp.route;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.jooby.Request;
 import org.jooby.Response;
@@ -10,6 +11,8 @@ import org.jooby.View;
 import org.jooby.mvc.GET;
 import org.jooby.mvc.Path;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -24,11 +27,15 @@ public class AssetRoutes {
 
 	private AssetService assetService;
 	private QuickStatsJob quickStats;
-
+	private Cache<String, Object> cache;
+	
 	@Inject
 	public AssetRoutes(AssetService blockService,QuickStatsJob quickStats) {
 		this.assetService = blockService;
 		this.quickStats = quickStats;
+		this.cache = CacheBuilder.newBuilder()
+			    .expireAfterAccess(1, TimeUnit.MINUTES)
+			    .build();
 	}
 	
 	@GET
@@ -62,8 +69,7 @@ public class AssetRoutes {
 	@GET
 	@Path(TRXPlorerRoutePaths.Front.ASSET_LIST)
 	public void assetList(Request req,Response res) throws Throwable {
-		
-		Integer limit = req.param("limit").intValue(20);
+
 		Integer page = req.param("page").intValue(1);
 		
 
@@ -71,12 +77,20 @@ public class AssetRoutes {
 		AssetIssueListCriteriaDTO criteria = new AssetIssueListCriteriaDTO();
 		
 
-		criteria.setLimit(limit);
+		criteria.setLimit(100);
 		criteria.setPage(page);
 
 		View view = Results.html("asset/asset.list");
 		
-		view.put("list",this.assetService.listAssetIssues(criteria));
+		Object result = this.cache.getIfPresent(criteria.params().toString());
+		
+		if (result==null) {
+			result = this.assetService.listAssetIssues(criteria);
+			this.cache.put(criteria.params().toString(), result);
+		}
+		
+		
+		view.put("list",result);
 		
 		HashMap<String, Object> stats = new HashMap<>();
 		stats.put("totalTokens", quickStats.getTotalTokens());
