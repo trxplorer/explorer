@@ -18,6 +18,8 @@ import org.jooq.Query;
 import org.jooq.UpdateConditionStep;
 import org.jooq.impl.DSL;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tron.api.GrpcAPI.Node;
 
 import com.google.inject.Inject;
@@ -40,6 +42,8 @@ public class NodeSyncService {
 	
 	private static final int NODE_PING_TIMEOUT = 5000;
 	
+	private static final Logger logger = LoggerFactory.getLogger(AccountSyncService.class);
+	
 	@Inject
 	public NodeSyncService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli,SyncNodeConfig config) {
 		this.dslContext = dslContext;
@@ -52,13 +56,19 @@ public class NodeSyncService {
 		HashMap<String, Node> nodesMap = new HashMap<>();
 		
 		for(String ip:config.getSeedNodes()) {
-			
 			TronFullNodeCli cli = new TronFullNodeCli(ip, true);
-			for(Node node:cli.getAllNodes()){
-				nodesMap.put(node.getAddress().getHost().toStringUtf8()+":"+node.getAddress().getPort(), node);
+			try {
+				for(Node node:cli.getAllNodes()){
+					nodesMap.put(node.getAddress().getHost().toStringUtf8()+":"+node.getAddress().getPort(), node);
+				}
+			}catch(Throwable e) {
+				logger.error("Could get nodes list from {}",ip,e);
+			}finally {
+				cli.shutdown();	
 			}
+
 			
-			cli.shutdown();
+			
 		}
 		
 		List<Node> nodes = new ArrayList<>(nodesMap.values());
