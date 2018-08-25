@@ -54,6 +54,7 @@ public class NodeSyncJob {
 		this.nodeSyncService.removeDownNodes();
 	}
 	
+	//FIXME: remove when all geo data is populated
 	@Scheduled("5m")
 	public void updateNodeLocalization() throws UnirestException {
 		if (!this.config.isNodesJobEnabled()) {

@@ -25,6 +25,10 @@ public class SyncNodeConfig{
 		return id==-1 ? this.generatedNodeId : id;
 	}
 	
+	public String getGeoDbPath() {
+		return this.config.getString("geodb.path");
+	}
+	
 	public int getSyncBatchSize() {
 		return this.config.getInt("node.syncBatchSize");
 	}

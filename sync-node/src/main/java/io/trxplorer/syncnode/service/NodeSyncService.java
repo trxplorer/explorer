@@ -1,21 +1,22 @@
 package io.trxplorer.syncnode.service;
 
+import static io.trxplorer.model.Tables.*;
+
+import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import org.jooq.DSLContext;
-import org.jooq.InsertFinalStep;
-import org.jooq.InsertOnDuplicateSetStep;
 import org.jooq.Query;
-import org.jooq.UpdateConditionStep;
 import org.jooq.impl.DSL;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -27,8 +28,9 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-
-import static io.trxplorer.model.Tables.*;
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
+import com.maxmind.geoip2.model.CityResponse;
 
 import io.trxplorer.model.tables.records.NodeRecord;
 import io.trxplorer.syncnode.SyncNodeConfig;
@@ -37,7 +39,6 @@ import io.trxplorer.troncli.TronFullNodeCli;
 public class NodeSyncService {
 
 	private DSLContext dslContext;
-	private TronFullNodeCli tronFullNodeCli;
 	private SyncNodeConfig config;
 	
 	private static final int NODE_PING_TIMEOUT = 5000;
@@ -45,9 +46,8 @@ public class NodeSyncService {
 	private static final Logger logger = LoggerFactory.getLogger(AccountSyncService.class);
 	
 	@Inject
-	public NodeSyncService(DSLContext dslContext,TronFullNodeCli tronFullNodeCli,SyncNodeConfig config) {
+	public NodeSyncService(DSLContext dslContext,SyncNodeConfig config) {
 		this.dslContext = dslContext;
-		this.tronFullNodeCli = tronFullNodeCli;
 		this.config = config;
 	}
 	
@@ -84,11 +84,18 @@ public class NodeSyncService {
 				lastUp = null;
 			}
 			
+			CityResponse geoRes = getGeoData(node.getAddress().getHost().toStringUtf8());
+			
 			this.dslContext.insertInto(NODE)
 			.set(NODE.HOST,node.getAddress().getHost().toStringUtf8())
 			.set(NODE.PORT,node.getAddress().getPort())
 			.set(NODE.DATE_CREATED,Timestamp.valueOf(LocalDateTime.now()))
 			.set(NODE.LAST_UPDATED,Timestamp.valueOf(LocalDateTime.now()))
+			.set(NODE.COUNTRY,geoRes!=null && geoRes.getCountry()!=null ?geoRes.getCountry().getName():null)
+			.set(NODE.COUNTRY_CODE,geoRes!=null && geoRes.getCountry()!=null ? geoRes.getCountry().getIsoCode():null)
+			.set(NODE.CITY,geoRes!=null && geoRes.getCity()!=null ? geoRes.getCity().getName() : null)
+			.set(NODE.LONGITUDE,geoRes!=null && geoRes.getLocation()!=null ? new BigDecimal(geoRes.getLocation().getLongitude()): null)
+			.set(NODE.LATITUDE,geoRes!=null && geoRes.getLocation()!=null ? new BigDecimal(geoRes.getLocation().getLatitude()) : null)
 			.set(NODE.LAST_UP,lastUp)
 			.set(NODE.UP,isUp ? (byte)1:(byte)0)
 			.onDuplicateKeyUpdate()
@@ -153,18 +160,17 @@ public class NodeSyncService {
 		List<Query> updates = new ArrayList<>();
 		
 		for(NodeRecord node:dbNodes) {
+
+			CityResponse geoRes = getGeoData(node.getHost());
 			
-			HttpResponse<JsonNode> resp = Unirest.get("http://ip-api.com/json/"+node.getHost()).asJson();
-			
-			if (resp!=null) {
-				JSONObject info = resp.getBody().getObject();
-				
+			if (geoRes!=null) {
+
 				updates.add(DSL.update(NODE)
-				.set(NODE.COUNTRY,info.getString("country"))
-				.set(NODE.COUNTRY_CODE,info.getString("countryCode"))
-				.set(NODE.CITY,info.getString("city"))
-				.set(NODE.LONGITUDE,info.getBigDecimal("lon"))
-				.set(NODE.LATITUDE,info.getBigDecimal("lat"))
+				.set(NODE.COUNTRY,geoRes.getCountry()!=null ?geoRes.getCountry().getName():null)
+				.set(NODE.COUNTRY_CODE,geoRes.getCountry()!=null ? geoRes.getCountry().getIsoCode():null)
+				.set(NODE.CITY,geoRes.getCity()!=null ? geoRes.getCity().getName() : null)
+				.set(NODE.LONGITUDE,geoRes.getLocation()!=null ? new BigDecimal(geoRes.getLocation().getLongitude()): null)
+				.set(NODE.LATITUDE,geoRes.getLocation()!=null ? new BigDecimal(geoRes.getLocation().getLatitude()) : null)
 				.where(NODE.ID.eq(node.getId())));
 				
 			}
@@ -184,5 +190,21 @@ public class NodeSyncService {
 	        return false;
 	    }
 	}
+	
+	private CityResponse getGeoData(String ip) {
+
+		try {
+			String dbLocation = this.config.getGeoDbPath();
+			File database = new File(dbLocation);
+			DatabaseReader dbReader = new DatabaseReader.Builder(database).build();
+			
+		    InetAddress ipAddress = InetAddress.getByName(ip);
+		    return dbReader.city(ipAddress);
+		}catch(Exception e) {
+			return null;
+		}
+	}
+	
+	
 	
 }
