@@ -189,7 +189,10 @@ public class AssetService {
 
 
 		
-		Integer totalCount = this.quickStats.getTotalTokens();
+		Integer totalCount = this.dslContext.select(DSL.count())
+				.from(ACCOUNT,ACCOUNT_ASSET)
+				.where(conditions)
+				.fetchOneInto(Integer.class);
 		
 		List<TokenHolderModel> items = listQuery.where(conditions).orderBy(ACCOUNT_ASSET.BALANCE.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(TokenHolderModel.class);
 		
