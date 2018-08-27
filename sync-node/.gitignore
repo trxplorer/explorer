@@ -5,6 +5,7 @@ target/
 .classpath
 .project
 .log
+GeoLite2-City.mmdb
 log/
 search-engine/data
 hs_err_*.log
