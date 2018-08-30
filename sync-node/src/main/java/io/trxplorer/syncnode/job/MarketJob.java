@@ -22,7 +22,7 @@ public class MarketJob {
 		this.config = config;
 	}
 	
-	@Scheduled("30s")
+	@Scheduled("5m")
 	public void syncMarkets() {
 		
 		if (!this.config.isMartketJobEnabled()) {
