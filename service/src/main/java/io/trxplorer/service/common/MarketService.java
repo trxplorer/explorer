@@ -26,7 +26,7 @@ public class MarketService {
 	public BigDecimal getCurrentAvgPrice() {
 		
 		int day = LocalDateTime.now().getDayOfMonth();
-		int month = LocalDateTime.now().getDayOfMonth();
+		int month = LocalDateTime.now().getMonthValue();
 		int year = LocalDateTime.now().getYear();
 		
 		return this.dslContext.select(MARKET.PRICE)
@@ -45,7 +45,7 @@ public class MarketService {
 	public List<MarketDTO> getMarkets(){
 		
 		int day = LocalDateTime.now().getDayOfMonth();
-		int month = LocalDateTime.now().getDayOfMonth();
+		int month = LocalDateTime.now().getMonthValue();
 		int year = LocalDateTime.now().getYear();
 		
 		return this.dslContext.select(MARKET.SOURCE.as("market"),MARKET.PRICE,MARKET.PAIR,MARKET.VOLUME_24H)

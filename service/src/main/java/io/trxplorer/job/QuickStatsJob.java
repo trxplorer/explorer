@@ -239,7 +239,7 @@ public class QuickStatsJob {
 		
 		//Market data
 		int day = LocalDateTime.now().getDayOfMonth();
-		int month = LocalDateTime.now().getDayOfMonth();
+		int month = LocalDateTime.now().getMonthValue();
 		int year = LocalDateTime.now().getYear();
 		
 		Record2<BigDecimal, UInteger> marketData = this.dslContext.select(MARKET.PRICE,MARKET.VOLUME_24H)
@@ -261,16 +261,29 @@ public class QuickStatsJob {
 
 		
 
-		int totalMarkets = this.dslContext.select(DSL.count())
+		int totalExchanges = this.dslContext.select(DSL.count())
 		.from(DSL.select()
 				.from(MARKET)
 				.where(MARKET.SOURCE.ne("CMC"))
+				.and(MARKET.DAY.eq(day))
+				.and(MARKET.MONTH.eq(month))
+				.and(MARKET.YEAR.eq(year))
 				.groupBy(MARKET.SOURCE).asTable())
 		.fetchOneInto(Integer.class);
 		
 
+		int totalMarkets = this.dslContext.select(DSL.count())
+		.from(DSL.select()
+				.from(MARKET)
+				.where(MARKET.SOURCE.ne("CMC"))
+				.and(MARKET.DAY.eq(day))
+				.and(MARKET.MONTH.eq(month))
+				.and(MARKET.YEAR.eq(year))
+				.asTable())
+		.fetchOneInto(Integer.class);
+		
 		this.marketData.put("totalMarkets", totalMarkets);			
-
+		this.marketData.put("totalExchanges", totalExchanges);
 
 		
 		//Votes

@@ -53,6 +53,8 @@ public class MarketSyncService {
 			
 			Elements elements = res.select("#markets-table tbody tr");
 			
+			System.out.println("==>"+elements.size());
+			
 			Iterator<Element> it = elements.iterator();
 			
 			while(it.hasNext()) {
@@ -64,7 +66,7 @@ public class MarketSyncService {
 				String pair = columns.get(2).text();
 				String mvolume = columns.get(3).text().replace("$", "").replace(",", "");
 				String mprice =  columns.get(4).text().replace("$", "").replace(",", "").replace("*", "");
-				String updated = columns.get(6).text();
+				String updated = columns.get(8).text();
 				
 
 				if (!updated.toLowerCase().equals("recently") ||mvolume.contains("*")) {
@@ -92,7 +94,7 @@ public class MarketSyncService {
 	private void createOrUpdate(Market market) {
 		
 		int day = LocalDateTime.now().getDayOfMonth();
-		int month = LocalDateTime.now().getDayOfMonth();
+		int month = LocalDateTime.now().getMonthValue();
 		int year = LocalDateTime.now().getYear();
 		
 		UInteger id = this.dslContext.select(MARKET.ID)
@@ -101,7 +103,7 @@ public class MarketSyncService {
 				.and(MARKET.MONTH.eq(month))
 				.and(MARKET.YEAR.eq(year)))
 				.and(MARKET.SOURCE.eq(market.getSource()))
-				.and(MARKET.SOURCE.eq(market.getPair()))
+				.and(MARKET.PAIR.eq(market.getPair()))
 		.fetchOneInto(UInteger.class);
 		
 		if (id==null) {
