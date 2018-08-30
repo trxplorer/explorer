@@ -12,7 +12,7 @@
 	<description>Sample Parent</description>
 
 	<properties>
-		 <java-tron.version>d04a786f824f127e2a4b4ab34182cb45213be5a8</java-tron.version>
+		 <java-tron.version>a780ba1</java-tron.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jooq.version>3.9.2</jooq.version>

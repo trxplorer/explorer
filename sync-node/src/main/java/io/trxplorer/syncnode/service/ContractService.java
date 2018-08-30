@@ -16,11 +16,24 @@ import org.tron.core.Wallet;
 import org.tron.protos.Contract.AccountCreateContract;
 import org.tron.protos.Contract.AccountUpdateContract;
 import org.tron.protos.Contract.AssetIssueContract;
+import org.tron.protos.Contract.CreateSmartContract;
+import org.tron.protos.Contract.ExchangeCreateContract;
+import org.tron.protos.Contract.ExchangeInjectContract;
+import org.tron.protos.Contract.ExchangeTransactionContract;
+import org.tron.protos.Contract.ExchangeWithdrawContract;
 import org.tron.protos.Contract.FreezeBalanceContract;
 import org.tron.protos.Contract.ParticipateAssetIssueContract;
+import org.tron.protos.Contract.ProposalApproveContract;
+import org.tron.protos.Contract.ProposalCreateContract;
+import org.tron.protos.Contract.ProposalDeleteContract;
+import org.tron.protos.Contract.SetAccountIdContract;
 import org.tron.protos.Contract.TransferAssetContract;
 import org.tron.protos.Contract.TransferContract;
+import org.tron.protos.Contract.TriggerSmartContract;
+import org.tron.protos.Contract.UnfreezeAssetContract;
 import org.tron.protos.Contract.UnfreezeBalanceContract;
+import org.tron.protos.Contract.UpdateAssetContract;
+import org.tron.protos.Contract.UpdateSettingContract;
 import org.tron.protos.Contract.VoteAssetContract;
 import org.tron.protos.Contract.VoteWitnessContract;
 import org.tron.protos.Contract.VoteWitnessContract.Vote;
@@ -38,11 +51,24 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import io.trxplorer.model.tables.records.ContractAccountCreateRecord;
 import io.trxplorer.model.tables.records.ContractAccountUpdateRecord;
 import io.trxplorer.model.tables.records.ContractAssetIssueRecord;
+import io.trxplorer.model.tables.records.ContractCreateSmartcontractRecord;
+import io.trxplorer.model.tables.records.ContractExchangeCreateRecord;
+import io.trxplorer.model.tables.records.ContractExchangeInjectRecord;
+import io.trxplorer.model.tables.records.ContractExchangeTransactionContractRecord;
+import io.trxplorer.model.tables.records.ContractExchangeWithdrawContractRecord;
 import io.trxplorer.model.tables.records.ContractFreezeBalanceRecord;
 import io.trxplorer.model.tables.records.ContractParticipateAssetIssueRecord;
+import io.trxplorer.model.tables.records.ContractProposalApproveRecord;
+import io.trxplorer.model.tables.records.ContractProposalCreateRecord;
+import io.trxplorer.model.tables.records.ContractProposalDeleteRecord;
+import io.trxplorer.model.tables.records.ContractSetAccountIdRecord;
 import io.trxplorer.model.tables.records.ContractTransferAssetRecord;
 import io.trxplorer.model.tables.records.ContractTransferRecord;
+import io.trxplorer.model.tables.records.ContractTriggerSmartcontractRecord;
+import io.trxplorer.model.tables.records.ContractUnfreezeAssetRecord;
 import io.trxplorer.model.tables.records.ContractUnfreezeBalanceRecord;
+import io.trxplorer.model.tables.records.ContractUpdateAssetRecord;
+import io.trxplorer.model.tables.records.ContractUpdateSettingRecord;
 import io.trxplorer.model.tables.records.ContractVoteAssetRecord;
 import io.trxplorer.model.tables.records.ContractVoteWitnessRecord;
 import io.trxplorer.model.tables.records.ContractWithdrawBalanceRecord;
@@ -97,14 +123,6 @@ public class ContractService {
 					
 					break;
 
-				case ContractType.CreateSmartContract_VALUE:
-					/*
-					ContractDeployRecord deployRecord = this.getDeployContractRecord(txId,SmartContract.parseFrom(contractByteString));
-					
-					
-					contractRecords.add(deployRecord);
-					*/
-					break;
 				case ContractType.ParticipateAssetIssueContract_VALUE:
 					
 					ContractParticipateAssetIssueRecord participateAssetIssueContract = this.getParticipateAssetIssueContractRecord(txId,ParticipateAssetIssueContract.parseFrom(contractByteString));
@@ -182,8 +200,104 @@ public class ContractService {
 					contractRecords.add(widthdrawBalanceRecord);
 					
 					break;
-				default:
+				
+				case ContractType.UpdateAssetContract_VALUE:
+					
+					ContractUpdateAssetRecord updateAssetContractRecord = this.getUpdateAssetContract(txId,UpdateAssetContract.parseFrom(contractByteString));
+					
+					contractRecords.add(updateAssetContractRecord);
+					
 					break;
+					
+				case ContractType.UnfreezeAssetContract_VALUE:
+					
+					ContractUnfreezeAssetRecord unfreezeAssetContractRecord = this.getUnfreezeAssetContract(txId,UnfreezeAssetContract.parseFrom(contractByteString));
+					
+					contractRecords.add(unfreezeAssetContractRecord);
+					
+					break;
+					
+				case ContractType.UpdateSettingContract_VALUE:
+					
+					ContractUpdateSettingRecord updateSettingContractRecord = this.getUpdateSettingContract(txId,UpdateSettingContract.parseFrom(contractByteString));
+					
+					contractRecords.add(updateSettingContractRecord);
+					
+					break;					
+					
+				case ContractType.SetAccountIdContract_VALUE:
+					
+					ContractSetAccountIdRecord setAccountIdContractRecord = this.getSetAccountIdContract(txId,SetAccountIdContract.parseFrom(contractByteString));
+					
+					contractRecords.add(setAccountIdContractRecord);
+					
+					break;					
+				case ContractType.ProposalCreateContract_VALUE:
+					
+					ContractProposalCreateRecord proposalCreateContractRecord = this.getProposalCreateContract(txId,ProposalCreateContract.parseFrom(contractByteString));
+					
+					contractRecords.add(proposalCreateContractRecord);
+					
+					break;
+				case ContractType.ProposalApproveContract_VALUE:
+					
+					ContractProposalApproveRecord proposalApproveRecord = this.getProposalApproveContract(txId,ProposalApproveContract.parseFrom(contractByteString));
+					
+					contractRecords.add(proposalApproveRecord);
+					
+					break;
+				case ContractType.ProposalDeleteContract_VALUE:
+					
+					ContractProposalDeleteRecord proposalDeleteRecord = this.getProposalDeleteContract(txId,ProposalDeleteContract.parseFrom(contractByteString));
+					
+					contractRecords.add(proposalDeleteRecord);
+					
+					break;					
+				case ContractType.CreateSmartContract_VALUE:
+					
+					ContractCreateSmartcontractRecord createSmartContractRecord = this.getCreateSmartContract(txId,CreateSmartContract.parseFrom(contractByteString));
+					
+					contractRecords.add(createSmartContractRecord);
+					
+					break;
+				case ContractType.TriggerSmartContract_VALUE:
+					
+					ContractTriggerSmartcontractRecord triggerSmartContractRecord = this.getTriggerSmartContract(txId,TriggerSmartContract.parseFrom(contractByteString));
+					
+					contractRecords.add(triggerSmartContractRecord);
+					
+					break;
+				case ContractType.ExchangeCreateContract_VALUE:
+					
+					ContractExchangeCreateRecord exchangeCreateRecord = this.getExchangeCreateContract(txId,ExchangeCreateContract.parseFrom(contractByteString));
+					
+					contractRecords.add(exchangeCreateRecord);
+					
+					break;
+				case ContractType.ExchangeInjectContract_VALUE:
+					
+					ContractExchangeInjectRecord exchangeInjectRecord = this.getExchangeInjectContract(txId,ExchangeInjectContract.parseFrom(contractByteString));
+					
+					contractRecords.add(exchangeInjectRecord);
+					
+					break;
+				case ContractType.ExchangeWithdrawContract_VALUE:
+					
+					ContractExchangeWithdrawContractRecord exchangeWithdrawRecord = this.getExchangeWidthdrawContract(txId,ExchangeWithdrawContract.parseFrom(contractByteString));
+					
+					contractRecords.add(exchangeWithdrawRecord);
+					
+					break;
+				case ContractType.ExchangeTransactionContract_VALUE:
+					
+					ContractExchangeTransactionContractRecord exchangeTransactionContractRecord = this.getExchangeTransactionContract(txId,ExchangeTransactionContract.parseFrom(contractByteString));
+					
+					contractRecords.add(exchangeTransactionContractRecord);
+					
+					break;
+				default:
+					throw new ServiceException("Unknown contract type");
+					
 				}
 
 			} catch (InvalidProtocolBufferException e) {
@@ -195,6 +309,112 @@ public class ContractService {
 		
 		this.dslContext.batchInsert(contractRecords).execute();
 
+	}
+
+	private ContractExchangeTransactionContractRecord getExchangeTransactionContract(ULong txId,
+			ExchangeTransactionContract contract) {
+		ContractExchangeTransactionContractRecord record = new ContractExchangeTransactionContractRecord();
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setTransactionId(txId);		
+		
+		return record;
+	}
+
+	private ContractExchangeWithdrawContractRecord getExchangeWidthdrawContract(ULong txId,
+			ExchangeWithdrawContract contract) {
+		ContractExchangeWithdrawContractRecord record = new ContractExchangeWithdrawContractRecord();
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setTransactionId(txId);		
+		
+		return record;
+	}
+
+	private ContractExchangeInjectRecord getExchangeInjectContract(ULong txId, ExchangeInjectContract contract) {
+		ContractExchangeInjectRecord record = new ContractExchangeInjectRecord();
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setTransactionId(txId);		
+		
+		return record;
+	}
+
+	private ContractExchangeCreateRecord getExchangeCreateContract(ULong txId, ExchangeCreateContract contract) {
+		ContractExchangeCreateRecord record = new ContractExchangeCreateRecord();
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setTransactionId(txId);		
+		
+		return record;
+	}
+
+	private ContractTriggerSmartcontractRecord getTriggerSmartContract(ULong txId, TriggerSmartContract contract) {
+		ContractTriggerSmartcontractRecord record = new ContractTriggerSmartcontractRecord();
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setTransactionId(txId);		
+		
+		return record;
+	}
+
+	private ContractCreateSmartcontractRecord getCreateSmartContract(ULong txId, CreateSmartContract contract) {
+		ContractCreateSmartcontractRecord record = new ContractCreateSmartcontractRecord();
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setTransactionId(txId);		
+		
+		return record;
+	}
+
+	private ContractProposalDeleteRecord getProposalDeleteContract(ULong txId, ProposalDeleteContract contract) {
+		ContractProposalDeleteRecord record = new ContractProposalDeleteRecord();
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setTransactionId(txId);		
+		
+		return record;
+	}
+
+	private ContractProposalApproveRecord getProposalApproveContract(ULong txId, ProposalApproveContract contract) {
+		ContractProposalApproveRecord record = new ContractProposalApproveRecord();
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setTransactionId(txId);		
+		
+		return record;
+	}
+
+	private ContractProposalCreateRecord getProposalCreateContract(ULong txId, ProposalCreateContract contract) {
+		ContractProposalCreateRecord record = new ContractProposalCreateRecord();
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setTransactionId(txId);		
+		
+		return record;
+	}
+
+	private ContractSetAccountIdRecord getSetAccountIdContract(ULong txId, SetAccountIdContract contract) {
+		ContractSetAccountIdRecord record = new ContractSetAccountIdRecord();
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setTransactionId(txId);		
+		
+		return record;
+	}
+
+	private ContractUpdateSettingRecord getUpdateSettingContract(ULong txId, UpdateSettingContract contract) {
+		ContractUpdateSettingRecord record = new ContractUpdateSettingRecord();
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setTransactionId(txId);		
+		
+		return record;
+	}
+
+	private ContractUnfreezeAssetRecord getUnfreezeAssetContract(ULong txId, UnfreezeAssetContract contract) {
+		ContractUnfreezeAssetRecord record = new ContractUnfreezeAssetRecord();
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setTransactionId(txId);		
+		
+		return record;
+	}
+
+	private ContractUpdateAssetRecord getUpdateAssetContract(ULong txId, UpdateAssetContract contract) {
+		ContractUpdateAssetRecord record = new ContractUpdateAssetRecord();
+		record.setOwnerAddress(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		record.setTransactionId(txId);		
+		
+		return record;
 	}
 
 	private ContractWithdrawBalanceRecord getWidthdrawBalanceContract(ULong txId, WithdrawBalanceContract contract) {
