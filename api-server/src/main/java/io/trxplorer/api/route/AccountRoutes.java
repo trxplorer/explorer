@@ -19,6 +19,8 @@ import io.trxplorer.api.dto.transaction.TransactionDTO;
 import io.trxplorer.api.dto.witness.AllowanceWidthdrawModel;
 import io.trxplorer.api.service.AccountService;
 import io.trxplorer.api.service.TransactionService;
+import io.trxplorer.service.dto.account.AccountDTO;
+import io.trxplorer.service.dto.account.AccountDetailCriteriaDTO;
 import io.trxplorer.service.dto.transaction.TransferModel;
 import io.trxplorer.service.dto.vote.VoteModel;
 
@@ -27,11 +29,13 @@ public class AccountRoutes {
 
 	private AccountService accountService;
 	private TransactionService transactionService;
+	private io.trxplorer.service.common.AccountService accountInfoService;
 	
 	@Inject
-	public AccountRoutes(AccountService accountService,TransactionService transactionService) {
+	public AccountRoutes(AccountService accountService,TransactionService transactionService,io.trxplorer.service.common.AccountService accountInfoService) {
 		this.accountService = accountService;
 		this.transactionService = transactionService;
+		this.accountInfoService = accountInfoService;
 	}
 	
 
@@ -44,9 +48,11 @@ public class AccountRoutes {
 	 */
 	@GET
 	@Path(ApiAppRoutePaths.V1.ACCOUNT_INFO)
-	public AccountInfo accountInfo(String address) throws Throwable {
+	public AccountDTO accountInfo(String address) throws Throwable {
 
-		return this.accountService.getAccountByAddress(address);		
+		
+		
+		return this.accountInfoService.getAccountByAddress(new AccountDetailCriteriaDTO(address));		
 	}
 	
 

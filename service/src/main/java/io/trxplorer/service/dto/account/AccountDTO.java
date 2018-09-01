@@ -5,6 +5,8 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.trxplorer.service.dto.asset.AssetIssueDTO;
 import io.trxplorer.service.dto.asset.AssetParticipationDTO;
 import io.trxplorer.service.dto.transaction.TransactionModel;
@@ -15,6 +17,7 @@ import io.trxplorer.service.utils.TransactionHelper;
 
 public class AccountDTO {
 	
+	@JsonIgnore
 	private Long id;
 	
 	private String name;
@@ -22,26 +25,6 @@ public class AccountDTO {
 	private long balance;
 	
 	private String address;
-	
-	private List<TransactionModel> transactions;
-
-	private List<AssetBalanceDTO> assetBalances;
-	
-	private List<VoteModel> votes;
-	
-	private List<FrozenBalanceDTO> frozenBalances;
-	
-	private List<AssetIssueDTO> assetIssues;
-	
-	private List<AssetParticipationDTO> assetParticipations;
-	
-	private List<AllowanceWidthdrawDTO> allowanceWithdrawals;
-	
-	private long voteSpent;
-	
-	private long voteReceived;
-	
-	private long assetCount;
 	
 	private long bandwidth;
 	
@@ -52,10 +35,6 @@ public class AccountDTO {
 	private long totalBalance;
 	
 	private Timestamp frozenExpire;
-	
-	private String percentage;
-	
-	private String rank;
 	
 	private Timestamp createTime;
 	
@@ -127,13 +106,7 @@ public class AccountDTO {
 		this.usdValue = usdValue;
 	}
 
-	public List<AllowanceWidthdrawDTO> getAllowanceWithdrawals() {
-		return allowanceWithdrawals;
-	}
 
-	public void setAllowanceWithdrawals(List<AllowanceWidthdrawDTO> allowanceWithdrawals) {
-		this.allowanceWithdrawals = allowanceWithdrawals;
-	}
 
 	public long getTotalBalance() {
 		return totalBalance;
@@ -183,13 +156,6 @@ public class AccountDTO {
 		this.isWitness = isWitness;
 	}
 
-	public List<AssetParticipationDTO> getAssetParticipations() {
-		return assetParticipations;
-	}
-
-	public void setAssetParticipations(List<AssetParticipationDTO> assetParticipations) {
-		this.assetParticipations = assetParticipations;
-	}
 	
 	public Timestamp getCreateTime() {
 		return createTime;
@@ -197,14 +163,6 @@ public class AccountDTO {
 
 	public void setCreateTime(Timestamp createdTime) {
 		this.createTime = createdTime;
-	}
-
-	public String getRank() {
-		return rank;
-	}
-
-	public void setRank(String rank) {
-		this.rank = rank;
 	}
 
 	public String getName() {
@@ -231,69 +189,6 @@ public class AccountDTO {
 		this.address = address;
 	}
 
-	public List<TransactionModel> getTransactions() {
-		return transactions;
-	}
-
-	public void setTransactions(List<TransactionModel> transactions) {
-		this.transactions = transactions;
-	}
-
-	public List<AssetBalanceDTO> getAssetBalances() {
-		return assetBalances;
-	}
-
-	public void setAssetBalances(List<AssetBalanceDTO> assetBalances) {
-		this.assetBalances = assetBalances;
-	}
-
-	public List<FrozenBalanceDTO> getFrozenBalances() {
-		return frozenBalances;
-	}
-
-	public void setFrozenBalances(List<FrozenBalanceDTO> frozenBalances) {
-		this.frozenBalances = frozenBalances;
-	}
-
-	public List<VoteModel> getVotes() {
-		return votes;
-	}
-
-	public void setVotes(List<VoteModel> votes) {
-		this.votes = votes;
-	}
-
-	public long getVoteReceived() {
-		return voteReceived;
-	}
-
-	public void setVoteReceived(long voteReceived) {
-		this.voteReceived = voteReceived;
-	}
-
-	public long getAssetCount() {
-		return assetCount;
-	}
-
-	public void setAssetCount(long assetCount) {
-		this.assetCount = assetCount;
-	}
-
-	public long getVoteSpent() {
-		return voteSpent;
-	}
-
-	public void setVoteSpent(long voteSpent) {
-		this.voteSpent = voteSpent;
-	}
-
-	public void setPercentage(String percentage) {
-		this.percentage = percentage;
-	}
-	
-	public String getPercentage() {
-		return percentage;
-	}
 	
 	public void setWitness(WitnessModel witness) {
 		this.witness = witness;
@@ -311,13 +206,6 @@ public class AccountDTO {
 		return criteria;
 	}
 
-	public List<AssetIssueDTO> getAssetIssues() {
-		return assetIssues;
-	}
-
-	public void setAssetIssues(List<AssetIssueDTO> assetIssues) {
-		this.assetIssues = assetIssues;
-	}
 	
 	public String getBalanceStr() {
 		return TransactionHelper.getTrxAmount(this.balance);
