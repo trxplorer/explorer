@@ -104,12 +104,13 @@ public class AccountRoutes {
 	 */
 	@GET
 	@Path(ApiAppRoutePaths.V1.ACCOUNT_TRANSFERS_IN)	
-	public ListResult<TransferModel, AccountCriteria> transfersIn(String address,Optional<Integer> limit,Optional<Integer> page) {
+	public ListResult<TransferModel, AccountCriteria> transfersIn(String address,Optional<Boolean> trx,Optional<Integer> limit,Optional<Integer> page) {
 		
 		AccountCriteria criteria = new AccountCriteria();
 		
 		criteria.setAddress(address);
 		criteria.setLimit(limit.orElse(20));
+		criteria.setTrx(trx.orElse(false));
 		criteria.setPage(page.orElse(1));
 		
 		return this.accountService.listTransfersIn(criteria);
@@ -117,12 +118,13 @@ public class AccountRoutes {
 
 	@GET
 	@Path(ApiAppRoutePaths.V1.ACCOUNT_TRANSFERS_OUT)	
-	public ListResult<TransferModel, AccountCriteria> transfersOut(String address,Optional<Integer> limit,Optional<Integer> page) {
+	public ListResult<TransferModel, AccountCriteria> transfersOut(String address,Optional<Boolean> trx,Optional<Integer> limit,Optional<Integer> page) {
 		
 		AccountCriteria criteria = new AccountCriteria();
 		
 		criteria.setAddress(address);
 		criteria.setLimit(limit.orElse(20));
+		criteria.setTrx(trx.orElse(false));
 		criteria.setPage(page.orElse(1));
 		
 		return this.accountService.listTransfersOut(criteria);

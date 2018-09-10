@@ -334,11 +334,26 @@ public class AccountService {
 					.join(TRANSFER).on(TRANSFER.TRANSACTION_ID.eq(TRANSACTION.ID)).and((TRANSFER.TO.eq(criteria.getAddress())))
 					;
 
+		Integer totalCount = null;
+		
+		if (!criteria.isTrx()) {
+			 totalCount = this.dslContext.select(ACCOUNT.TRANSFER_TO_COUNT)
+						.from(ACCOUNT)
+						.where(ACCOUNT.ADDRESS.eq(criteria.getAddress()))
+						.fetchOneInto(Integer.class);			
+		}else {
+			
+			conditions.add(TRANSFER.TOKEN.isNull());
+			
+			totalCount = this.dslContext.select(DSL.count())
+			.from(TRANSACTION)
+			.join(TRANSFER).on(TRANSFER.TRANSACTION_ID.eq(TRANSACTION.ID)).and((TRANSFER.TO.eq(criteria.getAddress())))
+			.where(conditions)
+			.fetchOneInto(Integer.class);
+			;
+			
+		}
 
-		Integer totalCount = this.dslContext.select(ACCOUNT.TRANSFER_TO_COUNT)
-				.from(ACCOUNT)
-				.where(ACCOUNT.ADDRESS.eq(criteria.getAddress()))
-				.fetchOneInto(Integer.class);
 		
 		if (totalCount==null) {
 			totalCount = 0;
@@ -367,10 +382,25 @@ public class AccountService {
 					;
 
 
-		Integer totalCount = this.dslContext.select(ACCOUNT.TRANSFER_FROM_COUNT)
-				.from(ACCOUNT)
-				.where(ACCOUNT.ADDRESS.eq(criteria.getAddress()))
-				.fetchOneInto(Integer.class);
+		Integer totalCount = null;
+		
+		if (!criteria.isTrx()) {
+			 totalCount = this.dslContext.select(ACCOUNT.TRANSFER_FROM_COUNT)
+						.from(ACCOUNT)
+						.where(ACCOUNT.ADDRESS.eq(criteria.getAddress()))
+						.fetchOneInto(Integer.class);			
+		}else {
+			
+			conditions.add(TRANSFER.TOKEN.isNull());
+			
+			totalCount = this.dslContext.select(DSL.count())
+			.from(TRANSACTION)
+			.join(TRANSFER).on(TRANSFER.TRANSACTION_ID.eq(TRANSACTION.ID)).and((TRANSFER.FROM.eq(criteria.getAddress())))
+			.where(conditions)
+			.fetchOneInto(Integer.class);
+			;
+			
+		}
 		
 		if (totalCount==null) {
 			totalCount = 0;
