@@ -45,14 +45,9 @@ public class AssetService {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		
-		Field<?> participantCountField = DSL.select(DSL.count()).from(CONTRACT_PARTICIPATE_ASSET_ISSUE).where(CONTRACT_PARTICIPATE_ASSET_ISSUE.ASSET_NAME.eq(CONTRACT_ASSET_ISSUE.NAME)).asField("totalParticipants");
 		
-		SelectJoinStep<?> listQuery = this.dslContext.select(CONTRACT_ASSET_ISSUE.ID,CONTRACT_ASSET_ISSUE.NAME,CONTRACT_ASSET_ISSUE.ABBR,CONTRACT_ASSET_ISSUE.TOTAL_SUPPLY,CONTRACT_ASSET_ISSUE.START_TIME,CONTRACT_ASSET_ISSUE.END_TIME,CONTRACT_ASSET_ISSUE.OWNER_ADDRESS.as("issuer"),participantCountField).from(CONTRACT_ASSET_ISSUE)
+		SelectJoinStep<?> listQuery = this.dslContext.select(CONTRACT_ASSET_ISSUE.ID,CONTRACT_ASSET_ISSUE.NAME,CONTRACT_ASSET_ISSUE.ABBR,CONTRACT_ASSET_ISSUE.TOTAL_SUPPLY,CONTRACT_ASSET_ISSUE.START_TIME,CONTRACT_ASSET_ISSUE.END_TIME,CONTRACT_ASSET_ISSUE.OWNER_ADDRESS.as("issuer")).from(CONTRACT_ASSET_ISSUE)
 				.join(TRANSACTION).on(TRANSACTION.ID.eq(CONTRACT_ASSET_ISSUE.TRANSACTION_ID));
-		
-		
-		SelectJoinStep<Record1<Integer>> countQuery = dslContext.select(DSL.count())
-		.from(CONTRACT_ASSET_ISSUE);
 		
 		
 		if (StringUtils.isNotBlank(criteria.getIssuer())) {
@@ -60,7 +55,7 @@ public class AssetService {
 		}
 		
 		
-		Integer totalCount = countQuery.where(conditions).fetchOneInto(Integer.class);
+		Integer totalCount = quickStats.getTotalTokens();
 		
 		List<AssetIssueDTO> items = listQuery.where(conditions).orderBy(TRANSACTION.TIMESTAMP.desc()).limit(criteria.getLimit()).offset(criteria.getOffSet()).fetchInto(AssetIssueDTO.class);
 		

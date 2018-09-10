@@ -27,15 +27,12 @@ public class AssetRoutes {
 
 	private AssetService assetService;
 	private QuickStatsJob quickStats;
-	private Cache<String, Object> cache;
 	
 	@Inject
 	public AssetRoutes(AssetService blockService,QuickStatsJob quickStats) {
 		this.assetService = blockService;
 		this.quickStats = quickStats;
-		this.cache = CacheBuilder.newBuilder()
-			    .expireAfterAccess(1, TimeUnit.MINUTES)
-			    .build();
+
 	}
 	
 	@GET
@@ -82,15 +79,8 @@ public class AssetRoutes {
 
 		View view = Results.html("asset/asset.list");
 		
-		Object result = this.cache.getIfPresent(criteria.params().toString());
 		
-		if (result==null) {
-			result = this.assetService.listAssetIssues(criteria);
-			this.cache.put(criteria.params().toString(), result);
-		}
-		
-		
-		view.put("list",result);
+		view.put("list",this.assetService.listAssetIssues(criteria));
 		
 		HashMap<String, Object> stats = new HashMap<>();
 		stats.put("totalTokens", quickStats.getTotalTokens());
