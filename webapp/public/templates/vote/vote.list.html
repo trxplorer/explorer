@@ -325,7 +325,7 @@ new Vue({
 	  mounted: function(){
 		  this.fetchTotalVotes();
 		  this.fetch({page:1});
-		  this.fetchRoundStats();
+		  //this.fetchRoundStats();
 		  var end=moment.utc(this.nextMaintenanceTime).local();
 		  var ziss = this;
 		  var countDown = 60;
