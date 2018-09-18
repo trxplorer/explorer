@@ -131,6 +131,7 @@ public class VoteService {
 		conditions.add(VOTING_ROUND_STATS.VOTING_ROUND_ID.eq(VOTING_ROUND.ID));
 		conditions.add(ACCOUNT.ADDRESS.eq(WITNESS.ADDRESS));
 		conditions.add(ACCOUNT.ADDRESS.eq(VOTING_ROUND_STATS.ADDRESS));
+
 		
 		if (StringUtils.isNotBlank(criteria.getAddress())) {
 			conditions.add(ACCOUNT.ADDRESS.eq(criteria.getAddress()));	
@@ -206,6 +207,8 @@ public class VoteService {
 		
 		ArrayList<Condition> conditions = new ArrayList<>();
 		conditions.add(VOTING_ROUND_VOTE.VOTING_ROUND_ID.eq(VOTING_ROUND.ID));
+		conditions.add(VOTING_ROUND.VALID.eq((byte)1));
+		
 		if (criteria.getRound()!=null) {
 			conditions.add(VOTING_ROUND.ROUND.eq(UInteger.valueOf(criteria.getRound())));			
 		}
