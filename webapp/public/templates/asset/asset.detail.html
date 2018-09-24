@@ -10,6 +10,17 @@
 	<small>Token: <small>{{asset.name}} {%if asset.abbr!=null and asset.abbr.length>0%}({{asset.abbr}}){%endif%}</small></small>
 </h1>
 
+{%if asset.violation==true%}
+<div class="ui error message">
+  
+  <div class="header">
+    <i class="warning circle icon"></i> Displayed informations about this token are limited
+  </div>
+  <p>This token has been reported as suspicious for one (or all) of the following reasons: multiple scam reports, copyright violation report</p>
+
+</div>
+{%endif%}
+
 <table class="ui compact definition table ">
 	<tbody>
 		<tr>
@@ -21,12 +32,13 @@
 			<td>Start: <small class="timestamp">{{asset.startTime}}</small>  &nbsp;&nbsp;&nbsp; End: <small class="timestamp">{{asset.endTime}}</small></td>
 		</tr>
 		<tr>
-			<td>URL</td>
-			<td><a href="{{asset.url}}" target="blank">{{asset.url}}</a></td>
-		</tr>
-		<tr>
 			<td>Total supply</td>
 			<td>{{asset.totalSupplyStr}}</td>
+		</tr>
+		{%if asset.violation==false%}
+		<tr>
+			<td>URL</td>
+			<td><a href="{{asset.url}}" target="blank">{{asset.url}}</a></td>
 		</tr>
 		<tr>
 			<td>Exchange rate</td>
@@ -36,10 +48,11 @@
 			<td>Description</td>
 			<td>{{asset.description}}</td>
 		</tr>
-
+		{%endif%}
 	</tbody>
 </table>
 
+{%if asset.violation==false%}
 <div id="app">
 
 <div class="ui stackable fluid secondary menu">
@@ -51,7 +64,7 @@
  <router-view></router-view>
  
 </div>
-
+{%endif%}
 <!-- TRANSFERS -->
  <script type="text/x-template"  id="transfers">
    <div v-cloak>

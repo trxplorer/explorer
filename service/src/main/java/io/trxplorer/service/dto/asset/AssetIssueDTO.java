@@ -48,7 +48,17 @@ public class AssetIssueDTO {
 	
 	private TokenCriteria criteria;
 	
+	private boolean violation;
 	
+
+	public boolean isViolation() {
+		return violation;
+	}
+
+	public void setViolation(boolean hideData) {
+		this.violation = hideData;
+	}
+
 	public String getAbbr() {
 		return abbr;
 	}

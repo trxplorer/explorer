@@ -4,6 +4,7 @@ import static io.trxplorer.model.Tables.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,10 +21,10 @@ import com.google.inject.Singleton;
 import io.trxplorer.job.QuickStatsJob;
 import io.trxplorer.service.dto.account.TokenHolderModel;
 import io.trxplorer.service.dto.asset.AssetIssueDTO;
-import io.trxplorer.service.dto.asset.TokenCriteria;
 import io.trxplorer.service.dto.asset.AssetIssueListCriteriaDTO;
 import io.trxplorer.service.dto.asset.AssetParticipationCriteria;
 import io.trxplorer.service.dto.asset.AssetParticipationDTO;
+import io.trxplorer.service.dto.asset.TokenCriteria;
 import io.trxplorer.service.dto.common.ListModel;
 import io.trxplorer.service.dto.transaction.TransferModel;
 
@@ -33,6 +34,15 @@ public class AssetService {
 	private DSLContext dslContext;
 	private TransactionService txService;
 	private QuickStatsJob quickStats;
+	
+	private static final HashMap<String,String> violationTokens = new HashMap<>();
+	
+	//TODO Implement non hard coded feature 
+	static {
+		
+		violationTokens.put("BNC", "binance");
+		
+	}
 	
 	@Inject
 	public AssetService(DSLContext dslContext,TransactionService txService,QuickStatsJob quickStats) {
@@ -203,7 +213,11 @@ public class AssetService {
 		.from(CONTRACT_ASSET_ISSUE).where(CONTRACT_ASSET_ISSUE.NAME.eq(assetIssueCriteria.getName()))
 		.fetchOneInto(AssetIssueDTO.class);
 		
-	
+		for(String token:violationTokens.keySet()) {
+			if (result.getAbbr().equals(token) && violationTokens.get(token).equals(result.getName())) {
+				result.setViolation(true);
+			}
+		}
 		
 		return result;
 	}
