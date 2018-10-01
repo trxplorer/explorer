@@ -61,6 +61,10 @@ public class SyncNodeConfig{
 		return this.config.getBoolean("jobs.block");
 	}
 	
+	public boolean isSoliditySyncEnabled() {
+		return this.config.getBoolean("jobs.soliditySync");
+	}
+	
 	public List<String> getSeedNodes() {
 		return this.config.getStringList("tron.seedNodes");
 	}

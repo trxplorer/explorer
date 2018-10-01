@@ -78,7 +78,7 @@ public class BlockSyncJob {
 	@Scheduled(ChainConstant.BLOCK_PRODUCED_INTERVAL+10+"ms")
 	public void syncSolidityNodeBlocks() throws ServiceException {
 		
-		if (!this.config.isBlockJobEnabled()) {
+		if (!this.config.isSoliditySyncEnabled() || !this.config.isBlockJobEnabled()) {
 			return;
 		}
 		
